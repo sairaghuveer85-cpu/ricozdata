@@ -1,0 +1,299 @@
+@import "tailwindcss";
+@import "./variables.css";
+@import "@xyflow/react/dist/style.css";
+
+@custom-variant dark (&:is([data-theme="dark"] *, [data-theme="dark"], .dark *, .dark));
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  
+  html,
+  body,
+  #root {
+    min-height: 100%;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-sans);
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition:
+      background-color 180ms ease,
+      color 180ms ease;
+  }
+
+  input,
+  textarea,
+  select {
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    border-color: var(--border);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--text-muted);
+  }
+}
+
+/* Reusable Theme Semantic Classes */
+.theme-surface {
+  background-color: var(--surface) !important;
+  border-color: var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+.theme-card {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--text-primary) !important;
+  box-shadow: none;
+}
+
+.theme-header {
+  background-color: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+}
+
+.theme-input {
+  background-color: var(--input-bg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Enterprise Restrained Radius Classes */
+.rounded-enterprise-btn {
+  border-radius: var(--radius-sm) !important;
+}
+
+.rounded-enterprise-input {
+  border-radius: var(--radius-sm) !important;
+}
+
+.rounded-enterprise-card {
+  border-radius: var(--radius-md) !important;
+}
+
+.rounded-enterprise-modal {
+  border-radius: var(--radius-lg) !important;
+}
+
+/* ============================================================
+   AUTOMATIC DARK MODE PROPAGATION (CSS VARIABLE SOURCE OF TRUTH)
+   ============================================================ */
+[data-theme="dark"] .bg-white,
+html[data-theme="dark"] .bg-white,
+.dark .bg-white {
+  background-color: var(--surface) !important;
+}
+
+[data-theme="dark"] .bg-\[\#F7F9FC\],
+html[data-theme="dark"] .bg-\[\#F7F9FC\],
+[data-theme="dark"] .bg-\[\#F8FAFC\],
+html[data-theme="dark"] .bg-\[\#F8FAFC\],
+[data-theme="dark"] .bg-slate-50,
+html[data-theme="dark"] .bg-slate-50,
+[data-theme="dark"] .bg-gray-50,
+html[data-theme="dark"] .bg-gray-50 {
+  background-color: var(--bg-primary) !important;
+}
+
+[data-theme="dark"] .bg-slate-100,
+html[data-theme="dark"] .bg-slate-100,
+[data-theme="dark"] .bg-gray-100,
+html[data-theme="dark"] .bg-gray-100 {
+  background-color: var(--surface-hover) !important;
+}
+
+[data-theme="dark"] .text-slate-900,
+html[data-theme="dark"] .text-slate-900,
+[data-theme="dark"] .text-gray-900,
+html[data-theme="dark"] .text-gray-900,
+[data-theme="dark"] .text-slate-800,
+html[data-theme="dark"] .text-slate-800,
+[data-theme="dark"] .text-gray-800,
+html[data-theme="dark"] .text-gray-800 {
+  color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .text-slate-700,
+html[data-theme="dark"] .text-slate-700,
+[data-theme="dark"] .text-slate-600,
+html[data-theme="dark"] .text-slate-600,
+[data-theme="dark"] .text-gray-700,
+html[data-theme="dark"] .text-gray-700,
+[data-theme="dark"] .text-gray-600,
+html[data-theme="dark"] .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .text-slate-500,
+html[data-theme="dark"] .text-slate-500,
+[data-theme="dark"] .text-slate-400,
+html[data-theme="dark"] .text-slate-400,
+[data-theme="dark"] .text-gray-500,
+html[data-theme="dark"] .text-gray-500,
+[data-theme="dark"] .text-gray-400,
+html[data-theme="dark"] .text-gray-400 {
+  color: var(--text-muted) !important;
+}
+
+[data-theme="dark"] .border-slate-200,
+html[data-theme="dark"] .border-slate-200,
+[data-theme="dark"] .border-slate-100,
+html[data-theme="dark"] .border-slate-100,
+[data-theme="dark"] .border-gray-200,
+html[data-theme="dark"] .border-gray-200,
+[data-theme="dark"] .border-gray-100,
+html[data-theme="dark"] .border-gray-100 {
+  border-color: var(--border) !important;
+}
+
+[data-theme="dark"] .border-slate-300,
+html[data-theme="dark"] .border-slate-300,
+[data-theme="dark"] .border-gray-300,
+html[data-theme="dark"] .border-gray-300 {
+  border-color: var(--border-strong) !important;
+}
+
+[data-theme="dark"] .divide-slate-100 > :not(:last-child),
+html[data-theme="dark"] .divide-slate-100 > :not(:last-child),
+[data-theme="dark"] .divide-slate-200 > :not(:last-child),
+html[data-theme="dark"] .divide-slate-200 > :not(:last-child) {
+  border-color: var(--border) !important;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* React Flow Lineage Styling */
+.react-flow__attribution {
+  display: none !important;
+}
+
+.react-flow__handle {
+  width: 8px !important;
+  height: 8px !important;
+  background-color: var(--brand) !important;
+  border: 2px solid var(--surface) !important;
+  border-radius: 50% !important;
+}
+
+[data-theme="dark"] .react-flow__pane,
+.dark .react-flow__pane {
+  background-color: #07111F !important;
+}
+
+[data-theme="dark"] .react-flow__controls,
+.dark .react-flow__controls {
+  background-color: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-theme="dark"] .react-flow__controls-button,
+.dark .react-flow__controls-button {
+  background-color: var(--surface) !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: var(--text-primary) !important;
+  fill: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .react-flow__controls-button:hover,
+.dark .react-flow__controls-button:hover {
+  background-color: var(--surface-hover) !important;
+}
+
+[data-theme="dark"] .react-flow__controls-button svg,
+.dark .react-flow__controls-button svg {
+  fill: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .react-flow__minimap,
+.dark .react-flow__minimap {
+  background-color: #07111F !important;
+  border: 1px solid var(--border) !important;
+}
+
+/* Skeleton base and shimmer */
+.skeleton {
+  background-color: #E2E8F0;
+}
+
+[data-theme="dark"] .skeleton,
+.dark .skeleton {
+  background-color: #1E3048 !important;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: #E2E8F0;
+}
+
+[data-theme="dark"] .skeleton-shimmer,
+.dark .skeleton-shimmer {
+  background-color: #1E3048 !important;
+}
+
+.skeleton-shimmer::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.4) 20%,
+    rgba(255, 255, 255, 0.6) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 1.6s infinite;
+  content: '';
+}
+
+[data-theme="dark"] .skeleton-shimmer::after,
+.dark .skeleton-shimmer::after {
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.04) 20%,
+    rgba(255, 255, 255, 0.08) 60%,
+    rgba(255, 255, 255, 0)
+  );
+}
