@@ -73,13 +73,15 @@ export function AppProvider({ children }) {
     isAuthenticated: false
   });
 
-  // Synchronize auth state on mount
+  // Synchronize auth state across tabs
   useEffect(() => {
-    const isAuth = localStorage.getItem('ricoz-authenticated') === 'true';
-    setIsAuthenticated(isAuth);
-    if (!isAuth && currentUser?.isAuthenticated) {
-      setCurrentUser(prev => ({ ...prev, isAuthenticated: false }));
-    }
+    const handleStorage = (e) => {
+      if (e.key === 'ricoz-authenticated') {
+        setIsAuthenticated(e.newValue === 'true');
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   // Persistent Mock Data
