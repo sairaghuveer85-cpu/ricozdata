@@ -9,21 +9,18 @@ export default function PopularDatasets() {
   const popular = datasets.slice(0, 5);
 
   return (
-    <div
-      className="p-5 rounded-lg flex flex-col justify-between h-full"
-      style={{
-        backgroundColor: 'var(--surface)',
-        border: '1px solid var(--border)'
-      }}
-    >
+    <div className="flex flex-col justify-between h-full">
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-            Popular Datasets
-          </h3>
+          <div>
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+              High-Demand Datasets
+            </h3>
+            <span className="text-[11px] text-slate-400">Most queried production assets</span>
+          </div>
           <NavLink
             to="/catalog"
-            className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
+            className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded font-medium"
           >
             <span>Explore catalog</span>
             <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -32,7 +29,7 @@ export default function PopularDatasets() {
 
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="border-b border-slate-100 dark:border-[#1D3047] text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+            <tr className="border-b border-slate-100 dark:border-[#1D3047] text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
               <th className="pb-2 font-medium">Dataset</th>
               <th className="pb-2 font-medium text-center">Quality</th>
               <th className="pb-2 font-medium text-right">Views</th>
@@ -52,20 +49,20 @@ export default function PopularDatasets() {
                     openDrawer('dataset', dataset);
                   }
                 }}
-                className="hover:bg-slate-50 dark:hover:bg-[#111E30] transition-colors cursor-pointer group focus:outline-none focus-visible:bg-slate-50 dark:focus-visible:bg-[#111E30]"
+                className="hover:bg-slate-50/80 dark:hover:bg-[#111E30]/70 transition-colors cursor-pointer group focus:outline-none focus-visible:bg-slate-50 dark:focus-visible:bg-[#111E30]"
               >
                 <td className="py-2.5 pr-2">
-                  <span className="font-medium text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors block truncate">
+                  <span className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors block truncate">
                     {dataset.name}
                   </span>
                   <span className="text-[11px] text-slate-400 dark:text-slate-500 block truncate">
-                    {dataset.domain}
+                    {dataset.domain} • {dataset.owner}
                   </span>
                 </td>
-                <td className="py-2.5 px-2 text-center font-semibold text-slate-800 dark:text-slate-200">
+                <td className="py-2.5 px-2 text-center font-bold text-slate-800 dark:text-slate-200 tabular-nums">
                   {dataset.quality}%
                 </td>
-                <td className="py-2.5 pl-2 text-right text-slate-500 dark:text-slate-400">
+                <td className="py-2.5 pl-2 text-right text-slate-500 dark:text-slate-400 tabular-nums">
                   {dataset.usage?.replace(' views', '') || '1.2k'}
                 </td>
               </tr>

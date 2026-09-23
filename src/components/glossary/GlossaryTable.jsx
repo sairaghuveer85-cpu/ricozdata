@@ -41,7 +41,7 @@ export default function GlossaryTable({ terms = [], onReset }) {
                 handleRowClick(term);
               }
             }}
-            className="p-3.5 rounded-lg border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] shadow-2xs space-y-2.5 cursor-pointer hover:border-blue-500/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="p-3.5 rounded-lg border border-slate-200/80 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] space-y-2.5 cursor-pointer hover:border-blue-500/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             <div className="flex items-start justify-between gap-2">
               <div>
@@ -75,11 +75,11 @@ export default function GlossaryTable({ terms = [], onReset }) {
       </div>
 
       {/* Desktop Table (>= md) */}
-      <div className="hidden md:block theme-card rounded-lg border border-slate-200 dark:border-[#1D3047] shadow-2xs overflow-hidden">
+      <div className="hidden md:block enterprise-workbench overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse" aria-label="Business Glossary Terms">
             <thead>
-              <tr className="bg-slate-50 dark:bg-[#111E30] border-b border-slate-200 dark:border-[#1D3047] text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <tr className="bg-slate-50/80 dark:bg-[#0B1524] border-b border-slate-200/80 dark:border-[#1D3047] text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 <th className="py-2.5 px-4 w-1/4">Term</th>
                 <th className="py-2.5 px-4 w-2/5">Definition</th>
                 <th className="py-2.5 px-4">Domain</th>

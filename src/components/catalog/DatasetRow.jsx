@@ -98,7 +98,7 @@ export default function DatasetRow({
 
       {/* Quality */}
       <td className="py-2.5 px-4 whitespace-nowrap">
-        <span className={`text-xs font-bold ${qualityInfo.color}`}>
+        <span className={`text-xs font-bold tabular-nums ${qualityInfo.color}`}>
           {dataset.quality}%
           <span className="sr-only"> ({qualityInfo.label})</span>
         </span>

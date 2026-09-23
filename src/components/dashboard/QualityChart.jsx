@@ -29,7 +29,7 @@ const CustomTooltip = ({ active, payload, label, isDark }) => {
         </p>
         <div className="mt-1 flex items-center justify-between gap-4">
           <span className="text-slate-500 dark:text-slate-400">Quality:</span>
-          <span className="font-bold text-blue-600 dark:text-blue-400">
+          <span className="font-bold text-blue-600 dark:text-blue-400 tabular-nums">
             {payload[0].value}%
           </span>
         </div>
@@ -76,19 +76,15 @@ export default function QualityChart() {
     <div
       role="region"
       aria-label="Data Quality Trend Chart"
-      className="p-5 rounded-lg flex flex-col h-full"
-      style={{
-        backgroundColor: 'var(--surface)',
-        border: '1px solid var(--border)'
-      }}
+      className="flex flex-col h-full justify-between"
     >
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
         <div>
           <div className="flex items-baseline gap-2.5">
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
-              Data Quality Trend
+              Data Quality Progression
             </h3>
-            <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
               +3.2% vs previous period
             </span>
           </div>

@@ -53,11 +53,11 @@ export default function RulesTable({ activeSubTab }) {
         </div>
 
         {/* Desktop Rules Table (>= md) */}
-        <div className="hidden md:block bg-white dark:bg-[#0B1628] rounded-xl border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+        <div className="hidden md:block enterprise-workbench overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-slate-50/80 dark:bg-[#111C2E] border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <tr className="bg-slate-50/80 dark:bg-[#0B1524] border-b border-slate-200/80 dark:border-[#1D3047] text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <th className="py-3 px-5">Rule Name</th>
                   <th className="py-3 px-5">Target Column</th>
                   <th className="py-3 px-5">Constraint Type</th>
@@ -100,7 +100,7 @@ export default function RulesTable({ activeSubTab }) {
   // Access Control: Permission Matrix matching Screen 8
   if (activeSubTab === 'access') {
     return (
-      <div className="bg-white dark:bg-[#0B1628] rounded-xl p-4 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-4">
+      <div className="enterprise-panel rounded-xl p-4 sm:p-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h4 className="text-sm font-bold text-slate-900 dark:text-white">Role-Based Access Control (RBAC) Permission Matrix</h4>

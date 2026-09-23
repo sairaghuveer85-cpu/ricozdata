@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -43,16 +43,36 @@ export default function Sidebar() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [sidebarOpen, setSidebarOpen]);
 
-  const navItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
-    { name: 'Data Catalog', path: '/catalog', icon: Database, matchPrefix: '/catalog' },
-    { name: 'Data Quality', path: '/quality/customer-database', icon: ShieldCheck, matchPrefix: '/quality' },
-    { name: 'Data Lineage', path: '/lineage/customer-database', icon: GitFork, matchPrefix: '/lineage' },
-    { name: 'Business Glossary', path: '/glossary', icon: BookOpen },
-    { name: 'Governance', path: '/governance', icon: Shield },
-    { name: 'Reports', path: '/reports', icon: BarChart2 },
-    { name: 'Users', path: '/users', icon: Users },
-    { name: 'Settings', path: '/settings', icon: Settings }
+  const navGroups = [
+    {
+      group: 'Discovery',
+      items: [
+        { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+        { name: 'Data Catalog', path: '/catalog', icon: Database, matchPrefix: '/catalog' }
+      ]
+    },
+    {
+      group: 'Data Health',
+      items: [
+        { name: 'Data Quality', path: '/quality/customer-database', icon: ShieldCheck, matchPrefix: '/quality' },
+        { name: 'Data Lineage', path: '/lineage/customer-database', icon: GitFork, matchPrefix: '/lineage' }
+      ]
+    },
+    {
+      group: 'Governance',
+      items: [
+        { name: 'Business Glossary', path: '/glossary', icon: BookOpen },
+        { name: 'Governance', path: '/governance', icon: Shield },
+        { name: 'Reports', path: '/reports', icon: BarChart2 }
+      ]
+    },
+    {
+      group: 'Management',
+      items: [
+        { name: 'Users', path: '/users', icon: Users },
+        { name: 'Settings', path: '/settings', icon: Settings }
+      ]
+    }
   ];
 
   const isActive = (item) => {
@@ -112,34 +132,52 @@ export default function Sidebar() {
         )}
       </div>
 
-      {/* Navigation Items */}
-      <nav aria-label="Main Navigation" className="flex-1 py-4 px-3 space-y-1 overflow-y-auto overflow-x-hidden">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const active = isActive(item);
-          return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              title={sidebarCollapsed ? item.name : undefined}
-              aria-current={active ? 'page' : undefined}
-              className={`
-                group flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
-                ${active
-                  ? 'bg-blue-600 text-white font-semibold'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-[#111C2E]'
-                }
-                ${sidebarCollapsed ? 'justify-center px-0' : ''}
-              `}
-            >
-              <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} aria-hidden="true" />
-              
-              {!sidebarCollapsed && (
-                <span className="truncate">{item.name}</span>
-              )}
-            </NavLink>
-          );
-        })}
+      {/* Navigation Groups */}
+      <nav aria-label="Main Navigation" className="flex-1 py-3 px-2 space-y-4 overflow-y-auto overflow-x-hidden">
+        {navGroups.map((grp, gIdx) => (
+          <div key={grp.group} className="space-y-0.5">
+            {!sidebarCollapsed ? (
+              <div className="text-[10px] font-bold text-slate-500 tracking-wider uppercase px-2.5 pt-1 pb-1 select-none">
+                {grp.group}
+              </div>
+            ) : gIdx > 0 ? (
+              <div className="border-t border-[#172337] my-2" aria-hidden="true" />
+            ) : null}
+
+            {grp.items.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item);
+              return (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  title={sidebarCollapsed ? item.name : undefined}
+                  aria-current={active ? 'page' : undefined}
+                  className={`
+                    group flex items-center gap-2.5 py-1.5 rounded-md text-xs font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
+                    ${
+                      active
+                        ? sidebarCollapsed
+                          ? 'bg-blue-500/20 text-blue-400 font-semibold justify-center px-0'
+                          : 'bg-blue-500/10 text-blue-400 font-semibold border-l-2 border-blue-500 pl-2.5 pr-2'
+                        : sidebarCollapsed
+                        ? 'text-slate-400 hover:text-slate-200 hover:bg-[#111E30] justify-center px-0'
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-[#111E30]/60 border-l-2 border-transparent pl-2.5 pr-2'
+                    }
+                  `}
+                >
+                  <Icon
+                    className={`w-4 h-4 shrink-0 transition-colors ${
+                      active ? 'text-blue-400' : 'text-slate-400 group-hover:text-slate-200'
+                    }`}
+                    aria-hidden="true"
+                  />
+                  {!sidebarCollapsed && <span className="truncate">{item.name}</span>}
+                </NavLink>
+              );
+            })}
+          </div>
+        ))}
       </nav>
 
       {/* Bottom User Profile */}
@@ -184,7 +222,7 @@ export default function Sidebar() {
         {desktopSidebarContent}
       </aside>
 
-      {/* Mobile Drawer (Enterprise Framer Motion Drawer) */}
+      {/* Mobile Drawer */}
       <AnimatePresence>
         {sidebarOpen && (
           <div className="fixed inset-0 z-50 lg:hidden flex">
@@ -234,33 +272,46 @@ export default function Sidebar() {
                 </button>
               </div>
 
-              {/* Navigation Links */}
-              <nav aria-label="Mobile Navigation" className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-                {navItems.map((item) => {
-                  const Icon = item.icon;
-                  const active = isActive(item);
-                  return (
-                    <NavLink
-                      key={item.path}
-                      to={item.path}
-                      onClick={() => setSidebarOpen(false)}
-                      aria-current={active ? 'page' : undefined}
-                      className={`
-                        group flex items-center gap-3 px-3 py-2.5 rounded-md text-xs font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
-                        ${active
-                          ? 'bg-blue-600 text-white font-semibold'
-                          : 'text-slate-400 hover:text-slate-200 hover:bg-[#111C2E]'
-                        }
-                      `}
-                    >
-                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} aria-hidden="true" />
-                      <span className="truncate">{item.name}</span>
-                    </NavLink>
-                  );
-                })}
+              {/* Grouped Mobile Navigation Links */}
+              <nav aria-label="Mobile Navigation" className="flex-1 py-3 px-3 space-y-4 overflow-y-auto">
+                {navGroups.map((grp) => (
+                  <div key={grp.group} className="space-y-0.5">
+                    <div className="text-[10px] font-bold text-slate-500 tracking-wider uppercase px-2.5 pt-1 pb-1 select-none">
+                      {grp.group}
+                    </div>
+                    {grp.items.map((item) => {
+                      const Icon = item.icon;
+                      const active = isActive(item);
+                      return (
+                        <NavLink
+                          key={item.path}
+                          to={item.path}
+                          onClick={() => setSidebarOpen(false)}
+                          aria-current={active ? 'page' : undefined}
+                          className={`
+                            group flex items-center gap-3 py-2 rounded-md text-xs font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
+                            ${
+                              active
+                                ? 'bg-blue-500/10 text-blue-400 font-semibold border-l-2 border-blue-500 pl-3 pr-2'
+                                : 'text-slate-400 hover:text-slate-200 hover:bg-[#111C2E]/60 border-l-2 border-transparent pl-3 pr-2'
+                            }
+                          `}
+                        >
+                          <Icon
+                            className={`w-4 h-4 shrink-0 transition-colors ${
+                              active ? 'text-blue-400' : 'text-slate-400 group-hover:text-slate-200'
+                            }`}
+                            aria-hidden="true"
+                          />
+                          <span className="truncate">{item.name}</span>
+                        </NavLink>
+                      );
+                    })}
+                  </div>
+                ))}
               </nav>
 
-              {/* Theme Control in Mobile Navigation (Accessible) */}
+              {/* Theme Control in Mobile Navigation */}
               <div className="px-4 py-3 border-t border-[#172337] flex items-center justify-between shrink-0">
                 <span className="text-xs text-slate-400 font-medium">Appearance</span>
                 <ThemeSelector compact />

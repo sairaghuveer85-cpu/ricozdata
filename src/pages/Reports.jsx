@@ -57,7 +57,7 @@ export default function Reports() {
         {reports.map((rep, idx) => (
           <div
             key={idx}
-            className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+            className="enterprise-panel rounded-lg p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
           >
             <div className="flex items-center gap-3.5 min-w-0">
               <div className="w-10 h-10 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0" aria-hidden="true">
@@ -84,7 +84,7 @@ export default function Reports() {
       </div>
 
       {/* Audit Log Stream */}
-      <div className="bg-white dark:bg-[#0D1828] rounded-lg border border-slate-200 dark:border-[#1D3047] shadow-2xs p-4 sm:p-5">
+      <div className="enterprise-panel rounded-lg p-4 sm:p-5">
         <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4">
           Recent System Audit Stream
         </h3>

@@ -86,10 +86,10 @@ export default function DatasetTable({
                   openDrawer('dataset', dataset);
                 }
               }}
-              className={`p-3.5 rounded-lg border transition-all cursor-pointer bg-white dark:bg-[#0D1828] shadow-2xs space-y-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+              className={`p-3.5 rounded-lg border transition-all cursor-pointer bg-white dark:bg-[#0D1828] space-y-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                 isSelected
                   ? 'border-blue-500/50 bg-blue-50/20 dark:bg-blue-950/20'
-                  : 'border-slate-200 dark:border-[#1D3047] hover:border-slate-300 dark:hover:border-slate-700'
+                  : 'border-slate-200/80 dark:border-[#1D3047] hover:border-slate-300 dark:hover:border-slate-700'
               }`}
             >
               {/* Card Header: Checkbox + Name + Certified Badge */}
@@ -145,7 +145,7 @@ export default function DatasetTable({
 
                 <div>
                   <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider block">Quality</span>
-                  <span className={`text-xs font-bold ${qualityColor}`}>{dataset.quality}%</span>
+                  <span className={`text-xs font-bold tabular-nums ${qualityColor}`}>{dataset.quality}%</span>
                 </div>
 
                 <div>
@@ -162,11 +162,11 @@ export default function DatasetTable({
       </div>
 
       {/* Desktop Table (>= md) */}
-      <div className="hidden md:block bg-white dark:bg-[#0D1828] rounded-lg border border-slate-200 dark:border-[#1D3047] overflow-hidden shadow-2xs">
+      <div className="hidden md:block enterprise-workbench overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse" aria-label="Data Catalog Datasets">
             <thead>
-              <tr className="bg-slate-50/80 dark:bg-[#111E30] border-b border-slate-200 dark:border-[#1D3047] text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider sticky top-0 z-10">
+              <tr className="bg-slate-50/80 dark:bg-[#0B1524] border-b border-slate-200/80 dark:border-[#1D3047] text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider sticky top-0 z-10">
                 <th className="py-2.5 px-4 w-10">
                   <input
                     type="checkbox"

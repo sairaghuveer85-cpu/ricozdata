@@ -18,11 +18,11 @@ export default function UserTable({ users = [], activeTab = 'users', onDeleteUse
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {INITIAL_ROLES.map((role) => (
-          <div key={role.id} className="theme-card rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs flex flex-col justify-between">
+          <div key={role.id} className="enterprise-panel rounded-lg p-4 sm:p-5 flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-2">
                 <h4 className="text-sm font-semibold text-slate-900 dark:text-white">{role.name}</h4>
-                <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium px-2 py-0.5 rounded-md">
+                <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium px-2 py-0.5 rounded-md tabular-nums">
                   {role.usersCount} users
                 </span>
               </div>
@@ -36,7 +36,7 @@ export default function UserTable({ users = [], activeTab = 'users', onDeleteUse
               </div>
               <div className="flex flex-wrap gap-1.5">
                 {role.permissions.map((p, idx) => (
-                  <span key={idx} className="text-[10px] bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-sm border border-slate-200 dark:border-slate-800">
+                  <span key={idx} className="text-[10px] bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-sm border border-slate-200/80 dark:border-[#1D3047]">
                     {p.replace(/_/g, ' ')}
                   </span>
                 ))}
@@ -52,10 +52,10 @@ export default function UserTable({ users = [], activeTab = 'users', onDeleteUse
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {INITIAL_GROUPS.map((group) => (
-          <div key={group.id} className="theme-card rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs">
+          <div key={group.id} className="enterprise-panel rounded-lg p-4 sm:p-5">
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-sm font-semibold text-slate-900 dark:text-white">{group.name}</h4>
-              <span className="text-xs text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-900/60">
+              <span className="text-xs text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-900/60 tabular-nums">
                 {group.membersCount} members
               </span>
             </div>
@@ -79,7 +79,7 @@ export default function UserTable({ users = [], activeTab = 'users', onDeleteUse
           <div
             key={user.id}
             onClick={() => handleSelectUser(user)}
-            className="theme-card rounded-xl p-4 border border-slate-200 dark:border-slate-800 shadow-2xs active:scale-[0.99] transition-all cursor-pointer space-y-3"
+            className="bg-white dark:bg-[#0D1828] rounded-xl p-4 border border-slate-200/80 dark:border-[#1D3047] active:scale-[0.99] transition-all cursor-pointer space-y-3"
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-3 min-w-0">
@@ -116,11 +116,11 @@ export default function UserTable({ users = [], activeTab = 'users', onDeleteUse
       </div>
 
       {/* Desktop User Table (>= md) */}
-      <div className="hidden md:block theme-card rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
+      <div className="hidden md:block enterprise-workbench overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+              <tr className="bg-slate-50/80 dark:bg-[#0B1524] border-b border-slate-200/80 dark:border-[#1D3047] text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 <th className="py-2.5 px-4 w-1/4">User</th>
                 <th className="py-2.5 px-4 w-1/4">Email Address</th>
                 <th className="py-2.5 px-4">Role</th>

@@ -95,6 +95,7 @@
 }
 
 /* Reusable Theme Semantic Classes */
+/* Reusable Theme Semantic Classes */
 .theme-surface {
   background-color: var(--surface) !important;
   border-color: var(--border) !important;
@@ -106,7 +107,26 @@
   border: 1px solid var(--border) !important;
   border-radius: var(--radius-md) !important;
   color: var(--text-primary) !important;
-  box-shadow: var(--shadow-sm);
+  box-shadow: none !important;
+}
+
+.enterprise-panel {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  box-shadow: none;
+}
+
+.enterprise-workbench {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
 .theme-header {

@@ -33,12 +33,12 @@ export default function QualityIssues() {
   };
 
   return (
-    <div className="theme-card rounded-lg border border-slate-200 dark:border-[#1D3047] shadow-2xs overflow-hidden">
+    <div className="enterprise-workbench overflow-hidden">
       {/* Table Toolbar */}
-      <div className="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-[#1D3047]">
+      <div className="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 dark:border-[#1D3047]">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white block">
-            Active Data Anomalies ({filteredIssues.length})
+            Active Data Anomalies (<span className="tabular-nums">{filteredIssues.length}</span>)
           </span>
           <span className="text-[11px] text-slate-400">Click any issue to inspect details</span>
         </div>
@@ -123,7 +123,7 @@ export default function QualityIssues() {
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse" aria-label="Active Data Anomalies">
               <thead>
-                <tr className="bg-slate-50 dark:bg-[#111E30] border-b border-slate-200 dark:border-[#1D3047] text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                <tr className="bg-slate-50/80 dark:bg-[#0B1524] border-b border-slate-200/80 dark:border-[#1D3047] text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <th className="py-2.5 px-4">Issue Description</th>
                   <th className="py-2.5 px-4">Target Column</th>
                   <th className="py-2.5 px-4">Severity</th>
@@ -165,7 +165,7 @@ export default function QualityIssues() {
                         {item.severity}
                       </span>
                     </td>
-                    <td className="py-2.5 px-4 font-semibold text-slate-800 dark:text-slate-200">
+                    <td className="py-2.5 px-4 font-semibold tabular-nums text-slate-800 dark:text-slate-200">
                       {item.count.toLocaleString()} rows
                     </td>
                     <td className="py-2.5 px-4">

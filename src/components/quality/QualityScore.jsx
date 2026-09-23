@@ -8,7 +8,7 @@ export default function QualityScore({ score = 98, grade = 'Excellent', trend = 
 
   return (
     <div
-      className="theme-card rounded-lg p-6 shadow-2xs flex flex-col items-center justify-center text-center h-full border border-slate-200 dark:border-slate-800"
+      className="enterprise-panel rounded-lg p-6 flex flex-col items-center justify-center text-center h-full"
     >
       <h3 className="text-xs font-bold uppercase tracking-wider mb-4 text-slate-900 dark:text-white">
         Overall Quality Score
@@ -40,7 +40,7 @@ export default function QualityScore({ score = 98, grade = 'Excellent', trend = 
         </svg>
 
         <div className="absolute flex flex-col items-center justify-center">
-          <span className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+          <span className="text-3xl font-bold tabular-nums text-slate-900 dark:text-white tracking-tight">
             {score}%
           </span>
           <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">

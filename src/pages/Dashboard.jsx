@@ -35,54 +35,54 @@ export default function Dashboard() {
   const metrics = [
     {
       id: 'total-datasets',
-      title: 'TOTAL DATASETS',
+      title: 'Total Datasets',
       value: '1,248',
-      comparisonText: '+12.4% vs previous period',
+      comparisonText: '+12.4% vs last period',
       isPositive: true,
       trendType: 'positive'
     },
     {
       id: 'data-quality',
-      title: 'DATA QUALITY',
+      title: 'Quality Score',
       value: '92.4%',
-      comparisonText: '+3.2% vs previous period',
+      comparisonText: '+3.2% vs target',
       isPositive: true,
       trendType: 'positive'
     },
     {
       id: 'policy-violations',
-      title: 'POLICY VIOLATIONS',
+      title: 'Active Violations',
       value: '36',
-      comparisonText: '18.6% fewer than previous period',
+      comparisonText: '-18.6% resolved',
       isPositive: true,
-      trendType: 'positive' // Fewer violations is positive!
+      trendType: 'positive'
     },
     {
       id: 'active-users',
-      title: 'ACTIVE USERS',
+      title: 'Active Analysts',
       value: '24',
-      comparisonText: '+9.1% vs previous period',
+      comparisonText: '+9.1% monthly',
       isPositive: true,
       trendType: 'positive'
     }
   ];
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="space-y-4 sm:space-y-5 pb-8">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1 border-b border-slate-200/60 dark:border-[#1D3047]/60">
         <div>
-          <h1 className="text-xl sm:text-[26px] lg:text-[28px] font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
-            Good morning, {currentUser?.name?.split(' ')[0] || 'Raghuveer'}
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
+            Enterprise Overview
           </h1>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-            Here&apos;s your organization&apos;s data health at a glance.
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            Operational reliability, data governance, and active catalog inventory.
           </p>
         </div>
 
         {/* Date / Time Range Selector */}
-        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828]">
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828]">
             <Calendar className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
             <span>Sep 18, 2026</span>
           </div>
@@ -93,7 +93,7 @@ export default function Dashboard() {
               onClick={() => setDropdownOpen(!dropdownOpen)}
               aria-haspopup="true"
               aria-expanded={dropdownOpen}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] text-slate-800 dark:text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] text-slate-800 dark:text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
               <span>{timeRange}</span>
               <ChevronDown className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
@@ -102,7 +102,7 @@ export default function Dashboard() {
             {dropdownOpen && (
               <div
                 role="menu"
-                className="absolute right-0 mt-1.5 w-36 rounded-md shadow-md py-1 z-30 text-xs bg-white dark:bg-[#0D1828] border border-slate-200 dark:border-[#1D3047]"
+                className="absolute right-0 mt-1 w-36 rounded-md shadow-md py-1 z-30 text-xs bg-white dark:bg-[#0D1828] border border-slate-200 dark:border-[#1D3047]"
               >
                 {['Last 7 days', 'Last 30 days', 'Last 90 days', 'Year to date'].map((range) => (
                   <button
@@ -128,8 +128,8 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Metric Summary: Compact, unified enterprise metric row (Section B) */}
-      <div className="rounded-lg border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] grid grid-cols-2 lg:grid-cols-4 overflow-hidden shadow-2xs">
+      {/* 1. Integrated KPI Metric Bar */}
+      <div className="enterprise-workbench rounded-lg border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] grid grid-cols-2 lg:grid-cols-4 overflow-hidden shadow-2xs">
         {metrics.map((metric, idx) => (
           <div
             key={metric.id}
@@ -150,22 +150,22 @@ export default function Dashboard() {
         ))}
       </div>
 
-      {/* Middle Row: Data Quality Trend (~65-70%) + Data Health Summary (~30-35%) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        <div className="lg:col-span-8">
+      {/* 2. Unified Data Reliability Studio (Quality Trend + Health Index) */}
+      <div className="enterprise-workbench rounded-lg border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] grid grid-cols-1 lg:grid-cols-12 divide-y lg:divide-y-0 lg:divide-x divide-slate-200 dark:divide-[#1D3047]">
+        <div className="lg:col-span-8 p-4 sm:p-5 flex flex-col justify-between">
           <QualityChart />
         </div>
-        <div className="lg:col-span-4">
+        <div className="lg:col-span-4 p-4 sm:p-5 flex flex-col justify-between bg-slate-50/40 dark:bg-[#111E30]/20">
           <DataHealthCard />
         </div>
       </div>
 
-      {/* Bottom Row: Recent Activity (50%) + Popular Datasets (50%) */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-        <div>
+      {/* 3. Unified Operations Workbench (Activity Stream + High-Demand Assets) */}
+      <div className="enterprise-workbench rounded-lg border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-200 dark:divide-[#1D3047]">
+        <div className="p-4 sm:p-5 flex flex-col justify-between">
           <RecentActivity />
         </div>
-        <div>
+        <div className="p-4 sm:p-5 flex flex-col justify-between">
           <PopularDatasets />
         </div>
       </div>
