@@ -1,13 +1,29 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useTheme } from './ThemeContext';
 import { INITIAL_DATASETS } from '../data/datasets';
 import { INITIAL_USERS } from '../data/users';
+import { DOMAIN_REGISTRY } from '../data/domains';
 import { INITIAL_ACTIVITIES } from '../data/activities';
 import { INITIAL_GLOSSARY_TERMS } from '../data/glossary';
 import { INITIAL_POLICIES, INITIAL_RULES } from '../data/policies';
-import { QUALITY_OVERVIEW, QUALITY_ISSUES, QUALITY_TRENDS } from '../data/quality';
-import { INITIAL_LINEAGE_NODES, INITIAL_LINEAGE_EDGES } from '../data/lineage';
+import { QUALITY_OVERVIEW, QUALITY_ISSUES, QUALITY_TRENDS, DATASET_QUALITY_METRICS } from '../data/quality';
+import { INITIAL_LINEAGE_NODES, INITIAL_LINEAGE_EDGES, getLineageForDataset as getRawLineage } from '../data/lineage';
+import { calculateDashboardMetrics, calculateDataHealthSummary, calculateAverageQuality } from '../utils/dataCalculations';
+import {
+  getDatasetById,
+  getUserById,
+  getDomainById,
+  getDatasetOwner,
+  getQualityForDataset,
+  getIssuesForDataset,
+  getPoliciesForDataset,
+  getLineageForDataset,
+  getGlossaryTermsForDataset,
+  getActivitiesForDataset,
+  enrichDataset,
+  searchCentralData
+} from '../utils/dataSelectors';
 
 const AppContext = createContext();
 
@@ -39,7 +55,6 @@ export function AppProvider({ children }) {
   const [isCommandOpen, setIsCommandOpen] = useState(false);
 
   // Global Drawers State
-  // type: 'dataset' | 'issue' | 'glossary' | 'policy' | 'user' | 'filter' | null
   const [activeDrawer, setActiveDrawer] = useState(null);
 
   const openDrawer = useCallback((type, data = null) => {
@@ -65,6 +80,7 @@ export function AppProvider({ children }) {
 
   // User state
   const [currentUser, setCurrentUser] = useLocalStorage('ricoz_current_user', {
+    id: 'user-001',
     name: 'Raghuveer C.',
     email: 'raghuveer@ricozdata.com',
     role: 'Data Analyst',
@@ -84,14 +100,40 @@ export function AppProvider({ children }) {
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
-  // Persistent Mock Data
-  const [datasets, setDatasets] = useLocalStorage('ricoz_datasets', INITIAL_DATASETS);
+  // Persistent Mock Data with automatic schema reconciliation
+  const [rawDatasets, setDatasets] = useLocalStorage('ricoz_datasets', INITIAL_DATASETS);
   const [users, setUsers] = useLocalStorage('ricoz_users', INITIAL_USERS);
+  const [domains] = useState(DOMAIN_REGISTRY);
   const [activities, setActivities] = useLocalStorage('ricoz_activities', INITIAL_ACTIVITIES);
   const [glossaryTerms, setGlossaryTerms] = useLocalStorage('ricoz_glossary', INITIAL_GLOSSARY_TERMS);
   const [policies, setPolicies] = useLocalStorage('ricoz_policies', INITIAL_POLICIES);
   const [rules] = useLocalStorage('ricoz_rules', INITIAL_RULES);
   const [issues, setIssues] = useLocalStorage('ricoz_issues', QUALITY_ISSUES);
+
+  // Reconcile datasets so any previously cached localStorage entries gain normalized ownerId, domainId, statistics
+  const datasets = useMemo(() => {
+    return rawDatasets.map(d => {
+      const canonical = INITIAL_DATASETS.find(init => init.id === d.id);
+      if (!canonical) return d;
+      return {
+        ...canonical,
+        ...d,
+        ownerId: d.ownerId || canonical.ownerId,
+        domainId: d.domainId || canonical.domainId,
+        statistics: { ...canonical.statistics, ...(d.statistics || {}) },
+        sourceDetails: { ...canonical.sourceDetails, ...(d.sourceDetails || {}) }
+      };
+    });
+  }, [rawDatasets]);
+
+  // Dynamically computed metrics derived directly from state
+  const dashboardMetrics = useMemo(() => {
+    return calculateDashboardMetrics(datasets, users, policies, issues);
+  }, [datasets, users, policies, issues]);
+
+  const dataHealthSummary = useMemo(() => {
+    return calculateDataHealthSummary(datasets, DATASET_QUALITY_METRICS);
+  }, [datasets]);
   
   const [globalSearch, setGlobalSearch] = useState('');
   const [unreadNotifications, setUnreadNotifications] = useState(3);
@@ -201,14 +243,24 @@ export function AppProvider({ children }) {
   // Dataset CRUD
   const addDataset = (datasetData) => {
     const id = datasetData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const ownerUser = users.find(u => u.name === datasetData.owner) || currentUser;
     const newDataset = {
       id,
       name: datasetData.name,
+      domainId: datasetData.domainId || (datasetData.domain ? datasetData.domain.toLowerCase() : 'marketing'),
       domain: datasetData.domain || 'Marketing',
-      owner: datasetData.owner || currentUser.name || 'Raghuveer C.',
-      ownerEmail: currentUser.email || 'raghuveer@ricozdata.com',
-      ownerRole: currentUser.role || 'Data Analyst',
+      ownerId: ownerUser.id || 'user-001',
+      owner: datasetData.owner || ownerUser.name || 'Raghuveer C.',
+      ownerEmail: ownerUser.email || 'raghuveer@ricozdata.com',
+      ownerRole: ownerUser.role || 'Data Analyst',
       source: datasetData.source || 'Snowflake',
+      sourceDetails: {
+        type: datasetData.source || 'Snowflake',
+        database: 'PROD_DB',
+        schema: 'ANALYTICS',
+        environment: 'Production',
+        syncSchedule: 'Daily'
+      },
       quality: datasetData.quality || 95,
       status: datasetData.status || 'Certified',
       updated: 'Just now',
@@ -217,6 +269,14 @@ export function AppProvider({ children }) {
       columnsCount: datasetData.columnsCount || 12,
       sensitivity: datasetData.sensitivity || 'Internal',
       usage: '1 view',
+      statistics: {
+        rowCount: 1000000,
+        sizeBytes: 1250000000,
+        columnCount: datasetData.columnsCount || 12,
+        queryCount30d: 1,
+        activeUsersCount: 1,
+        lastIngestionTime: new Date().toISOString()
+      },
       description: datasetData.description || 'Newly registered dataset.',
       longDescription: datasetData.description || 'Newly registered enterprise dataset.',
       tags: datasetData.tags || ['custom', datasetData.domain?.toLowerCase() || 'data'],
@@ -234,7 +294,9 @@ export function AppProvider({ children }) {
       type: 'create',
       iconColor: 'text-blue-500',
       iconBg: 'bg-blue-50 dark:bg-blue-950/40',
-      user: currentUser.name || 'Raghuveer C.',
+      actorId: ownerUser.id || 'user-001',
+      user: ownerUser.name || 'Raghuveer C.',
+      datasetId: newDataset.id,
       target: newDataset.name
     });
 
@@ -389,6 +451,18 @@ export function AppProvider({ children }) {
     }));
   };
 
+  // Selectors bound to current state
+  const getDataset = useCallback((id) => getDatasetById(datasets, id), [datasets]);
+  const getUser = useCallback((idOrName) => getUserById(users, idOrName), [users]);
+  const getDomain = useCallback((idOrName) => getDomainById(domains, idOrName), [domains]);
+  const getEnrichedDataset = useCallback((id) => enrichDataset(getDatasetById(datasets, id), { users, domains }), [datasets, users, domains]);
+  const getDatasetIssues = useCallback((datasetId) => getIssuesForDataset(issues, datasetId), [issues]);
+  const getDatasetPolicies = useCallback((datasetId) => getPoliciesForDataset(policies, datasetId), [policies]);
+  const getDatasetLineage = useCallback((datasetId) => getLineageForDataset(datasetId), []);
+  const getDatasetGlossary = useCallback((datasetId) => getGlossaryTermsForDataset(glossaryTerms, datasetId), [glossaryTerms]);
+  const getDatasetActivities = useCallback((datasetId) => getActivitiesForDataset(activities, datasetId), [activities]);
+  const searchAll = useCallback((query) => searchCentralData(query, { datasets, users, glossary: glossaryTerms, policies }), [datasets, users, glossaryTerms, policies]);
+
   return (
     <AppContext.Provider
       value={{
@@ -421,6 +495,7 @@ export function AppProvider({ children }) {
         users,
         addUser,
         deleteUser,
+        domains,
         activities,
         addActivity,
         glossaryTerms,
@@ -434,6 +509,8 @@ export function AppProvider({ children }) {
         issues,
         setIssues,
         updateIssueStatus,
+        dashboardMetrics,
+        dataHealthSummary,
         globalSearch,
         setGlobalSearch,
         unreadNotifications,
@@ -443,7 +520,19 @@ export function AppProvider({ children }) {
         qualityOverview: QUALITY_OVERVIEW,
         qualityTrends: QUALITY_TRENDS,
         initialLineageNodes: INITIAL_LINEAGE_NODES,
-        initialLineageEdges: INITIAL_LINEAGE_EDGES
+        initialLineageEdges: INITIAL_LINEAGE_EDGES,
+        // Selectors
+        getDataset,
+        getUser,
+        getDomain,
+        getEnrichedDataset,
+        getQualityForDataset,
+        getDatasetIssues,
+        getDatasetPolicies,
+        getDatasetLineage,
+        getDatasetGlossary,
+        getDatasetActivities,
+        searchAll
       }}
     >
       {children}

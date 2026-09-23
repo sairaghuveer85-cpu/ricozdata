@@ -1,5 +1,6 @@
 import React from 'react';
 import { Filter, RotateCcw } from 'lucide-react';
+import { useApp } from '../../context/AppContext';
 
 export default function CatalogFilters({
   selectedSources,
@@ -10,26 +11,26 @@ export default function CatalogFilters({
   setSelectedCertifications,
   onReset
 }) {
+  const { datasets } = useApp();
+
   const sources = [
-    { label: 'Snowflake', count: 120 },
-    { label: 'BigQuery', count: 95 },
-    { label: 'PostgreSQL', count: 76 },
-    { label: 'MySQL', count: 54 },
-    { label: 'Others', count: 23 }
+    { label: 'Snowflake', count: datasets.filter(d => d.source === 'Snowflake').length },
+    { label: 'BigQuery', count: datasets.filter(d => d.source === 'BigQuery').length },
+    { label: 'PostgreSQL', count: datasets.filter(d => d.source === 'PostgreSQL').length },
+    { label: 'MySQL', count: datasets.filter(d => d.source === 'MySQL').length }
   ];
 
   const domains = [
-    { label: 'Sales', count: 280 },
-    { label: 'Marketing', count: 190 },
-    { label: 'Finance', count: 160 },
-    { label: 'Product', count: 120 },
-    { label: 'HR', count: 90 }
+    { label: 'Customer 360', count: datasets.filter(d => d.domain === 'Customer 360' || d.domainId === 'customer').length },
+    { label: 'Finance', count: datasets.filter(d => d.domain === 'Finance' || d.domainId === 'finance').length },
+    { label: 'Product', count: datasets.filter(d => d.domain === 'Product' || d.domainId === 'product').length },
+    { label: 'Marketing', count: datasets.filter(d => d.domain === 'Marketing' || d.domainId === 'marketing').length },
+    { label: 'HR', count: datasets.filter(d => d.domain === 'HR' || d.domainId === 'hr').length }
   ];
 
   const certifications = [
-    { label: 'Certified', count: 210 },
-    { label: 'In Review', count: 190 },
-    { label: 'Not Certified', count: 120 }
+    { label: 'Certified', count: datasets.filter(d => d.status === 'Certified').length },
+    { label: 'In Review', count: datasets.filter(d => d.status === 'In Review').length }
   ];
 
   const toggleFilter = (list, setList, item) => {

@@ -1,8 +1,10 @@
 import React from 'react';
 import { DATA_HEALTH_SUMMARY } from '../../data/dashboard';
+import { useApp } from '../../context/AppContext';
 
 export default function DataHealthCard() {
-  const { score, maxScore, status, dimensions } = DATA_HEALTH_SUMMARY;
+  const { dataHealthSummary } = useApp();
+  const { score, maxScore, status, dimensions } = dataHealthSummary || DATA_HEALTH_SUMMARY;
 
   return (
     <div className="flex flex-col justify-between h-full">

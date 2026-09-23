@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import {
   ReactFlow,
   Background,
@@ -9,18 +9,32 @@ import {
 import LineageNode from './LineageNode';
 import LineageToolbar from './LineageToolbar';
 import { useTheme } from '../../context/ThemeContext';
+import { useApp } from '../../context/AppContext';
 import { INITIAL_LINEAGE_NODES, INITIAL_LINEAGE_EDGES } from '../../data/lineage';
 
 const nodeTypes = {
   customLineageNode: LineageNode,
 };
 
-function FlowComponent({ onSelectNode }) {
+function FlowComponent({ onSelectNode, datasetId }) {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
+  const { getDatasetLineage } = useApp();
 
-  const [nodes, , onNodesChange] = useNodesState(INITIAL_LINEAGE_NODES);
-  const [edges, , onEdgesChange] = useEdgesState(INITIAL_LINEAGE_EDGES);
+  const lineageData = useMemo(() => {
+    if (getDatasetLineage && datasetId) {
+      return getDatasetLineage(datasetId);
+    }
+    return { nodes: INITIAL_LINEAGE_NODES, edges: INITIAL_LINEAGE_EDGES };
+  }, [getDatasetLineage, datasetId]);
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(lineageData.nodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(lineageData.edges);
+
+  useEffect(() => {
+    setNodes(lineageData.nodes);
+    setEdges(lineageData.edges);
+  }, [lineageData, setNodes, setEdges]);
 
   const themedEdges = useMemo(() => {
     return edges.map((e) => ({
@@ -57,10 +71,10 @@ function FlowComponent({ onSelectNode }) {
   );
 }
 
-export default function LineageGraph({ onSelectNode }) {
+export default function LineageGraph({ onSelectNode, datasetId }) {
   return (
     <ReactFlowProvider>
-      <FlowComponent onSelectNode={onSelectNode} />
+      <FlowComponent onSelectNode={onSelectNode} datasetId={datasetId} />
     </ReactFlowProvider>
   );
 }

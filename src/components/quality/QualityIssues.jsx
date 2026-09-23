@@ -5,13 +5,14 @@ import { ChevronRight, AlertCircle } from 'lucide-react';
 import IssueDrawer from './IssueDrawer';
 import { useApp } from '../../context/AppContext';
 
-export default function QualityIssues() {
+export default function QualityIssues({ datasetId }) {
   const { issues } = useApp();
   const [filterSeverity, setFilterSeverity] = useState('All');
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const filteredIssues = issues.filter(iss => {
+  const baseIssues = datasetId ? issues.filter(iss => iss.datasetId === datasetId) : issues;
+  const filteredIssues = baseIssues.filter(iss => {
     if (filterSeverity === 'All') return true;
     return iss.severity === filterSeverity;
   });

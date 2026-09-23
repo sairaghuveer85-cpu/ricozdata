@@ -16,7 +16,7 @@ export default function DataCatalog() {
   const [searchParams] = useSearchParams();
 
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
-  const [selectedSources, setSelectedSources] = useState(['Snowflake']);
+  const [selectedSources, setSelectedSources] = useState([]);
   const [selectedDomains, setSelectedDomains] = useState([]);
   const [selectedCertifications, setSelectedCertifications] = useState([]);
   const [selectedSensitivity, setSelectedSensitivity] = useState([]);

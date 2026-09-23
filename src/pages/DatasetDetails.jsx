@@ -15,29 +15,18 @@ import { useApp } from '../context/AppContext';
 export default function DatasetDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { datasets, policies, updateDataset, deleteDataset } = useApp();
+  const { datasets, policies, updateDataset, deleteDataset, getEnrichedDataset, getDatasetPolicies } = useApp();
 
   const [activeTab, setActiveTab] = useState('overview');
   const [isQueryModalOpen, setIsQueryModalOpen] = useState(false);
   const [sqlQuery, setSqlQuery] = useState(`SELECT \n  customer_id, email, first_name, last_name, tier\nFROM \n  SNOWFLAKE_PROD.MARKETING.CUSTOMER_DATABASE \nWHERE \n  churn_risk_score > 0.75 \nLIMIT 50;`);
   const [queryResult, setQueryResult] = useState(null);
 
-  // Find dataset
-  const dataset = datasets.find(d => d.id === id) || datasets[0] || {
-    id: 'customer-database',
-    name: 'Customer Database',
-    domain: 'Marketing',
-    owner: 'Priya S.',
-    source: 'Snowflake',
-    quality: 98,
-    status: 'Certified',
-    rows: '12.4M',
-    columnsCount: 48,
-    sensitivity: 'PII',
-    usage: '1.4k views',
-    description: 'Contains customer information including demographics, purchase history, and support tickets.',
-    tags: ['customer', 'marketing', 'pii', 'sales', 'production']
-  };
+  // Find dataset and enrich with resolved owner and quality data
+  const rawDataset = datasets.find(d => d.id === id) || datasets[0];
+  const dataset = (getEnrichedDataset && rawDataset) ? (getEnrichedDataset(rawDataset.id) || rawDataset) : rawDataset;
+
+  const datasetPolicies = getDatasetPolicies ? getDatasetPolicies(dataset?.id) : policies;
 
   const handleDelete = () => {
     if (window.confirm(`Are you sure you want to delete dataset "${dataset.name}"?`)) {
@@ -95,10 +84,12 @@ export default function DatasetDetails() {
             <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               Enforced Governance Policies
             </h3>
-            <span className="text-xs text-slate-500 dark:text-slate-400">3 active policies applied</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              {datasetPolicies.length} {datasetPolicies.length === 1 ? 'policy' : 'policies'} applied
+            </span>
           </div>
           <PolicyTable
-            policies={policies.filter(p => p.appliesTo === 'Customer Data' || p.appliesTo === 'All Datasets')}
+            policies={datasetPolicies}
           />
         </div>
       )}

@@ -181,7 +181,7 @@ LEFT JOIN scored_churn s ON c.contact_id = s.customer_id;`;
 
       {/* Main Interactive Flow Graph */}
       <div className="theme-card rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs p-1">
-        <LineageGraph onSelectNode={handleSelectNode} />
+        <LineageGraph onSelectNode={handleSelectNode} datasetId={dataset.id} />
       </div>
 
       {/* Node Detail Drawer Inspector */}

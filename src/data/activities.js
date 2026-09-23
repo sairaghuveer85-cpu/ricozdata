@@ -6,7 +6,9 @@ export const INITIAL_ACTIVITIES = [
     type: 'update',
     iconColor: 'text-emerald-500',
     iconBg: 'bg-emerald-50',
+    actorId: 'user-003',
     user: 'Arjun K.',
+    datasetId: 'sales-analytics',
     target: 'Sales Analytics'
   },
   {
@@ -16,7 +18,9 @@ export const INITIAL_ACTIVITIES = [
     type: 'create',
     iconColor: 'text-blue-500',
     iconBg: 'bg-blue-50',
+    actorId: 'user-007',
     user: 'Rohan P.',
+    datasetId: 'marketing-campaigns',
     target: 'Marketing Campaigns'
   },
   {
@@ -26,7 +30,10 @@ export const INITIAL_ACTIVITIES = [
     type: 'alert',
     iconColor: 'text-rose-500',
     iconBg: 'bg-rose-50',
+    actorId: 'system-guard',
     user: 'System Guard',
+    policyId: 'pol-1',
+    datasetId: 'customer-database',
     target: 'PII Data Access'
   },
   {
@@ -36,7 +43,9 @@ export const INITIAL_ACTIVITIES = [
     type: 'access',
     iconColor: 'text-purple-500',
     iconBg: 'bg-purple-50',
+    actorId: 'user-005',
     user: 'Vikram M.',
+    datasetId: 'customer-database',
     target: 'Customer Database'
   },
   {
@@ -46,7 +55,9 @@ export const INITIAL_ACTIVITIES = [
     type: 'lineage',
     iconColor: 'text-cyan-500',
     iconBg: 'bg-cyan-50',
+    actorId: 'pipeline-worker',
     user: 'Data Pipeline Worker',
+    datasetId: 'customer-database',
     target: 'ETL Pipeline'
   },
   {
@@ -56,7 +67,13 @@ export const INITIAL_ACTIVITIES = [
     type: 'quality',
     iconColor: 'text-emerald-500',
     iconBg: 'bg-emerald-50',
+    actorId: 'system-guard',
     user: 'Automated Test Runner',
+    datasetId: 'customer-database',
     target: 'Customer Database'
   }
 ];
+
+export const getActivitiesForDataset = (datasetId, activities = INITIAL_ACTIVITIES) => {
+  return activities.filter(a => a.datasetId === datasetId);
+};

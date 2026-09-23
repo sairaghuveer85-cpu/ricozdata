@@ -6,7 +6,7 @@ import { Shield, Copy, Edit3, Power, CheckCircle, Clock, Database, User } from '
 import { useApp } from '../../context/AppContext';
 
 export default function PolicyDrawer({ policy, isOpen, onClose }) {
-  const { togglePolicyStatus, addPolicy, addToast } = useApp();
+  const { togglePolicyStatus, addPolicy, addToast, datasets } = useApp();
 
   if (!policy) return null;
 
@@ -131,12 +131,22 @@ export default function PolicyDrawer({ policy, isOpen, onClose }) {
             Affected Datasets
           </h4>
           <div className="space-y-1.5">
-            {(policy.affectedDatasets || ['Customer Database', 'Sales Analytics']).map((ds) => (
-              <div key={ds} className="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40">
-                <Database className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-                <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs">{ds}</span>
-              </div>
-            ))}
+            {(policy.affectedDatasets || (policy.datasetIds ? policy.datasetIds.map(id => datasets.find(d => d.id === id)?.name || id) : ['Customer Database'])).map((ds) => {
+              const matched = datasets.find(d => d.name === ds || d.id === ds);
+              return (
+                <div key={ds} className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Database className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                    <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs truncate">{matched?.name || ds}</span>
+                  </div>
+                  {matched && (
+                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">
+                      {matched.sensitivity}
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
 

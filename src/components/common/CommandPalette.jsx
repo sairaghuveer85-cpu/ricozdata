@@ -25,6 +25,7 @@ export default function CommandPalette() {
     isCommandOpen,
     setIsCommandOpen,
     datasets,
+    users,
     policies,
     glossaryTerms,
     theme,
@@ -221,6 +222,23 @@ export default function CommandPalette() {
       }
     });
 
+    // Search users
+    users?.forEach(u => {
+      if (u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || (u.role && u.role.toLowerCase().includes(q))) {
+        matches.push({
+          id: `user-${u.id}`,
+          title: u.name,
+          category: 'Users',
+          icon: Users,
+          metadata: `${u.role} • ${u.email}`,
+          perform: () => {
+            setIsCommandOpen(false);
+            navigate('/users');
+          }
+        });
+      }
+    });
+
     // Search actions
     defaultActions.forEach(a => {
       if (a.title.toLowerCase().includes(q)) {
@@ -229,7 +247,7 @@ export default function CommandPalette() {
     });
 
     return matches.slice(0, 10);
-  }, [query, datasets, policies, glossaryTerms, theme]);
+  }, [query, datasets, users, policies, glossaryTerms, theme]);
 
   const handleKeyDown = (e) => {
     if (e.key === 'ArrowDown') {

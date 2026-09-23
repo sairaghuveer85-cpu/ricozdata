@@ -10,9 +10,10 @@ import { useApp } from '../context/AppContext';
 
 export default function DataQuality() {
   const { datasetId } = useParams();
-  const { datasets, qualityOverview } = useApp();
+  const { datasets, qualityOverview, getQualityForDataset } = useApp();
 
   const dataset = datasets.find(d => d.id === datasetId) || datasets[0];
+  const quality = (getQualityForDataset && dataset) ? getQualityForDataset(dataset.id) : qualityOverview;
 
   const [activeTab, setActiveTab] = useState('issues');
   const [timeRange, setTimeRange] = useState('Last 30 days');
@@ -62,13 +63,13 @@ export default function DataQuality() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">
           <QualityScore
-            score={dataset.quality || 98}
-            grade="Excellent"
-            trend="↑ 3% from last month"
+            score={dataset.quality || quality.score || 98}
+            grade={quality.grade || 'Excellent'}
+            trend={quality.trendText || '↑ 3% from last month'}
           />
         </div>
         <div className="lg:col-span-2">
-          <QualityMetrics dimensions={qualityOverview.dimensions} />
+          <QualityMetrics dimensions={quality.dimensions || qualityOverview.dimensions} />
         </div>
       </div>
 
@@ -100,7 +101,7 @@ export default function DataQuality() {
         </div>
 
         {/* Tab Content */}
-        {activeTab === 'issues' && <QualityIssues />}
+        {activeTab === 'issues' && <QualityIssues datasetId={dataset.id} />}
         {activeTab === 'rules' && <RulesTable activeSubTab="rules" />}
         {activeTab === 'trends' && <QualityTrends />}
       </div>

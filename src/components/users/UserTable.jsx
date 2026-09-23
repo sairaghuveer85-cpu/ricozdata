@@ -17,19 +17,22 @@ export default function UserTable({ users = [], activeTab = 'users', onDeleteUse
   if (activeTab === 'roles') {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {INITIAL_ROLES.map((role) => (
-          <div key={role.id} className="enterprise-panel rounded-lg p-4 sm:p-5 flex flex-col justify-between">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-semibold text-slate-900 dark:text-white">{role.name}</h4>
-                <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium px-2 py-0.5 rounded-md tabular-nums">
-                  {role.usersCount} users
-                </span>
+        {INITIAL_ROLES.map((role) => {
+          const matchingUsers = users.filter(u => u.role?.toLowerCase() === role.name.toLowerCase() || u.roleId === role.id);
+          const count = matchingUsers.length > 0 ? matchingUsers.length : role.usersCount;
+          return (
+            <div key={role.id} className="enterprise-panel rounded-lg p-4 sm:p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h4 className="text-sm font-semibold text-slate-900 dark:text-white">{role.name}</h4>
+                  <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium px-2 py-0.5 rounded-md tabular-nums">
+                    {count} users
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
+                  {role.description}
+                </p>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
-                {role.description}
-              </p>
-            </div>
             <div>
               <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
                 Privileges
@@ -43,7 +46,8 @@ export default function UserTable({ users = [], activeTab = 'users', onDeleteUse
               </div>
             </div>
           </div>
-        ))}
+        );
+      })}
       </div>
     );
   }

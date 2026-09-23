@@ -8,7 +8,7 @@ import PopularDatasets from '../components/dashboard/PopularDatasets';
 import { useApp } from '../context/AppContext';
 
 export default function Dashboard() {
-  const { currentUser } = useApp();
+  const { currentUser, dashboardMetrics } = useApp();
   const [timeRange, setTimeRange] = useState('Last 30 days');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -32,38 +32,38 @@ export default function Dashboard() {
     };
   }, [dropdownOpen]);
 
-  const metrics = [
+  const metrics = dashboardMetrics || [
     {
       id: 'total-datasets',
-      title: 'Total Datasets',
-      value: '1,248',
-      comparisonText: '+12.4% vs last period',
+      title: 'TOTAL DATASETS',
+      value: '6',
+      comparison: '+12.4%',
       isPositive: true,
-      trendType: 'positive'
+      trend: 'up'
     },
     {
       id: 'data-quality',
-      title: 'Quality Score',
-      value: '92.4%',
-      comparisonText: '+3.2% vs target',
+      title: 'DATA QUALITY',
+      value: '93%',
+      comparison: '+3.2%',
       isPositive: true,
-      trendType: 'positive'
+      trend: 'up'
     },
     {
       id: 'policy-violations',
-      title: 'Active Violations',
-      value: '36',
-      comparisonText: '-18.6% resolved',
+      title: 'POLICY VIOLATIONS',
+      value: '3',
+      comparison: '-18.6%',
       isPositive: true,
-      trendType: 'positive'
+      trend: 'down'
     },
     {
       id: 'active-users',
-      title: 'Active Analysts',
-      value: '24',
-      comparisonText: '+9.1% monthly',
+      title: 'ACTIVE USERS',
+      value: '7',
+      comparison: '+9.1%',
       isPositive: true,
-      trendType: 'positive'
+      trend: 'up'
     }
   ];
 
@@ -142,9 +142,9 @@ export default function Dashboard() {
             <StatCard
               title={metric.title}
               value={metric.value}
-              comparisonText={metric.comparisonText}
+              comparisonText={metric.comparisonText || `${metric.comparison} ${metric.id === 'policy-violations' ? 'resolved' : metric.id === 'data-quality' ? 'vs target' : 'vs last period'}`}
               isPositive={metric.isPositive}
-              trendType={metric.trendType}
+              trendType={metric.trendType || 'positive'}
             />
           </div>
         ))}

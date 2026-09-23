@@ -1,33 +1,32 @@
 import React from 'react';
 import { User } from 'lucide-react';
+import { useApp } from '../../context/AppContext';
 
-export default function DatasetActivity({ dataset: _dataset }) {
-  const events = [
-    {
-      title: 'Dataset Certified by Governance Board',
-      user: 'Vikram M.',
-      time: 'Sep 16, 2026 at 10:45 AM',
-      description: 'Passed annual PII security audit and SLA quality thresholds.'
-    },
-    {
-      title: 'Schema Update - Added churn_risk_score',
-      user: 'Arjun K.',
-      time: 'Sep 12, 2026 at 03:15 PM',
-      description: 'Added float prediction column from ML model output.'
-    },
-    {
-      title: 'Data Quality Test Run Completed',
-      user: 'System Guard',
-      time: 'Sep 10, 2026 at 01:00 AM',
-      description: 'Verified 12.4M rows. 98% overall score.'
-    },
-    {
-      title: 'Initial Dataset Registration',
-      user: 'Priya S.',
-      time: 'Aug 04, 2026 at 09:00 AM',
-      description: 'Connected Snowflake warehouse production stage.'
-    }
-  ];
+export default function DatasetActivity({ dataset }) {
+  const { getDatasetActivities } = useApp();
+  const datasetActs = (getDatasetActivities && dataset) ? getDatasetActivities(dataset.id) : [];
+
+  const events = datasetActs.length > 0
+    ? datasetActs.map(act => ({
+        title: act.title,
+        user: act.user || 'System Guard',
+        time: act.time || 'Recently',
+        description: `Logged activity for ${dataset?.name || 'dataset'}. Type: ${act.type || 'audit'}.`
+      }))
+    : [
+        {
+          title: `Dataset Certified — ${dataset?.name || 'Dataset'}`,
+          user: dataset?.owner || 'Data Steward',
+          time: dataset?.lastUpdatedDate || 'Recently',
+          description: `Certified quality compliance and automated validation routines. Quality score: ${dataset?.quality || 95}%.`
+        },
+        {
+          title: 'Initial Dataset Registration',
+          user: dataset?.owner || 'System',
+          time: 'Initial Sync',
+          description: `Connected ${dataset?.source || 'warehouse'} production stage replica.`
+        }
+      ];
 
   return (
     <div className="theme-card rounded-lg p-5 border border-slate-200 dark:border-slate-800 shadow-2xs">

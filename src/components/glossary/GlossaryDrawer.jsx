@@ -6,7 +6,7 @@ import { BookOpen, Trash2, Database, User, Tag } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 
 export default function GlossaryDrawer({ term, isOpen, onClose }) {
-  const { deleteGlossaryTerm } = useApp();
+  const { deleteGlossaryTerm, datasets } = useApp();
 
   if (!term) return null;
 
@@ -94,12 +94,22 @@ export default function GlossaryDrawer({ term, isOpen, onClose }) {
             Related Certified Datasets
           </h4>
           <div className="space-y-2">
-            {['Customer Database', 'Sales Analytics'].map(ds => (
-              <div key={ds} className="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800">
-                <Database className="w-4 h-4 text-blue-600" />
-                <span className="font-medium text-slate-800 dark:text-slate-200">{ds}</span>
-              </div>
-            ))}
+            {(term.relatedDatasets || (term.relatedDatasetIds ? term.relatedDatasetIds.map(id => datasets.find(d => d.id === id)?.name || id) : ['Customer Database'])).map(ds => {
+              const matched = datasets.find(d => d.name === ds || d.id === ds);
+              return (
+                <div key={ds} className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Database className="w-4 h-4 text-blue-600 shrink-0" />
+                    <span className="font-medium text-slate-800 dark:text-slate-200 truncate">{matched?.name || ds}</span>
+                  </div>
+                  {matched && (
+                    <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 shrink-0">
+                      {matched.quality}% Quality
+                    </span>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
