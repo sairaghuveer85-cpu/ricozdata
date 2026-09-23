@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
   Database,
@@ -15,10 +16,12 @@ import {
   ChevronRight,
   LogOut,
   Sparkles,
-  CheckCircle2
+  CheckCircle2,
+  X
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import Dropdown from '../common/Dropdown';
+import ThemeSelector from '../common/ThemeSelector';
 
 export default function Sidebar() {
   const location = useLocation();
@@ -58,7 +61,7 @@ export default function Sidebar() {
     navigate('/login');
   };
 
-  const sidebarContent = (
+  const desktopSidebarContent = (
     <div
       className={`flex flex-col h-full bg-[#07111F] text-slate-300 select-none border-r border-[#172337] transition-all duration-150 ${
         sidebarCollapsed ? 'w-16' : 'w-60'
@@ -99,7 +102,7 @@ export default function Sidebar() {
         )}
       </div>
 
-      {/* Navigation Items (Single Calm Stream matching Screen 2) */}
+      {/* Navigation Items */}
       <div className="flex-1 py-4 px-3 space-y-1 overflow-y-auto overflow-x-hidden">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -108,7 +111,6 @@ export default function Sidebar() {
             <NavLink
               key={item.path}
               to={item.path}
-              onClick={() => setSidebarOpen(false)}
               title={sidebarCollapsed ? item.name : undefined}
               className={`
                 group flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-colors duration-150
@@ -167,21 +169,118 @@ export default function Sidebar() {
     <>
       {/* Desktop Sidebar (Persistent) */}
       <aside className="hidden lg:block shrink-0 h-screen sticky top-0 z-30">
-        {sidebarContent}
+        {desktopSidebarContent}
       </aside>
 
-      {/* Mobile Drawer (Responsive Overlay) */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex">
-          <div
-            className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs transition-opacity"
-            onClick={() => setSidebarOpen(false)}
-          />
-          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-[#0B1628] z-10 animate-in slide-in-from-left duration-200">
-            {sidebarContent}
+      {/* Mobile Drawer (Enterprise Framer Motion Drawer) */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden flex">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.18 }}
+              className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs"
+              onClick={() => setSidebarOpen(false)}
+            />
+
+            {/* Mobile Drawer Panel */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 300 }}
+              className="relative flex-1 flex flex-col max-w-[280px] sm:max-w-xs w-full bg-[#07111F] text-slate-300 z-10 border-r border-[#172337] shadow-2xl h-full select-none"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Top Header: Logo + Close Button */}
+              <div className="h-16 px-4 border-b border-[#172337] flex items-center justify-between shrink-0">
+                <NavLink
+                  to="/dashboard"
+                  onClick={() => setSidebarOpen(false)}
+                  className="flex items-center gap-2.5"
+                >
+                  <div className="w-7 h-7 rounded-md bg-blue-600 flex items-center justify-center text-white shrink-0">
+                    <Database className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-sm font-bold text-white tracking-tight leading-none">RicozData</span>
+                </NavLink>
+
+                <button
+                  type="button"
+                  onClick={() => setSidebarOpen(false)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#111C2E] transition-colors cursor-pointer"
+                  aria-label="Close navigation"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Navigation Links */}
+              <div className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  const active = isActive(item);
+                  return (
+                    <NavLink
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setSidebarOpen(false)}
+                      className={`
+                        group flex items-center gap-3 px-3 py-2.5 rounded-md text-xs font-medium transition-colors duration-150
+                        ${active
+                          ? 'bg-blue-600 text-white font-semibold'
+                          : 'text-slate-400 hover:text-slate-200 hover:bg-[#111C2E]'
+                        }
+                      `}
+                    >
+                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} />
+                      <span className="truncate">{item.name}</span>
+                    </NavLink>
+                  );
+                })}
+              </div>
+
+              {/* Theme Control in Mobile Navigation (Accessible) */}
+              <div className="px-4 py-3 border-t border-[#172337] flex items-center justify-between shrink-0">
+                <span className="text-xs text-slate-400 font-medium">Appearance</span>
+                <ThemeSelector compact />
+              </div>
+
+              {/* Bottom User Profile with Logout */}
+              <div className="p-3 border-t border-[#172337] shrink-0">
+                <div className="flex items-center justify-between px-1 py-1">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`w-7 h-7 rounded-full ${currentUser?.avatarBg || 'bg-blue-600'} text-white font-semibold text-xs flex items-center justify-center shrink-0`}>
+                      {currentUser?.avatar || 'R'}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-semibold text-white truncate leading-tight">
+                        {currentUser?.name || 'Raghuveer'}
+                      </div>
+                      <div className="text-[11px] text-slate-400 truncate leading-tight">
+                        {currentUser?.role || 'Data Analyst'}
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-[#111C2E] transition-colors cursor-pointer"
+                    title="Sign out"
+                    aria-label="Sign out"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 }

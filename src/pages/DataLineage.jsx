@@ -92,7 +92,7 @@ LEFT JOIN scored_churn s ON c.contact_id = s.customer_id;`;
       {/* Header Row with Legend and Controls */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
             Data Lineage
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
@@ -101,31 +101,31 @@ LEFT JOIN scored_churn s ON c.contact_id = s.customer_id;`;
         </div>
 
         {/* Legend matching Screen 5 specification */}
-        <div className="flex items-center gap-4 text-xs text-slate-600 dark:text-slate-300 flex-wrap p-2 rounded-md bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-4 text-xs text-slate-600 dark:text-slate-300 p-2.5 rounded-lg bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800">
           <div className="flex items-center gap-1.5 font-medium">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-2xs" />
-            <span>SOURCE</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-2xs shrink-0" />
+            <span className="text-[11px] sm:text-xs">SOURCE</span>
           </div>
           <div className="flex items-center gap-1.5 font-medium">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-2xs" />
-            <span>TRANSFORMATION</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-2xs shrink-0" />
+            <span className="text-[11px] sm:text-xs">TRANSFORM</span>
           </div>
           <div className="flex items-center gap-1.5 font-medium">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-600 shadow-2xs" />
-            <span>DATASET</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-600 shadow-2xs shrink-0" />
+            <span className="text-[11px] sm:text-xs">DATASET</span>
           </div>
           <div className="flex items-center gap-1.5 font-medium">
-            <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 shadow-2xs" />
-            <span>DESTINATION</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-cyan-500 shadow-2xs shrink-0" />
+            <span className="text-[11px] sm:text-xs">DESTINATION</span>
           </div>
         </div>
 
         {/* Lineage Toolbar Right Actions */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
           <button
             type="button"
             onClick={handleRefresh}
-            className={`p-1.5 rounded-md bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
+            className={`p-2 rounded-md bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
               isRefreshing ? 'animate-spin' : ''
             }`}
             title="Refresh Lineage Graph"

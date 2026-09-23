@@ -16,16 +16,16 @@ export default function MainLayout() {
 
   return (
     <div
-      className="flex min-h-screen transition-colors"
+      className="flex min-h-screen transition-colors w-full overflow-x-hidden"
       style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}
     >
       {/* Sidebar navigation (remains intentionally dark in both themes) */}
       <Sidebar />
 
       {/* Main app viewport */}
-      <div className="flex-1 flex flex-col min-w-0" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <div className="flex-1 flex flex-col min-w-0 w-full" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <Header />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto" style={{ backgroundColor: 'var(--bg-primary)' }}>
           <Outlet />
         </main>
       </div>

@@ -32,7 +32,39 @@ export default function DatasetSchema({ schema = [] }) {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Mobile Schema Cards (< md) */}
+      <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+        {filteredSchema.map((col, idx) => (
+          <div key={idx} className="p-3.5 space-y-2">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 font-mono text-xs font-bold text-slate-900 dark:text-white">
+                {col.primaryKey && (
+                  <Key className="w-3.5 h-3.5 text-amber-500 shrink-0" title="Primary Key" />
+                )}
+                <span>{col.name}</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                  {col.type}
+                </span>
+                {col.pii && (
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-900/50">
+                    <Shield className="w-3 h-3 text-rose-500" />
+                    PII
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 gap-2">
+              <span className="shrink-0">{col.nullable ? 'Nullable' : 'NOT NULL'}</span>
+              <span className="text-right truncate">{col.description || 'No description provided'}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Table (>= md) */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">

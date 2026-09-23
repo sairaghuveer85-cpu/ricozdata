@@ -33,7 +33,7 @@ function FlowComponent({ onSelectNode }) {
   }, [edges, isDark]);
 
   return (
-    <div className="w-full h-[520px] bg-white dark:bg-[#07111F] rounded-xl relative border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors shadow-2xs">
+    <div className="w-full h-[380px] sm:h-[460px] md:h-[520px] bg-white dark:bg-[#07111F] rounded-xl relative border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors shadow-2xs">
       <ReactFlow
         nodes={nodes}
         edges={themedEdges}

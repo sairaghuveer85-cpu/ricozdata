@@ -74,8 +74,8 @@ export default function DataQuality() {
 
       {/* Bottom Tabs */}
       <div className="space-y-4">
-        <div className="border-b border-slate-200 dark:border-slate-800">
-          <nav className="flex space-x-6">
+        <div className="border-b border-slate-200 dark:border-slate-800 -mx-3.5 px-3.5 sm:mx-0 sm:px-0">
+          <nav className="flex space-x-6 overflow-x-auto no-scrollbar py-0.5">
             {[
               { id: 'issues', label: 'Issues' },
               { id: 'rules', label: 'Quality Rules' },
@@ -86,7 +86,7 @@ export default function DataQuality() {
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
                 className={`
-                  py-3 px-1 border-b-2 text-xs font-semibold transition-colors cursor-pointer
+                  py-3 px-1 border-b-2 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0
                   ${activeTab === tab.id
                     ? 'border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700'

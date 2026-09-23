@@ -7,7 +7,7 @@ export default function Pagination({
   onPageChange
 }) {
   return (
-    <div className="flex items-center justify-end gap-1 select-none">
+    <div className="flex items-center justify-center sm:justify-end gap-1 select-none flex-wrap">
       <button
         type="button"
         onClick={() => onPageChange && onPageChange(Math.max(1, currentPage - 1))}

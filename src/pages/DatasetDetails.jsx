@@ -92,10 +92,10 @@ export default function DatasetDetails() {
       {activeTab === 'policies' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+            <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               Enforced Governance Policies
             </h3>
-            <span className="text-xs text-slate-500">3 active policies applied</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">3 active policies applied</span>
           </div>
           <PolicyTable
             policies={policies.filter(p => p.appliesTo === 'Customer Data' || p.appliesTo === 'All Datasets')}
@@ -118,18 +118,18 @@ export default function DatasetDetails() {
         subtitle={`Execute read-only queries against ${dataset.source} production replica`}
         maxWidth="max-w-3xl"
         footer={
-          <>
-            <Button variant="secondary" size="sm" onClick={() => setIsQueryModalOpen(false)}>
+          <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:justify-end">
+            <Button variant="secondary" size="sm" onClick={() => setIsQueryModalOpen(false)} className="w-full sm:w-auto">
               Close
             </Button>
-            <Button size="sm" onClick={handleExecuteQuery}>
+            <Button size="sm" onClick={handleExecuteQuery} className="w-full sm:w-auto">
               Run SQL Query
             </Button>
-          </>
+          </div>
         }
       >
         <div className="space-y-4">
-          <div className="bg-slate-900 rounded-lg p-3 text-white font-mono text-xs shadow-inner">
+          <div className="bg-slate-900 dark:bg-[#07111F] rounded-lg p-3 text-white font-mono text-xs shadow-inner border border-slate-800">
             <textarea
               rows={5}
               value={sqlQuery}
@@ -139,14 +139,14 @@ export default function DatasetDetails() {
           </div>
 
           {queryResult && (
-            <div className="border border-slate-200 rounded-lg overflow-hidden">
-              <div className="bg-slate-50 px-3 py-1.5 border-b border-slate-200 text-[11px] font-semibold text-slate-600 flex justify-between">
+            <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden bg-white dark:bg-[#0B1628]">
+              <div className="bg-slate-50 dark:bg-[#111C2E] px-3 py-1.5 border-b border-slate-200 dark:border-slate-800 text-[11px] font-semibold text-slate-600 dark:text-slate-300 flex justify-between">
                 <span>Query Result (3 rows returned in 12ms)</span>
-                <span className="text-emerald-600 font-bold">✓ Success</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓ Success</span>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 text-[11px] text-slate-500 border-b border-slate-200">
+                  <thead className="bg-slate-50 dark:bg-[#111C2E] text-[11px] text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
                     <tr>
                       <th className="p-2">customer_id</th>
                       <th className="p-2">email</th>
@@ -155,14 +155,14 @@ export default function DatasetDetails() {
                       <th className="p-2">tier</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                     {queryResult.map((row, i) => (
-                      <tr key={i} className="hover:bg-slate-50">
-                        <td className="p-2 font-mono">{row.customer_id}</td>
-                        <td className="p-2 font-mono text-slate-600">{row.email}</td>
+                      <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td className="p-2 font-mono text-slate-900 dark:text-white">{row.customer_id}</td>
+                        <td className="p-2 font-mono text-slate-600 dark:text-slate-400">{row.email}</td>
                         <td className="p-2">{row.first_name}</td>
                         <td className="p-2">{row.last_name}</td>
-                        <td className="p-2 font-semibold text-blue-600">{row.tier}</td>
+                        <td className="p-2 font-semibold text-blue-600 dark:text-blue-400">{row.tier}</td>
                       </tr>
                     ))}
                   </tbody>

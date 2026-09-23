@@ -42,10 +42,11 @@ export default function IssueDrawer({ issue, isOpen, onClose }) {
       title={issue.issue}
       subtitle={`Column: ${issue.column}`}
       footer={
-        <div className="flex items-center justify-between w-full gap-2">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between w-full gap-2">
           <Button
             variant="secondary"
             size="sm"
+            className="w-full sm:w-auto"
             onClick={() => {
               addToast({
                 type: 'info',
@@ -57,10 +58,11 @@ export default function IssueDrawer({ issue, isOpen, onClose }) {
           >
             Ignore
           </Button>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <Button
               variant="secondary"
               size="sm"
+              className="w-full sm:w-auto"
               onClick={() => {
                 addToast({
                   type: 'success',
@@ -72,7 +74,7 @@ export default function IssueDrawer({ issue, isOpen, onClose }) {
             >
               Create Rule
             </Button>
-            <Button size="sm" icon={Check} onClick={handleResolve}>
+            <Button size="sm" icon={Check} onClick={handleResolve} className="w-full sm:w-auto">
               Mark Resolved
             </Button>
           </div>

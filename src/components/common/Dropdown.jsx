@@ -35,7 +35,7 @@ export default function Dropdown({
             exit={{ opacity: 0, scale: 0.95, y: -4 }}
             transition={{ duration: 0.12 }}
             className={`
-              absolute z-50 mt-1.5 ${width} rounded-xl shadow-xl py-1.5 focus:outline-none
+              absolute z-50 mt-1.5 ${width} max-w-[calc(100vw-1.5rem)] rounded-xl shadow-xl py-1.5 focus:outline-none
               ${align === 'right' ? 'right-0 origin-top-right' : 'left-0 origin-top-left'}
             `}
             style={{

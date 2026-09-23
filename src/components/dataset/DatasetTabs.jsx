@@ -15,7 +15,7 @@ export default function DatasetTabs({
 
   return (
     <div className="mb-6" style={{ borderBottom: '1px solid var(--border)' }}>
-      <nav className="flex space-x-6 overflow-x-auto">
+      <nav className="flex space-x-4 sm:space-x-6 overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -23,7 +23,7 @@ export default function DatasetTabs({
               key={tab.id}
               type="button"
               onClick={() => onTabChange(tab.id)}
-              className="py-3 px-1 border-b-2 text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer"
+              className="py-3 px-1 border-b-2 text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer shrink-0"
               style={{
                 borderColor: isActive ? 'var(--brand)' : 'transparent',
                 color: isActive ? 'var(--brand)' : 'var(--text-muted)'

@@ -46,6 +46,7 @@ export default function BusinessGlossary() {
             size="md"
             icon={Plus}
             onClick={() => setIsModalOpen(true)}
+            className="w-full sm:w-auto"
           >
             Add Term
           </Button>

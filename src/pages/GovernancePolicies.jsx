@@ -25,11 +25,12 @@ export default function GovernancePolicies() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3 self-start sm:self-auto shrink-0">
+        <div className="flex items-center gap-3 self-start sm:self-auto shrink-0 w-full sm:w-auto">
           <Button
             size="md"
             icon={Plus}
             onClick={() => setIsModalOpen(true)}
+            className="w-full sm:w-auto"
           >
             Create Policy
           </Button>

@@ -72,39 +72,44 @@ export default function Header() {
       className="h-16 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-20 transition-colors"
       style={{ backgroundColor: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)', color: 'var(--text-primary)' }}
     >
-      {/* Left: Mobile Toggle & Breadcrumbs */}
-      <div className="flex items-center gap-3">
+      {/* Left: Mobile Toggle & Breadcrumbs / Page Context */}
+      <div className="flex items-center gap-2.5 min-w-0">
         <button
           type="button"
           onClick={() => setSidebarOpen(true)}
-          className="lg:hidden p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+          aria-label="Open navigation menu"
+          className="lg:hidden p-2 -ml-1 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
         >
           <Menu className="w-5 h-5" />
         </button>
 
-        {/* Dynamic Breadcrumbs */}
-        <nav className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-          <NavLink to="/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium">
+        {/* Dynamic Breadcrumbs for sm+ */}
+        <nav className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 min-w-0">
+          <NavLink to="/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium shrink-0">
             RicozData
           </NavLink>
           {breadcrumbs.map((crumb, idx) => (
             <React.Fragment key={idx}>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600" />
+              <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 shrink-0" />
               {crumb.path ? (
-                <NavLink to={crumb.path} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                <NavLink to={crumb.path} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate">
                   {crumb.label}
                 </NavLink>
               ) : (
-                <span className="text-slate-900 dark:text-white font-semibold">
+                <span className="text-slate-900 dark:text-white font-semibold truncate">
                   {crumb.label}
                 </span>
               )}
             </React.Fragment>
           ))}
         </nav>
+
+        {/* Mobile Page Context Header */}
+        <div className="sm:hidden font-semibold text-xs sm:text-sm text-slate-900 dark:text-white truncate">
+          {breadcrumbs[breadcrumbs.length - 1]?.label || 'RicozData'}
+        </div>
       </div>
 
-      {/* Center: Global Search trigger with ⌘K */}
       {/* Center: Global Search trigger matching Screen 2 */}
       <div className="flex-1 max-w-md mx-4 hidden md:block">
         <button
@@ -131,18 +136,21 @@ export default function Header() {
       </div>
 
       {/* Right: Theme Switcher, Notifications, Help, User Profile */}
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
         {/* Mobile search button */}
         <button
           type="button"
           onClick={() => setIsCommandOpen(true)}
+          aria-label="Search"
           className="md:hidden p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
         >
           <Search className="w-4 h-4" />
         </button>
 
-        {/* Polished 3-Option Theme Switcher (Light / System / Dark) */}
-        <ThemeSelector compact />
+        {/* Polished 3-Option Theme Switcher (Available on sm+; mobile access in drawer) */}
+        <div className="hidden sm:block">
+          <ThemeSelector compact />
+        </div>
 
         {/* Notifications Popover */}
         <div className="relative">
@@ -163,7 +171,7 @@ export default function Header() {
 
           {notificationsOpen && (
             <div
-              className="absolute right-0 mt-2 w-80 sm:w-96 rounded-xl shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150"
+              className="absolute right-0 mt-2 w-[calc(100vw-1.5rem)] sm:w-96 max-w-sm rounded-xl shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150"
               style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
             >
               <div
@@ -205,7 +213,7 @@ export default function Header() {
         </div>
 
         {/* Divider */}
-        <div className="h-5 w-px bg-slate-200 dark:bg-slate-800" />
+        <div className="hidden sm:block h-5 w-px bg-slate-200 dark:bg-slate-800" />
 
         {/* User Profile Dropdown */}
         <Dropdown

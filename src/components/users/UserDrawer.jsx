@@ -35,16 +35,17 @@ export default function UserDrawer({ user, isOpen, onClose }) {
       title={user.name}
       subtitle={user.email}
       footer={
-        <div className="flex items-center justify-between w-full">
+        <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:justify-between">
           <Button
             variant="danger"
             size="sm"
             icon={Trash2}
             onClick={handleDelete}
+            className="w-full sm:w-auto"
           >
             Revoke Access
           </Button>
-          <Button size="sm" onClick={onClose}>
+          <Button size="sm" onClick={onClose} className="w-full sm:w-auto">
             Done
           </Button>
         </div>

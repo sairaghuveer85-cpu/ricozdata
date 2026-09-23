@@ -43,13 +43,13 @@ export default function Modal({
           />
 
           {/* Modal Dialog */}
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+          <div className="flex min-h-full items-center justify-center p-3 sm:p-4 text-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 8 }}
               transition={{ duration: 0.18, ease: 'easeOut' }}
-              className={`relative transform overflow-hidden rounded-xl text-left shadow-2xl transition-all sm:my-8 w-full ${maxWidth} z-10`}
+              className={`relative transform overflow-hidden rounded-xl text-left shadow-2xl transition-all sm:my-8 w-[calc(100%-0.5rem)] sm:w-full ${maxWidth} max-h-[calc(100dvh-2rem)] flex flex-col z-10`}
               style={{
                 backgroundColor: 'var(--surface)',
                 border: '1px solid var(--border)',
@@ -59,19 +59,20 @@ export default function Modal({
             >
               {/* Header */}
               <div
-                className="flex items-center justify-between px-6 py-4"
+                className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 shrink-0"
                 style={{ borderBottom: '1px solid var(--border)' }}
               >
-                <div>
-                  <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{title}</h3>
+                <div className="min-w-0 pr-2">
+                  <h3 className="text-sm sm:text-base font-bold truncate" style={{ color: 'var(--text-primary)' }}>{title}</h3>
                   {subtitle && (
-                    <p className="mt-0.5 text-xs" style={{ color: 'var(--text-muted)' }}>{subtitle}</p>
+                    <p className="mt-0.5 text-xs truncate" style={{ color: 'var(--text-muted)' }}>{subtitle}</p>
                   )}
                 </div>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-lg p-1.5 transition-colors cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                  aria-label="Close modal"
+                  className="rounded-lg p-1.5 transition-colors cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
                   style={{ color: 'var(--text-muted)' }}
                 >
                   <X className="w-4 h-4" />
@@ -79,14 +80,14 @@ export default function Modal({
               </div>
 
               {/* Body */}
-              <div className="px-6 py-5">
+              <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5">
                 {children}
               </div>
 
               {/* Optional Footer */}
               {footer && (
                 <div
-                  className="px-6 py-3.5 flex items-center justify-end gap-2.5"
+                  className="px-4 sm:px-6 py-3 sm:py-3.5 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-2.5 shrink-0"
                   style={{
                     backgroundColor: 'var(--bg-tertiary)',
                     borderTop: '1px solid var(--border)'

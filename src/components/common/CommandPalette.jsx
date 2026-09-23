@@ -251,7 +251,7 @@ export default function CommandPalette() {
   if (!isCommandOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto p-4 sm:p-6 md:p-20 flex items-start justify-center">
+    <div className="fixed inset-0 z-50 overflow-y-auto p-3 sm:p-6 md:p-20 flex items-start justify-center">
       {/* Backdrop */}
       <div
         className="fixed inset-0 backdrop-blur-xs transition-opacity"
@@ -362,18 +362,18 @@ export default function CommandPalette() {
 
         {/* Footer shortcuts */}
         <div
-          className="px-4 py-2.5 flex items-center justify-between text-[11px]"
+          className="px-3 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between text-[11px]"
           style={{
             backgroundColor: 'var(--bg-tertiary)',
             borderTop: '1px solid var(--border)',
             color: 'var(--text-muted)'
           }}
         >
-          <div className="flex items-center gap-3">
+          <div className="hidden sm:flex items-center gap-3">
             <span>Use <kbd className="font-mono font-semibold">↑</kbd> <kbd className="font-mono font-semibold">↓</kbd> to navigate</span>
             <span><kbd className="font-mono font-semibold">↵</kbd> to select</span>
           </div>
-          <span>RicozData Command Hub</span>
+          <span className="text-[10px] sm:text-[11px]">RicozData Command Hub</span>
         </div>
       </motion.div>
     </div>

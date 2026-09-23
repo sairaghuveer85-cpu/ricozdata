@@ -46,6 +46,7 @@ export default function Reports() {
             size="md"
             icon={Download}
             onClick={() => alert('Generating on-demand compliance snapshot...')}
+            className="w-full sm:w-auto"
           >
             Generate Report
           </Button>
@@ -54,13 +55,13 @@ export default function Reports() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {reports.map((rep, idx) => (
-          <div key={idx} className="bg-white dark:bg-[#0B1628] rounded-xl p-5 border border-slate-200 dark:border-slate-800 shadow-xs flex items-center justify-between">
+          <div key={idx} className="bg-white dark:bg-[#0B1628] rounded-xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3.5 min-w-0">
               <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                 <FileText className="w-5 h-5" />
               </div>
               <div className="min-w-0">
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{rep.title}</h4>
+                <h4 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white truncate">{rep.title}</h4>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{rep.date} • {rep.size}</p>
               </div>
             </div>
@@ -70,6 +71,7 @@ export default function Reports() {
               size="xs"
               icon={Download}
               onClick={() => alert(`Downloading ${rep.title}`)}
+              className="w-full sm:w-auto shrink-0 justify-center"
             >
               Export {rep.type}
             </Button>
@@ -78,18 +80,18 @@ export default function Reports() {
       </div>
 
       {/* Audit Log Stream */}
-      <div className="bg-white dark:bg-[#0B1628] rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs p-5">
+      <div className="bg-white dark:bg-[#0B1628] rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs p-4 sm:p-5">
         <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4">
           Recent System Audit Stream
         </h3>
         <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
           {INITIAL_ACTIVITIES.map(act => (
-            <div key={act.id} className="py-3 flex items-center justify-between">
+            <div key={act.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <div>
                 <span className="font-semibold text-slate-800 dark:text-slate-200">{act.title}</span>
-                <span className="text-slate-500 dark:text-slate-400 ml-2">({act.target})</span>
+                <span className="text-slate-500 dark:text-slate-400 ml-1.5 sm:ml-2">({act.target})</span>
               </div>
-              <div className="text-slate-400 dark:text-slate-500 text-[11px]">{act.time}</div>
+              <div className="text-slate-400 dark:text-slate-500 text-[11px] shrink-0">{act.time}</div>
             </div>
           ))}
         </div>

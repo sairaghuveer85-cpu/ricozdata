@@ -39,11 +39,12 @@ export default function NodeDrawer({ node, isOpen, onClose, onViewSql }) {
       title={data.label}
       subtitle={`${data.category} • ${data.typeLabel}`}
       footer={
-        <>
+        <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:justify-end">
           <Button
             variant="secondary"
             size="sm"
             icon={Terminal}
+            className="w-full sm:w-auto"
             onClick={() => {
               onClose();
               onViewSql && onViewSql();
@@ -51,10 +52,10 @@ export default function NodeDrawer({ node, isOpen, onClose, onViewSql }) {
           >
             View SQL
           </Button>
-          <Button size="sm" onClick={onClose}>
+          <Button size="sm" onClick={onClose} className="w-full sm:w-auto">
             Close Inspector
           </Button>
-        </>
+        </div>
       }
     >
       <div className="space-y-5 text-xs text-slate-600 dark:text-slate-300">

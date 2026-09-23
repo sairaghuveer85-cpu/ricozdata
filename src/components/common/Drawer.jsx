@@ -43,13 +43,13 @@ export default function Drawer({
           />
 
           {/* Drawer Slide-in Panel */}
-          <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
+          <div className="fixed inset-y-0 right-0 flex max-w-full pl-0 sm:pl-10 pointer-events-auto">
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className={`w-screen ${width} shadow-2xl flex flex-col`}
+              className={`w-full sm:w-screen ${width} max-w-full shadow-2xl flex flex-col h-full`}
               style={{
                 backgroundColor: 'var(--surface)',
                 borderLeft: '1px solid var(--border)',
@@ -59,15 +59,15 @@ export default function Drawer({
             >
               {/* Header */}
               <div
-                className="px-6 py-4 flex items-center justify-between"
+                className="px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0"
                 style={{ borderBottom: '1px solid var(--border)' }}
               >
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold" style={{ color: 'var(--text-primary)' }}>
+                <div className="min-w-0 pr-2">
+                  <h3 className="text-sm sm:text-base font-bold truncate" style={{ color: 'var(--text-primary)' }}>
                     {title}
                   </h3>
                   {subtitle && (
-                    <p className="text-xs mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                    <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-muted)' }}>
                       {subtitle}
                     </p>
                   )}
@@ -75,7 +75,8 @@ export default function Drawer({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-lg p-1.5 transition-colors cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+                  aria-label="Close drawer"
+                  className="rounded-lg p-1.5 transition-colors cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
                   style={{ color: 'var(--text-muted)' }}
                 >
                   <X className="w-4 h-4" />
@@ -83,14 +84,14 @@ export default function Drawer({
               </div>
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
                 {children}
               </div>
 
               {/* Footer */}
               {footer && (
                 <div
-                  className="p-4 flex items-center justify-end gap-2.5"
+                  className="p-3 sm:p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 shrink-0"
                   style={{
                     backgroundColor: 'var(--bg-tertiary)',
                     borderTop: '1px solid var(--border)'

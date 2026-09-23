@@ -153,18 +153,18 @@ export default function QualityChart() {
         </ResponsiveContainer>
       </div>
 
-      <div className="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-        <div className="flex items-center gap-4">
+      <div className="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 inline-block" />
+            <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 inline-block shrink-0" />
             <span>Actual Score (92.4%)</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-0.5 bg-slate-400 dark:bg-slate-500 inline-block" />
+            <span className="w-2.5 h-0.5 bg-slate-400 dark:bg-slate-500 inline-block shrink-0" />
             <span>Target Line (90.0%)</span>
           </span>
         </div>
-        <span>142 validation rules verified</span>
+        <span className="text-[10px] sm:text-[11px]">142 validation rules verified</span>
       </div>
     </div>
   );

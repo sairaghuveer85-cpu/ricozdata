@@ -83,7 +83,7 @@ export default function DatasetOverview({ dataset, onUpdateTags }) {
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
               {dataset.longDescription || dataset.description}
             </p>
-            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+            <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs text-slate-500 dark:text-slate-400">
               <span>Data classification: <strong className="text-slate-900 dark:text-white">Confidential PII</strong></span>
               <span>Update cadence: <strong className="text-slate-900 dark:text-white">Hourly Micro-batch</strong></span>
             </div>

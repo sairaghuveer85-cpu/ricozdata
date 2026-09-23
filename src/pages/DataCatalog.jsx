@@ -97,6 +97,7 @@ export default function DataCatalog() {
             size="md"
             icon={Plus}
             onClick={() => setIsAddModalOpen(true)}
+            className="w-full sm:w-auto"
           >
             Add Dataset
           </Button>
@@ -145,12 +146,13 @@ export default function DataCatalog() {
 
         {/* Right Main Table & Pagination */}
         <div className="lg:col-span-3 space-y-4">
-          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs text-slate-500 dark:text-slate-400 px-1">
             <span>
               Showing <strong className="text-slate-900 dark:text-white">{filteredDatasets.length}</strong> of{' '}
               <strong className="text-slate-900 dark:text-white">1,248</strong> enterprise datasets
             </span>
-            <span className="text-slate-400">Click any row for quick inspection</span>
+            <span className="text-slate-400 hidden sm:inline">Click any row for quick inspection</span>
+            <span className="text-slate-400 sm:hidden">Tap any card for quick inspection</span>
           </div>
 
           <DatasetTable

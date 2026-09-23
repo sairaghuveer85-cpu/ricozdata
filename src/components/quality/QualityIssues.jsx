@@ -34,22 +34,22 @@ export default function QualityIssues() {
   return (
     <div className="theme-card rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs overflow-hidden">
       {/* Table Toolbar */}
-      <div className="p-4 flex items-center justify-between gap-3 flex-wrap border-b border-slate-200 dark:border-slate-800">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+      <div className="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white block">
             Active Data Anomalies ({filteredIssues.length})
           </span>
           <span className="text-[11px] text-slate-400">Click any issue to inspect details</span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Severity:</span>
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-medium shrink-0 mr-1">Severity:</span>
           {['All', 'High', 'Medium', 'Low'].map((sev) => (
             <button
               key={sev}
               type="button"
               onClick={() => setFilterSeverity(sev)}
-              className={`text-xs px-2.5 py-1 rounded-md transition-colors cursor-pointer ${
+              className={`text-xs px-2.5 py-1 rounded-md transition-colors cursor-pointer shrink-0 ${
                 filterSeverity === sev
                   ? 'bg-blue-600 text-white font-semibold shadow-2xs'
                   : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -61,7 +61,44 @@ export default function QualityIssues() {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Mobile Issue Cards (< md) */}
+      <div className="md:hidden divide-y divide-slate-100 dark:divide-slate-800">
+        {filteredIssues.map((item) => (
+          <div
+            key={item.id}
+            onClick={() => handleRowClick(item)}
+            className="p-4 hover:bg-slate-50/70 dark:hover:bg-slate-800/40 active:bg-slate-100 transition-colors cursor-pointer space-y-2.5"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start gap-2 min-w-0">
+                <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                <h4 className="font-semibold text-xs sm:text-sm text-slate-900 dark:text-white leading-snug">
+                  {item.issue}
+                </h4>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold border ${getSeverityBadge(item.severity)}`}>
+                {item.severity}
+              </span>
+              <span className="font-mono text-[11px] px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                {item.column}
+              </span>
+              <Badge status={item.status} size="xs" dot />
+            </div>
+
+            <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+              <span>{item.count.toLocaleString()} affected rows</span>
+              <span>{item.detectedAt || '2h ago'}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Table (>= md) */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">

@@ -62,7 +62,7 @@ export default function Login() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row w-full bg-white dark:bg-[#07111F] transition-colors">
       {/* Left: Dark Navy Visual Area with Enterprise Brand Hero */}
-      <div className="relative w-full md:w-[52%] lg:w-[55%] bg-[#08101e] p-8 sm:p-12 lg:p-16 flex flex-col justify-between text-white overflow-hidden select-none min-h-[460px] md:min-h-screen border-r border-slate-850">
+      <div className="relative w-full md:w-[52%] lg:w-[55%] bg-[#08101e] p-6 sm:p-10 lg:p-16 flex flex-col justify-between text-white overflow-hidden select-none min-h-0 md:min-h-screen border-b md:border-b-0 md:border-r border-slate-800">
         {/* Subtle Architectural SVG Data Grid Background */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-25">
           <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -87,29 +87,34 @@ export default function Login() {
 
         {/* Top: Brand Logo */}
         <div className="relative z-10 flex items-center gap-3">
-          <div className="w-9 h-9 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-2xs">
-            <Database className="w-5 h-5 text-white" />
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-2xs shrink-0">
+            <Database className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
           <div>
-            <span className="text-xl font-bold text-white tracking-tight leading-none block">RicozData</span>
+            <span className="text-lg sm:text-xl font-bold text-white tracking-tight leading-none block">RicozData</span>
             <span className="text-[10px] font-medium text-slate-400 tracking-wider uppercase">Enterprise Data Platform</span>
           </div>
         </div>
 
         {/* Center: Main Headline & Core Capabilities */}
-        <div className="relative z-10 my-auto py-8">
+        <div className="relative z-10 my-auto py-4 sm:py-6 md:py-8">
           <div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-[1.18]">
+            <h1 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white tracking-tight leading-[1.2]">
               Trust Your Data.<br />
               <span className="text-slate-300">Build a Better Tomorrow.</span>
             </h1>
 
-            <p className="mt-4 text-sm sm:text-base text-slate-400 max-w-md leading-relaxed">
+            <p className="mt-2 sm:mt-4 text-xs sm:text-sm lg:text-base text-slate-400 max-w-md leading-relaxed">
               A unified data governance platform to discover, monitor, and control your organization&apos;s data assets with confidence.
             </p>
 
-            {/* Feature Highlights: Data Catalog, Data Quality, Data Lineage, Governance */}
-            <div className="mt-8 space-y-2.5 max-w-md">
+            {/* Mobile compact tagline */}
+            <div className="sm:hidden mt-3 inline-flex items-center gap-2 px-2.5 py-1 rounded bg-slate-900/80 border border-slate-800 text-[11px] text-blue-400 font-medium">
+              <span>Catalog • Quality • Lineage • Governance</span>
+            </div>
+
+            {/* Feature Highlights on sm+ */}
+            <div className="hidden sm:block mt-6 lg:mt-8 space-y-2.5 max-w-md">
               {[
                 { label: 'Data Catalog', desc: 'Unified discovery with multi-warehouse metadata', icon: Database },
                 { label: 'Data Quality', desc: 'Automated anomaly detection & SLA compliance', icon: ShieldCheck },
@@ -137,15 +142,15 @@ export default function Login() {
         </div>
 
         {/* Bottom Tagline */}
-        <div className="relative z-10 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-500 font-medium">
+        <div className="hidden sm:flex relative z-10 pt-4 border-t border-slate-800/80 items-center justify-between text-xs text-slate-500 font-medium">
           <span>Data • Governance • Trust • Growth</span>
           <span className="hidden sm:inline text-[11px] text-slate-500">SOC 2 Type II Certified</span>
         </div>
       </div>
 
       {/* Right: Authentication Form Panel */}
-      <div className="flex-1 flex items-center justify-center p-6 sm:p-12 lg:p-16 bg-white dark:bg-[#0b1322] transition-colors">
-        <div className="w-full max-w-md space-y-6">
+      <div className="flex-1 flex items-center justify-center p-5 sm:p-10 lg:p-16 bg-white dark:bg-[#0b1322] transition-colors">
+        <div className="w-full max-w-md space-y-5 sm:space-y-6">
           {/* Header */}
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
@@ -203,7 +208,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="test@example.com"
-                className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 px-3 py-2.5 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
+                className="w-full h-11 sm:h-10 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
                 required
               />
             </div>
@@ -219,7 +224,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 px-3 py-2.5 pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
+                  className="w-full h-11 sm:h-10 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 px-3 py-2 pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
                   required
                 />
                 <button
@@ -261,7 +266,7 @@ export default function Login() {
               type="submit"
               id="sign-in-btn"
               loading={loading}
-              className="w-full py-2.5 shadow-2xs text-xs sm:text-sm font-semibold"
+              className="w-full h-11 sm:h-10 shadow-2xs text-xs sm:text-sm font-semibold"
             >
               Sign In
             </Button>
@@ -276,7 +281,7 @@ export default function Login() {
           </div>
 
           {/* Social Sign-in Buttons */}
-          <div className="grid grid-cols-2 gap-3 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
             <button
               type="button"
               id="google-signin-btn"

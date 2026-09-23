@@ -75,9 +75,9 @@ export default function Settings() {
         subtitle="Manage personal preferences, workspace governance rules, and integrations."
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-start">
-        {/* Navigation Sidebar */}
-        <div className="bg-white dark:bg-[#0B1628] rounded-lg border border-slate-200 dark:border-slate-800 p-1.5 shadow-2xs space-y-0.5">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 items-start">
+        {/* Navigation Sidebar: Horizontal scrollable strip on mobile, vertical on md+ */}
+        <div className="bg-white dark:bg-[#0B1628] rounded-lg border border-slate-200 dark:border-slate-800 p-1.5 shadow-2xs flex md:flex-col overflow-x-auto no-scrollbar gap-1 md:space-y-0.5 shrink-0">
           {navSections.map(sec => {
             const Icon = sec.icon;
             const isActive = activeSection === sec.id;
@@ -86,13 +86,13 @@ export default function Settings() {
                 key={sec.id}
                 type="button"
                 onClick={() => setActiveSection(sec.id)}
-                className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer text-left ${
+                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer text-left whitespace-nowrap shrink-0 ${
                   isActive
                     ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-semibold border border-blue-200 dark:border-blue-900/50'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:text-white'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}`} />
+                <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}`} />
                 <span>{sec.label}</span>
               </button>
             );
@@ -100,22 +100,22 @@ export default function Settings() {
         </div>
 
         {/* Content Pane */}
-        <div className="md:col-span-3">
+        <div className="md:col-span-3 min-w-0">
           {/* 1. PROFILE */}
           {activeSection === 'profile' && (
-            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Personal Profile</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage your credentials, role, and avatar</p>
               </div>
 
-              <div className="flex items-center gap-3.5 pb-4 border-b border-slate-100 dark:border-slate-800">
-                <div className={`w-12 h-12 rounded-full ${currentUser?.avatarBg || 'bg-blue-600'} text-white font-bold text-lg flex items-center justify-center`}>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 pb-4 border-b border-slate-100 dark:border-slate-800">
+                <div className={`w-12 h-12 rounded-full ${currentUser?.avatarBg || 'bg-blue-600'} text-white font-bold text-lg flex items-center justify-center shrink-0`}>
                   {profileName.trim().charAt(0).toUpperCase()}
                 </div>
-                <div>
-                  <div className="text-sm font-semibold text-slate-900 dark:text-white">{profileName}</div>
-                  <div className="text-xs text-slate-500 dark:text-slate-400">{profileRole} • Central Operations</div>
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-slate-900 dark:text-white truncate">{profileName}</div>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 truncate">{profileRole} • Central Operations</div>
                 </div>
               </div>
 
@@ -138,7 +138,7 @@ export default function Settings() {
                 />
 
                 <div className="pt-2">
-                  <Button type="submit" size="sm">
+                  <Button type="submit" size="sm" className="w-full sm:w-auto">
                     Save Profile Changes
                   </Button>
                 </div>
@@ -148,7 +148,7 @@ export default function Settings() {
 
           {/* 2. WORKSPACE */}
           {activeSection === 'workspace' && (
-            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Workspace Configuration</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage enterprise domain boundaries and governance limits</p>
@@ -189,7 +189,7 @@ export default function Settings() {
                 </div>
 
                 <div className="pt-2">
-                  <Button type="submit" size="sm">
+                  <Button type="submit" size="sm" className="w-full sm:w-auto">
                     Save Workspace Config
                   </Button>
                 </div>
@@ -199,14 +199,14 @@ export default function Settings() {
 
           {/* 3. NOTIFICATIONS */}
           {activeSection === 'notifications' && (
-            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Alert Notifications</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Control how and when RicozData dispatches incident notifications</p>
               </div>
 
               <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs space-y-3">
-                <div className="pt-2 flex items-center justify-between">
+                <div className="pt-2 flex items-center justify-between gap-4">
                   <div>
                     <div className="font-semibold text-slate-900 dark:text-white">Email Incident Digest</div>
                     <div className="text-slate-500 dark:text-slate-400 text-[11px]">Daily executive summary of quality scores and unresolved issues</div>
@@ -215,11 +215,11 @@ export default function Settings() {
                     type="checkbox"
                     checked={emailAlerts}
                     onChange={(e) => setEmailAlerts(e.target.checked)}
-                    className="w-4 h-4 rounded-xs text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20 cursor-pointer"
+                    className="w-4 h-4 rounded-xs text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20 cursor-pointer shrink-0"
                   />
                 </div>
 
-                <div className="pt-3 flex items-center justify-between">
+                <div className="pt-3 flex items-center justify-between gap-4">
                   <div>
                     <div className="font-semibold text-slate-900 dark:text-white">Slack Webhook Routing</div>
                     <div className="text-slate-500 dark:text-slate-400 text-[11px]">Real-time broadcasts for High Severity violations</div>
@@ -228,11 +228,11 @@ export default function Settings() {
                     type="checkbox"
                     checked={slackAlerts}
                     onChange={(e) => setSlackAlerts(e.target.checked)}
-                    className="w-4 h-4 rounded-xs text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20 cursor-pointer"
+                    className="w-4 h-4 rounded-xs text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20 cursor-pointer shrink-0"
                   />
                 </div>
 
-                <div className="pt-3 flex items-center justify-between">
+                <div className="pt-3 flex items-center justify-between gap-4">
                   <div>
                     <div className="font-semibold text-slate-900 dark:text-white">Automated Schema Drift Alerts</div>
                     <div className="text-slate-500 dark:text-slate-400 text-[11px]">Instant alert when warehouse schema changes violate constraints</div>
@@ -241,7 +241,7 @@ export default function Settings() {
                     type="checkbox"
                     checked={driftAlerts}
                     onChange={(e) => setDriftAlerts(e.target.checked)}
-                    className="w-4 h-4 rounded-xs text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20 cursor-pointer"
+                    className="w-4 h-4 rounded-xs text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20 cursor-pointer shrink-0"
                   />
                 </div>
               </div>
@@ -250,7 +250,7 @@ export default function Settings() {
 
           {/* 4. APPEARANCE: Light, Dark, System */}
           {activeSection === 'appearance' && (
-            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Theme & Appearance</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Customize UI contrast, dark mode, and layout density</p>
@@ -338,27 +338,27 @@ export default function Settings() {
 
           {/* 5. SECURITY */}
           {activeSection === 'security' && (
-            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Security & API Keys</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage two-factor authentication, personal access tokens, and sessions</p>
               </div>
 
               <div className="space-y-3 text-xs">
-                <div className="p-3.5 rounded-md bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <div className="p-3.5 rounded-md bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <div className="font-semibold text-slate-900 dark:text-white">Two-Factor Authentication (2FA / WebAuthn)</div>
                     <div className="text-slate-500 dark:text-slate-400 text-[11px]">Enforce hardware security key or TOTP authenticator</div>
                   </div>
-                  <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800/60">
+                  <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1 rounded-md border border-emerald-200 dark:border-emerald-800/60 self-start sm:self-auto shrink-0">
                     Enforced by Policy
                   </span>
                 </div>
 
-                <div className="p-3.5 rounded-md bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-800 flex items-center justify-between">
-                  <div>
+                <div className="p-3.5 rounded-md bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="min-w-0">
                     <div className="font-semibold text-slate-900 dark:text-white">Production API Access Token</div>
-                    <div className="text-slate-500 dark:text-slate-400 font-mono text-[11px] mt-0.5">
+                    <div className="text-slate-500 dark:text-slate-400 font-mono text-[11px] mt-0.5 truncate">
                       rz_live_••••••••••••••••382b
                     </div>
                   </div>
@@ -366,6 +366,7 @@ export default function Settings() {
                     variant="secondary"
                     size="xs"
                     icon={RefreshCw}
+                    className="self-start sm:self-auto shrink-0"
                     onClick={() =>
                       addToast({
                         title: 'API Token Rotated',
@@ -383,7 +384,7 @@ export default function Settings() {
 
           {/* 6. INTEGRATIONS */}
           {activeSection === 'integrations' && (
-            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Connected Platforms & Connectors</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage bidirectional syncs across cloud data warehouses and catalogs</p>
@@ -400,13 +401,13 @@ export default function Settings() {
                 ].map((integ, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-[#111C2E] flex items-center justify-between text-xs"
+                    className="p-3 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-[#111C2E] flex items-center justify-between text-xs gap-2"
                   >
-                    <div>
-                      <div className="font-semibold text-slate-900 dark:text-white">{integ.name}</div>
-                      <div className="text-[11px] text-slate-400 mt-0.5">{integ.type} • Synced {integ.sync}</div>
+                    <div className="min-w-0">
+                      <div className="font-semibold text-slate-900 dark:text-white truncate">{integ.name}</div>
+                      <div className="text-[11px] text-slate-400 mt-0.5 truncate">{integ.type} • Synced {integ.sync}</div>
                     </div>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800/60">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800/60 shrink-0">
                       <CheckCircle2 className="w-3 h-3" />
                       {integ.status}
                     </span>

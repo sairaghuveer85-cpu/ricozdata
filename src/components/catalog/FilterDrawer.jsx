@@ -31,14 +31,14 @@ export default function FilterDrawer({
       title="Advanced Catalog Filters"
       subtitle="Refine datasets across domains, warehouses, sensitivity, and certifications"
       footer={
-        <>
-          <Button variant="secondary" size="sm" onClick={onReset}>
+        <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:justify-end">
+          <Button variant="secondary" size="sm" onClick={onReset} className="w-full sm:w-auto">
             Reset All
           </Button>
-          <Button size="sm" onClick={onClose}>
+          <Button size="sm" onClick={onClose} className="w-full sm:w-auto">
             Apply Filters
           </Button>
-        </>
+        </div>
       }
     >
       <div className="space-y-6 text-xs">

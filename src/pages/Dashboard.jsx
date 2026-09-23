@@ -50,9 +50,9 @@ export default function Dashboard() {
   return (
     <div className="space-y-6 pb-8">
       {/* Top Header matching Section A */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-[26px] sm:text-[28px] font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
+          <h1 className="text-xl sm:text-[26px] lg:text-[28px] font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
             Good morning, {currentUser?.name?.split(' ')[0] || 'Raghuveer'}
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
@@ -61,7 +61,7 @@ export default function Dashboard() {
         </div>
 
         {/* Date / Time Range Selector */}
-        <div className="flex items-center gap-2 self-start sm:self-auto">
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0B1628]">
             <Calendar className="w-3.5 h-3.5 text-slate-400" />
             <span>Sep 18, 2026</span>
@@ -104,7 +104,7 @@ export default function Dashboard() {
 
       {/* Metric Summary: Compact, unified enterprise metric row (Section B) */}
       <div
-        className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0B1628] grid grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 dark:divide-slate-800"
+        className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0B1628] grid grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 dark:divide-slate-800 overflow-hidden"
         style={{ borderRadius: '8px' }}
       >
         {metrics.map((metric) => (
