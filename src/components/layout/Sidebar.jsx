@@ -94,7 +94,7 @@ export default function Sidebar() {
       }`}
     >
       {/* Top Header: Logo */}
-      <div className="h-16 px-4 border-b border-[#172337] flex items-center justify-between">
+      <div className="h-16 px-4 border-b border-[#172337] flex items-center justify-between shrink-0">
         {!sidebarCollapsed ? (
           <div className="flex items-center justify-between w-full">
             <NavLink to="/dashboard" className="flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md">
@@ -181,7 +181,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom User Profile */}
-      <div className="p-3 border-t border-[#172337]">
+      <div className="p-3 border-t border-[#172337] shrink-0">
         <div className="flex items-center justify-between px-1 py-1">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className={`w-7 h-7 rounded-full ${currentUser?.avatarBg || 'bg-blue-600'} text-white font-semibold text-xs flex items-center justify-center shrink-0`}>
@@ -218,7 +218,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar (Persistent) */}
-      <aside aria-label="Desktop Sidebar" className="hidden lg:block shrink-0 h-screen sticky top-0 z-30">
+      <aside aria-label="Desktop Sidebar" className="hidden lg:flex lg:flex-col h-full shrink-0 z-30">
         {desktopSidebarContent}
       </aside>
 

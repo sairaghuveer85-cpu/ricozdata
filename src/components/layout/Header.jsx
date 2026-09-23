@@ -90,7 +90,7 @@ export default function Header() {
 
   return (
     <header
-      className="h-16 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-20 transition-colors"
+      className="h-16 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20 transition-colors"
       style={{ backgroundColor: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)', color: 'var(--text-primary)' }}
     >
       {/* Left: Mobile Toggle & Breadcrumbs / Page Context */}
