@@ -2,6 +2,7 @@ import React from 'react';
 import Drawer from '../common/Drawer';
 import Button from '../common/Button';
 import Badge from '../common/Badge';
+import { useNavigate } from 'react-router-dom';
 import {
   Database,
   Terminal,
@@ -16,6 +17,7 @@ import {
 } from 'lucide-react';
 
 export default function NodeDrawer({ node, isOpen, onClose, onViewSql }) {
+  const navigate = useNavigate();
   if (!node) return null;
   const data = node.data;
 
@@ -40,6 +42,11 @@ export default function NodeDrawer({ node, isOpen, onClose, onViewSql }) {
       subtitle={`${data.category} • ${data.typeLabel}`}
       footer={
         <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:justify-end">
+          {data.datasetId && (
+            <Button size="sm" onClick={() => { onClose(); navigate(`/catalog/${data.datasetId}`); }} className="w-full sm:w-auto">
+              Open Dataset
+            </Button>
+          )}
           <Button
             variant="secondary"
             size="sm"

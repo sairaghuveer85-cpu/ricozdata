@@ -21,25 +21,34 @@ export default function DataQuality() {
   return (
     <div className="space-y-6">
       {/* Breadcrumbs */}
-      <nav className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-        <NavLink to="/catalog" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+      <nav 
+        className="flex items-center gap-1.5 text-xs"
+        style={{ color: 'var(--color-text-muted)' }}
+      >
+        <NavLink to="/catalog" className="hover:underline transition-colors" style={{ color: 'var(--color-text-secondary)' }}>
           Data Catalog
         </NavLink>
-        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <NavLink to={`/catalog/${dataset.id}`} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+        <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--color-text-muted)' }} />
+        <NavLink to={`/catalog/${dataset.id}`} className="hover:underline transition-colors" style={{ color: 'var(--color-text-secondary)' }}>
           {dataset.name}
         </NavLink>
-        <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-        <span className="text-slate-800 dark:text-slate-200 font-medium">Data Quality</span>
+        <ChevronRight className="w-3.5 h-3.5" style={{ color: 'var(--color-text-muted)' }} />
+        <span className="font-medium" style={{ color: 'var(--color-text-primary)' }}>Data Quality</span>
       </nav>
 
       {/* Header Row with Timeframe Dropdown */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+          <h1 
+            className="text-xl sm:text-2xl font-bold tracking-tight"
+            style={{ color: 'var(--color-text-primary)' }}
+          >
             Data Quality
           </h1>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          <p 
+            className="mt-1 text-xs sm:text-sm"
+            style={{ color: 'var(--color-text-secondary)' }}
+          >
             Monitor and improve the quality of your data.
           </p>
         </div>
@@ -49,12 +58,17 @@ export default function DataQuality() {
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white dark:bg-[#0B1628] border border-slate-200 dark:border-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-2xs hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer focus:outline-none"
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              color: 'var(--color-text-primary)'
+            }}
           >
-            <option value="Last 7 days" className="bg-white dark:bg-[#0B1628] text-slate-900 dark:text-white">Last 7 days</option>
-            <option value="Last 30 days" className="bg-white dark:bg-[#0B1628] text-slate-900 dark:text-white">Last 30 days</option>
-            <option value="Last 90 days" className="bg-white dark:bg-[#0B1628] text-slate-900 dark:text-white">Last 90 days</option>
-            <option value="Year to date" className="bg-white dark:bg-[#0B1628] text-slate-900 dark:text-white">Year to date</option>
+            <option value="Last 7 days">Last 7 days</option>
+            <option value="Last 30 days">Last 30 days</option>
+            <option value="Last 90 days">Last 90 days</option>
+            <option value="Year to date">Year to date</option>
           </select>
         </div>
       </div>

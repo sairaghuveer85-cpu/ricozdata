@@ -4,9 +4,11 @@ import Button from '../common/Button';
 import Badge from '../common/Badge';
 import { Shield, Copy, Edit3, Power, CheckCircle, Clock, Database, User } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function PolicyDrawer({ policy, isOpen, onClose }) {
   const { togglePolicyStatus, addPolicy, addToast, datasets } = useApp();
+  const navigate = useNavigate();
 
   if (!policy) return null;
 
@@ -134,7 +136,7 @@ export default function PolicyDrawer({ policy, isOpen, onClose }) {
             {(policy.affectedDatasets || (policy.datasetIds ? policy.datasetIds.map(id => datasets.find(d => d.id === id)?.name || id) : ['Customer Database'])).map((ds) => {
               const matched = datasets.find(d => d.name === ds || d.id === ds);
               return (
-                <div key={ds} className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40">
+                <button key={ds} type="button" onClick={() => matched && (onClose(), navigate(`/catalog/${matched.id}`))} className="w-full flex items-center justify-between p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/40 text-left hover:border-blue-300 dark:hover:border-blue-700 transition-colors cursor-pointer">
                   <div className="flex items-center gap-2 min-w-0">
                     <Database className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
                     <span className="font-semibold text-slate-800 dark:text-slate-200 text-xs truncate">{matched?.name || ds}</span>
@@ -144,7 +146,7 @@ export default function PolicyDrawer({ policy, isOpen, onClose }) {
                       {matched.sensitivity}
                     </span>
                   )}
-                </div>
+                </button>
               );
             })}
           </div>

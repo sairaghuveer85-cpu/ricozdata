@@ -13,35 +13,63 @@
 :root,
 :root[data-theme="light"],
 html[data-theme="light"] {
-  --bg-primary: #F6F8FB;
-  --bg-secondary: #F1F4F8;
-  --bg-tertiary: #E8EDF5;
+  /* Standard RicozData Semantic Theme Tokens (Light) */
+  --color-background: #F6F8FB;
+  --color-surface: #FFFFFF;
+  --color-surface-secondary: #F1F4F8;
+  --color-surface-tertiary: #E8EDF5;
+  --color-text-primary: #111827;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94A3B8;
+  --color-border: #E2E8F0;
+  --color-border-strong: #CBD5E1;
+  --color-brand: #2563EB;
+  --color-brand-hover: #1D4ED8;
+  --color-brand-soft: #EFF6FF;
+  --color-success: #16A34A;
+  --color-warning: #D97706;
+  --color-danger: #DC2626;
 
-  --surface: #FFFFFF;
+  /* Aliases mapped to semantic tokens */
+  --bg-primary: var(--color-background);
+  --bg-secondary: var(--color-surface-secondary);
+  --bg-tertiary: var(--color-surface-tertiary);
+
+  --surface: var(--color-surface);
   --surface-hover: #F8FAFC;
   --surface-active: #EFF6FF;
 
-  --text-primary: #111827;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
 
-  --border: #E2E8F0;
-  --border-strong: #CBD5E1;
+  --border: var(--color-border);
+  --border-strong: var(--color-border-strong);
 
   --input-bg: #FFFFFF;
 
-  --brand: #2563EB;
-  --brand-hover: #1D4ED8;
-  --brand-soft: #EFF6FF;
+  --brand: var(--color-brand);
+  --brand-hover: var(--color-brand-hover);
+  --brand-soft: var(--color-brand-soft);
 
-  --success: #16A34A;
-  --warning: #D97706;
-  --danger: #DC2626;
+  --success: var(--color-success);
+  --warning: var(--color-warning);
+  --danger: var(--color-danger);
 
-  --sidebar-bg: #07111F;
-  --sidebar-text: #94A3B8;
-  --sidebar-text-active: #FFFFFF;
-  --sidebar-hover: #111E30;
+  /* Sidebar tokens: map the navigation shell to the active global theme. */
+  --sidebar-bg: var(--color-surface);
+  --sidebar-border: var(--color-border);
+  --sidebar-text-primary: var(--color-text-primary);
+  --sidebar-text: var(--color-text-secondary);
+  --sidebar-text-muted: var(--color-text-muted);
+  --sidebar-text-hover: var(--color-text-primary);
+  --sidebar-text-active: var(--color-brand);
+  --sidebar-hover: #F8FAFC;
+  --sidebar-hover-subtle: #F8FAFC;
+  --sidebar-mobile-hover: #F8FAFC;
+  --sidebar-active: var(--color-brand-soft);
+  --sidebar-active-strong: var(--color-brand-soft);
+  --sidebar-active-border: var(--color-brand);
 
   --overlay: rgba(17, 24, 39, 0.6);
 
@@ -50,45 +78,74 @@ html[data-theme="light"] {
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
 
   /* Legacy compatibility aliases */
-  --bg-canvas: var(--bg-primary);
-  --bg-surface: var(--surface);
-  --bg-surface-subtle: var(--bg-secondary);
+  --bg-canvas: var(--color-background);
+  --bg-surface: var(--color-surface);
+  --bg-surface-subtle: var(--color-surface-secondary);
   --bg-surface-hover: var(--surface-hover);
-  --border-subtle: var(--border);
+  --border-subtle: var(--color-border);
 }
 
 :root[data-theme="dark"],
 html[data-theme="dark"],
+[data-theme="dark"],
 .dark {
-  --bg-primary: #07111F;
-  --bg-secondary: #111E30;
-  --bg-tertiary: #17273F;
+  /* Standard RicozData Semantic Theme Tokens (Dark) */
+  --color-background: #07111F;
+  --color-surface: #0D1828;
+  --color-surface-secondary: #111E30;
+  --color-surface-tertiary: #17273F;
+  --color-text-primary: #F8FAFC;
+  --color-text-secondary: #CBD5E1;
+  --color-text-muted: #8290A3;
+  --color-border: #1D3047;
+  --color-border-strong: #2A4363;
+  --color-brand: #60A5FA;
+  --color-brand-hover: #93C5FD;
+  --color-brand-soft: #142842;
+  --color-success: #4ADE80;
+  --color-warning: #FBBF24;
+  --color-danger: #F87171;
 
-  --surface: #0D1828;
+  /* Aliases mapped to semantic tokens */
+  --bg-primary: var(--color-background);
+  --bg-secondary: var(--color-surface-secondary);
+  --bg-tertiary: var(--color-surface-tertiary);
+
+  --surface: var(--color-surface);
   --surface-hover: #132238;
   --surface-active: #1A2F4C;
 
-  --text-primary: #F8FAFC;
-  --text-secondary: #CBD5E1;
-  --text-muted: #8290A3;
+  --text-primary: var(--color-text-primary);
+  --text-secondary: var(--color-text-secondary);
+  --text-muted: var(--color-text-muted);
 
-  --border: #1D3047;
-  --border-strong: #2A4363;
+  --border: var(--color-border);
+  --border-strong: var(--color-border-strong);
 
   --input-bg: #0B1524;
 
-  --brand: #60A5FA;
-  --brand-hover: #93C5FD;
-  --brand-soft: #142842;
+  --brand: var(--color-brand);
+  --brand-hover: var(--color-brand-hover);
+  --brand-soft: var(--color-brand-soft);
 
-  --success: #4ADE80;
-  --warning: #FBBF24;
-  --danger: #F87171;
+  --success: var(--color-success);
+  --warning: var(--color-warning);
+  --danger: var(--color-danger);
 
+  /* Preserve the established dark sidebar palette. */
   --sidebar-bg: #07111F;
-  --sidebar-text: #8290A3;
-  --sidebar-text-active: #FFFFFF;
+  --sidebar-border: #172337;
+  --sidebar-text-primary: #FFFFFF;
+  --sidebar-text: #94A3B8;
+  --sidebar-text-muted: #64748B;
+  --sidebar-text-hover: #E2E8F0;
+  --sidebar-text-active: #60A5FA;
   --sidebar-hover: #111E30;
+  --sidebar-hover-subtle: rgba(17, 30, 48, 0.6);
+  --sidebar-mobile-hover: rgba(17, 28, 46, 0.6);
+  --sidebar-active: rgba(59, 130, 246, 0.1);
+  --sidebar-active-strong: rgba(59, 130, 246, 0.2);
+  --sidebar-active-border: #3B82F6;
 
   --overlay: rgba(0, 0, 0, 0.7);
 
@@ -97,9 +154,9 @@ html[data-theme="dark"],
   --shadow-lg: 0 12px 24px rgba(0, 0, 0, 0.6);
 
   /* Legacy compatibility aliases */
-  --bg-canvas: var(--bg-primary);
-  --bg-surface: var(--surface);
-  --bg-surface-subtle: var(--bg-secondary);
+  --bg-canvas: var(--color-background);
+  --bg-surface: var(--color-surface);
+  --bg-surface-subtle: var(--color-surface-secondary);
   --bg-surface-hover: var(--surface-hover);
-  --border-subtle: var(--border);
+  --border-subtle: var(--color-border);
 }

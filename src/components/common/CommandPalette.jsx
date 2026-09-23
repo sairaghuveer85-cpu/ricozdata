@@ -136,8 +136,8 @@ export default function CommandPalette() {
   const navPages = [
     { id: 'p-dashboard', title: 'Dashboard', path: '/dashboard', category: 'Navigation', icon: LayoutDashboard },
     { id: 'p-catalog', title: 'Data Catalog', path: '/catalog', category: 'Navigation', icon: Database },
-    { id: 'p-quality', title: 'Data Quality', path: '/quality/customer-database', category: 'Navigation', icon: ShieldCheck },
-    { id: 'p-lineage', title: 'Data Lineage', path: '/lineage/customer-database', category: 'Navigation', icon: GitFork },
+    { id: 'p-quality', title: 'Data Quality', path: '/quality/customer-master', category: 'Navigation', icon: ShieldCheck },
+    { id: 'p-lineage', title: 'Data Lineage', path: '/lineage/customer-master', category: 'Navigation', icon: GitFork },
     { id: 'p-glossary', title: 'Business Glossary', path: '/glossary', category: 'Navigation', icon: BookOpen },
     { id: 'p-governance', title: 'Governance & Policies', path: '/governance', category: 'Navigation', icon: Shield },
     { id: 'p-users', title: 'User Management', path: '/users', category: 'Navigation', icon: Users },

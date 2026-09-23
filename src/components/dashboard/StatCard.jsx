@@ -37,13 +37,22 @@ export default function StatCard({
   const TrendIcon = trend.icon;
 
   return (
-    <div className="p-3.5 sm:p-4 flex flex-col justify-between min-w-0 transition-colors">
-      <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate select-none">
+    <div
+      className="p-3.5 sm:p-4 flex flex-col justify-between min-w-0 transition-colors"
+      style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-primary)' }}
+    >
+      <div
+        className="text-[10px] font-bold uppercase tracking-wider truncate select-none"
+        style={{ color: 'var(--color-text-muted)' }}
+      >
         {title}
       </div>
 
       <div className="my-1.5 flex items-baseline gap-2">
-        <span className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white truncate tabular-nums">
+        <span
+          className="text-xl sm:text-2xl font-bold tracking-tight truncate tabular-nums"
+          style={{ color: 'var(--color-text-primary)' }}
+        >
           {value}
         </span>
       </div>
@@ -55,7 +64,7 @@ export default function StatCard({
           <TrendIcon className="w-2.5 h-2.5 shrink-0" aria-hidden="true" />
           <span>{comparisonText.split(' ')[0]}</span>
         </span>
-        <span className="text-slate-400 dark:text-slate-500 truncate">
+        <span className="truncate" style={{ color: 'var(--color-text-muted)' }}>
           {comparisonText.split(' ').slice(1).join(' ')}
         </span>
       </div>

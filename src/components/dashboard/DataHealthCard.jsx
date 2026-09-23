@@ -9,43 +9,77 @@ export default function DataHealthCard() {
   return (
     <div className="flex flex-col justify-between h-full">
       <div>
-        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 select-none">
+        <div 
+          className="text-[10px] font-bold uppercase tracking-wider select-none"
+          style={{ color: 'var(--color-text-muted)' }}
+        >
           Reliability Index
         </div>
 
         <div className="mt-1.5 flex items-baseline gap-2">
-          <span className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white tabular-nums">
+          <span 
+            className="text-2xl sm:text-3xl font-bold tracking-tight tabular-nums"
+            style={{ color: 'var(--color-text-primary)' }}
+          >
             {score}
           </span>
-          <span className="text-xs font-medium text-slate-400 dark:text-slate-500">
+          <span 
+            className="text-xs font-medium"
+            style={{ color: 'var(--color-text-muted)' }}
+          >
             / {maxScore} Target
           </span>
         </div>
 
-        <div className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 mt-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true" />
+        <div 
+          className="inline-flex items-center gap-1 text-[11px] font-semibold mt-1"
+          style={{ color: 'var(--color-success)' }}
+        >
+          <span 
+            className="w-1.5 h-1.5 rounded-full" 
+            style={{ backgroundColor: 'var(--color-success)' }}
+            aria-hidden="true" 
+          />
           <span>{status} (SLA Met)</span>
         </div>
       </div>
 
-      <div className="mt-5 pt-3.5 border-t border-slate-100 dark:border-[#1D3047] space-y-2.5">
-        <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
+      <div 
+        className="mt-5 pt-3.5 border-t space-y-2.5"
+        style={{ borderColor: 'var(--color-border)' }}
+      >
+        <div 
+          className="text-[10px] font-bold uppercase tracking-wider mb-2"
+          style={{ color: 'var(--color-text-muted)' }}
+        >
           Quality Dimensions
         </div>
         {dimensions.map((dim) => (
           <div key={dim.name}>
             <div className="flex items-center justify-between text-xs mb-1">
-              <span className="text-slate-600 dark:text-slate-300 font-medium">
+              <span 
+                className="font-medium"
+                style={{ color: 'var(--color-text-secondary)' }}
+              >
                 {dim.name}
               </span>
-              <span className="text-slate-900 dark:text-white font-semibold tabular-nums text-xs">
+              <span 
+                className="font-semibold tabular-nums text-xs"
+                style={{ color: 'var(--color-text-primary)' }}
+              >
                 {dim.score}%
               </span>
             </div>
-            <div className="w-full h-1 bg-slate-100 dark:bg-slate-800 rounded-xs overflow-hidden">
+            <div 
+              className="w-full h-1 rounded-xs overflow-hidden"
+              style={{ backgroundColor: 'var(--color-surface-tertiary)' }}
+            >
               <div
-                className="h-full bg-emerald-600 dark:bg-emerald-500 rounded-xs transition-all duration-300"
-                style={{ width: `${dim.score}%` }}
+                className="h-full rounded-xs transition-all duration-300"
+                style={{ 
+                  width: `${dim.score}%`,
+                  backgroundColor: 'var(--color-success)' 
+                }}
               />
             </div>
           </div>

@@ -54,8 +54,8 @@ export default function Sidebar() {
     {
       group: 'Data Health',
       items: [
-        { name: 'Data Quality', path: '/quality/customer-database', icon: ShieldCheck, matchPrefix: '/quality' },
-        { name: 'Data Lineage', path: '/lineage/customer-database', icon: GitFork, matchPrefix: '/lineage' }
+        { name: 'Data Quality', path: '/quality/customer-master', icon: ShieldCheck, matchPrefix: '/quality' },
+        { name: 'Data Lineage', path: '/lineage/customer-master', icon: GitFork, matchPrefix: '/lineage' }
       ]
     },
     {
@@ -89,26 +89,26 @@ export default function Sidebar() {
 
   const desktopSidebarContent = (
     <div
-      className={`flex flex-col h-full bg-[#07111F] text-slate-300 select-none border-r border-[#172337] transition-all duration-150 ${
+      className={`flex flex-col h-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] select-none border-r border-[var(--sidebar-border)] transition-all duration-150 ${
         sidebarCollapsed ? 'w-16' : 'w-60'
       }`}
     >
       {/* Top Header: Logo */}
-      <div className="h-16 px-4 border-b border-[#172337] flex items-center justify-between shrink-0">
+      <div className="h-16 px-4 border-b border-[var(--sidebar-border)] flex items-center justify-between shrink-0">
         {!sidebarCollapsed ? (
           <div className="flex items-center justify-between w-full">
             <NavLink to="/dashboard" className="flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md">
               <div className="w-7 h-7 rounded-md bg-blue-600 flex items-center justify-center text-white shrink-0" aria-hidden="true">
                 <Database className="w-4 h-4 text-white" />
               </div>
-              <span className="text-sm font-bold text-white tracking-tight leading-none">RicozData</span>
+              <span className="text-sm font-bold text-[var(--sidebar-text-primary)] tracking-tight leading-none">RicozData</span>
             </NavLink>
 
             {/* Collapse toggle button */}
             <button
               type="button"
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-[#111C2E] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="p-1 rounded-md text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-hover)] hover:bg-[var(--sidebar-hover)] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               aria-label="Collapse sidebar navigation"
               aria-expanded="true"
               title="Collapse sidebar"
@@ -137,11 +137,11 @@ export default function Sidebar() {
         {navGroups.map((grp, gIdx) => (
           <div key={grp.group} className="space-y-0.5">
             {!sidebarCollapsed ? (
-              <div className="text-[10px] font-bold text-slate-500 tracking-wider uppercase px-2.5 pt-1 pb-1 select-none">
+              <div className="text-[10px] font-bold text-[var(--sidebar-text-muted)] tracking-wider uppercase px-2.5 pt-1 pb-1 select-none">
                 {grp.group}
               </div>
             ) : gIdx > 0 ? (
-              <div className="border-t border-[#172337] my-2" aria-hidden="true" />
+              <div className="border-t border-[var(--sidebar-border)] my-2" aria-hidden="true" />
             ) : null}
 
             {grp.items.map((item) => {
@@ -158,17 +158,17 @@ export default function Sidebar() {
                     ${
                       active
                         ? sidebarCollapsed
-                          ? 'bg-blue-500/20 text-blue-400 font-semibold justify-center px-0'
-                          : 'bg-blue-500/10 text-blue-400 font-semibold border-l-2 border-blue-500 pl-2.5 pr-2'
+                          ? 'bg-[var(--sidebar-active-strong)] text-[var(--sidebar-text-active)] font-semibold justify-center px-0'
+                          : 'bg-[var(--sidebar-active)] text-[var(--sidebar-text-active)] font-semibold border-l-2 border-[var(--sidebar-active-border)] pl-2.5 pr-2'
                         : sidebarCollapsed
-                        ? 'text-slate-400 hover:text-slate-200 hover:bg-[#111E30] justify-center px-0'
-                        : 'text-slate-400 hover:text-slate-200 hover:bg-[#111E30]/60 border-l-2 border-transparent pl-2.5 pr-2'
+                        ? 'text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-hover)] hover:bg-[var(--sidebar-hover)] justify-center px-0'
+                        : 'text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-hover)] hover:bg-[var(--sidebar-hover-subtle)] border-l-2 border-transparent pl-2.5 pr-2'
                     }
                   `}
                 >
                   <Icon
                     className={`w-4 h-4 shrink-0 transition-colors ${
-                      active ? 'text-blue-400' : 'text-slate-400 group-hover:text-slate-200'
+                      active ? 'text-[var(--sidebar-text-active)]' : 'text-[var(--sidebar-text)] group-hover:text-[var(--sidebar-text-hover)]'
                     }`}
                     aria-hidden="true"
                   />
@@ -181,7 +181,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Bottom User Profile */}
-      <div className="p-3 border-t border-[#172337] shrink-0">
+      <div className="p-3 border-t border-[var(--sidebar-border)] shrink-0">
         <div className="flex items-center justify-between px-1 py-1">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className={`w-7 h-7 rounded-full ${currentUser?.avatarBg || 'bg-blue-600'} text-white font-semibold text-xs flex items-center justify-center shrink-0`}>
@@ -189,10 +189,10 @@ export default function Sidebar() {
             </div>
             {!sidebarCollapsed && (
               <div className="min-w-0">
-                <div className="text-xs font-semibold text-white truncate leading-tight">
+                <div className="text-xs font-semibold text-[var(--sidebar-text-primary)] truncate leading-tight">
                   {currentUser?.name || 'Raghuveer'}
                 </div>
-                <div className="text-[11px] text-slate-400 truncate leading-tight">
+                <div className="text-[11px] text-[var(--sidebar-text)] truncate leading-tight">
                   {currentUser?.role || 'Data Analyst'}
                 </div>
               </div>
@@ -203,7 +203,7 @@ export default function Sidebar() {
             <button
               type="button"
               onClick={handleLogout}
-              className="p-1.5 rounded-md text-slate-400 hover:text-rose-400 hover:bg-[#111C2E] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              className="p-1.5 rounded-md text-[var(--sidebar-text)] hover:text-rose-400 hover:bg-[var(--sidebar-hover)] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               title="Sign out"
               aria-label="Sign out"
             >
@@ -246,11 +246,11 @@ export default function Sidebar() {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className="relative flex-1 flex flex-col max-w-[280px] sm:max-w-xs w-full bg-[#07111F] text-slate-300 z-10 border-r border-[#172337] shadow-2xl h-full select-none"
+              className="relative flex-1 flex flex-col max-w-[280px] sm:max-w-xs w-full bg-[var(--sidebar-bg)] text-[var(--sidebar-text)] z-10 border-r border-[var(--sidebar-border)] shadow-2xl h-full select-none"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Top Header: Logo + Close Button */}
-              <div className="h-16 px-4 border-b border-[#172337] flex items-center justify-between shrink-0">
+              <div className="h-16 px-4 border-b border-[var(--sidebar-border)] flex items-center justify-between shrink-0">
                 <NavLink
                   to="/dashboard"
                   onClick={() => setSidebarOpen(false)}
@@ -259,13 +259,13 @@ export default function Sidebar() {
                   <div className="w-7 h-7 rounded-md bg-blue-600 flex items-center justify-center text-white shrink-0" aria-hidden="true">
                     <Database className="w-4 h-4 text-white" />
                   </div>
-                  <span className="text-sm font-bold text-white tracking-tight leading-none">RicozData</span>
+                  <span className="text-sm font-bold text-[var(--sidebar-text-primary)] tracking-tight leading-none">RicozData</span>
                 </NavLink>
 
                 <button
                   type="button"
                   onClick={() => setSidebarOpen(false)}
-                  className="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-[#111C2E] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                  className="p-1.5 rounded-md text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-hover)] hover:bg-[var(--sidebar-hover)] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   aria-label="Close navigation"
                 >
                   <X className="w-4 h-4" aria-hidden="true" />
@@ -276,7 +276,7 @@ export default function Sidebar() {
               <nav aria-label="Mobile Navigation" className="flex-1 py-3 px-3 space-y-4 overflow-y-auto">
                 {navGroups.map((grp) => (
                   <div key={grp.group} className="space-y-0.5">
-                    <div className="text-[10px] font-bold text-slate-500 tracking-wider uppercase px-2.5 pt-1 pb-1 select-none">
+                    <div className="text-[10px] font-bold text-[var(--sidebar-text-muted)] tracking-wider uppercase px-2.5 pt-1 pb-1 select-none">
                       {grp.group}
                     </div>
                     {grp.items.map((item) => {
@@ -292,14 +292,14 @@ export default function Sidebar() {
                             group flex items-center gap-3 py-2 rounded-md text-xs font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
                             ${
                               active
-                                ? 'bg-blue-500/10 text-blue-400 font-semibold border-l-2 border-blue-500 pl-3 pr-2'
-                                : 'text-slate-400 hover:text-slate-200 hover:bg-[#111C2E]/60 border-l-2 border-transparent pl-3 pr-2'
+                                ? 'bg-[var(--sidebar-active)] text-[var(--sidebar-text-active)] font-semibold border-l-2 border-[var(--sidebar-active-border)] pl-3 pr-2'
+                                : 'text-[var(--sidebar-text)] hover:text-[var(--sidebar-text-hover)] hover:bg-[var(--sidebar-mobile-hover)] border-l-2 border-transparent pl-3 pr-2'
                             }
                           `}
                         >
                           <Icon
                             className={`w-4 h-4 shrink-0 transition-colors ${
-                              active ? 'text-blue-400' : 'text-slate-400 group-hover:text-slate-200'
+                              active ? 'text-[var(--sidebar-text-active)]' : 'text-[var(--sidebar-text)] group-hover:text-[var(--sidebar-text-hover)]'
                             }`}
                             aria-hidden="true"
                           />
@@ -312,23 +312,23 @@ export default function Sidebar() {
               </nav>
 
               {/* Theme Control in Mobile Navigation */}
-              <div className="px-4 py-3 border-t border-[#172337] flex items-center justify-between shrink-0">
-                <span className="text-xs text-slate-400 font-medium">Appearance</span>
+              <div className="px-4 py-3 border-t border-[var(--sidebar-border)] flex items-center justify-between shrink-0">
+                <span className="text-xs text-[var(--sidebar-text)] font-medium">Appearance</span>
                 <ThemeSelector compact />
               </div>
 
               {/* Bottom User Profile with Logout */}
-              <div className="p-3 border-t border-[#172337] shrink-0">
+              <div className="p-3 border-t border-[var(--sidebar-border)] shrink-0">
                 <div className="flex items-center justify-between px-1 py-1">
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className={`w-7 h-7 rounded-full ${currentUser?.avatarBg || 'bg-blue-600'} text-white font-semibold text-xs flex items-center justify-center shrink-0`}>
                       {currentUser?.avatar || 'R'}
                     </div>
                     <div className="min-w-0">
-                      <div className="text-xs font-semibold text-white truncate leading-tight">
+                      <div className="text-xs font-semibold text-[var(--sidebar-text-primary)] truncate leading-tight">
                         {currentUser?.name || 'Raghuveer'}
                       </div>
-                      <div className="text-[11px] text-slate-400 truncate leading-tight">
+                      <div className="text-[11px] text-[var(--sidebar-text)] truncate leading-tight">
                         {currentUser?.role || 'Data Analyst'}
                       </div>
                     </div>
@@ -337,7 +337,7 @@ export default function Sidebar() {
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="p-1.5 rounded-md text-slate-400 hover:text-rose-400 hover:bg-[#111C2E] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                    className="p-1.5 rounded-md text-[var(--sidebar-text)] hover:text-rose-400 hover:bg-[var(--sidebar-hover)] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     title="Sign out"
                     aria-label="Sign out"
                   >

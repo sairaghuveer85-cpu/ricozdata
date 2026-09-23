@@ -4,9 +4,11 @@ import Button from '../common/Button';
 import Badge from '../common/Badge';
 import { BookOpen, Trash2, Database, User, Tag } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function GlossaryDrawer({ term, isOpen, onClose }) {
   const { deleteGlossaryTerm, datasets } = useApp();
+  const navigate = useNavigate();
 
   if (!term) return null;
 
@@ -97,7 +99,7 @@ export default function GlossaryDrawer({ term, isOpen, onClose }) {
             {(term.relatedDatasets || (term.relatedDatasetIds ? term.relatedDatasetIds.map(id => datasets.find(d => d.id === id)?.name || id) : ['Customer Database'])).map(ds => {
               const matched = datasets.find(d => d.name === ds || d.id === ds);
               return (
-                <div key={ds} className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+                <button key={ds} type="button" onClick={() => matched && (onClose(), navigate(`/catalog/${matched.id}`))} className="w-full flex items-center justify-between p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-left hover:border-blue-300 dark:hover:border-blue-700 transition-colors cursor-pointer">
                   <div className="flex items-center gap-2 min-w-0">
                     <Database className="w-4 h-4 text-blue-600 shrink-0" />
                     <span className="font-medium text-slate-800 dark:text-slate-200 truncate">{matched?.name || ds}</span>
@@ -107,7 +109,7 @@ export default function GlossaryDrawer({ term, isOpen, onClose }) {
                       {matched.quality}% Quality
                     </span>
                   )}
-                </div>
+                </button>
               );
             })}
           </div>

@@ -60,7 +60,13 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row w-full bg-white dark:bg-[#07111F] transition-colors">
+    <div 
+      className="min-h-screen flex flex-col md:flex-row w-full transition-colors"
+      style={{
+        backgroundColor: 'var(--color-background)',
+        color: 'var(--color-text-primary)'
+      }}
+    >
       {/* Left: Dark Navy Visual Area with Enterprise Brand Hero */}
       <div className="relative w-full md:w-[52%] lg:w-[55%] bg-[#08101e] p-6 sm:p-10 lg:p-16 flex flex-col justify-between text-white overflow-hidden select-none min-h-0 md:min-h-screen border-b md:border-b-0 md:border-r border-slate-800">
         {/* Subtle Architectural SVG Data Grid Background */}
@@ -149,22 +155,40 @@ export default function Login() {
       </div>
 
       {/* Right: Authentication Form Panel */}
-      <div className="flex-1 flex items-center justify-center p-5 sm:p-10 lg:p-16 bg-white dark:bg-[#07111F] transition-colors">
+      <div 
+        className="flex-1 flex items-center justify-center p-5 sm:p-10 lg:p-16 transition-colors"
+        style={{
+          backgroundColor: 'var(--color-background)',
+          color: 'var(--color-text-primary)'
+        }}
+      >
         <div className="w-full max-w-md space-y-5 sm:space-y-6">
           {/* Header */}
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
+            <h2 
+              className="text-2xl sm:text-3xl font-bold tracking-tight"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
               Welcome back
             </h2>
-            <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+            <p 
+              className="mt-1 text-xs sm:text-sm"
+              style={{ color: 'var(--color-text-secondary)' }}
+            >
               Sign in to your account
             </p>
           </div>
 
           {/* Quick Demo Helper for convenience */}
-          <div className="flex items-center justify-between p-2.5 rounded-md bg-slate-50 dark:bg-[#0D1828] border border-slate-200 dark:border-[#1D3047] text-xs">
-            <div className="text-slate-600 dark:text-slate-400">
-              <span className="font-semibold text-slate-800 dark:text-slate-200">Demo Login:</span> test@example.com
+          <div 
+            className="flex items-center justify-between p-2.5 rounded-md text-xs"
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              border: '1px solid var(--color-border)'
+            }}
+          >
+            <div style={{ color: 'var(--color-text-secondary)' }}>
+              <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Demo Login:</span> test@example.com
             </div>
             <button
               type="button"
@@ -174,7 +198,8 @@ export default function Login() {
                 setPassword('password');
                 setError('');
               }}
-              className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
+              className="text-[11px] font-semibold hover:underline cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
+              style={{ color: 'var(--color-brand)' }}
             >
               Fill Demo
             </button>

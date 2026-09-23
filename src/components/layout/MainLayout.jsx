@@ -17,24 +17,24 @@ export default function MainLayout() {
   return (
     <div
       className="flex h-screen h-dvh w-full overflow-hidden transition-colors"
-      style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}
+      style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text-primary)' }}
     >
       {/* Accessible skip link */}
       <a href="#main-content" className="skip-link">
         Skip to main content
       </a>
 
-      {/* Sidebar navigation (remains intentionally dark in both themes) */}
+      {/* Sidebar navigation follows the global theme tokens. */}
       <Sidebar />
 
       {/* Main app viewport */}
-      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }}>
+      <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden" style={{ backgroundColor: 'var(--color-background)' }}>
         <Header />
         <main
           id="main-content"
           tabIndex={-1}
           className="flex-1 overflow-y-auto overflow-x-hidden p-3.5 sm:p-6 lg:p-8 focus:outline-none"
-          style={{ backgroundColor: 'var(--bg-primary)' }}
+          style={{ backgroundColor: 'var(--color-background)' }}
         >
           <div className="max-w-7xl w-full mx-auto">
             <Outlet />

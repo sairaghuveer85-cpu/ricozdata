@@ -91,7 +91,7 @@ export default function Header() {
   return (
     <header
       className="h-16 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20 transition-colors"
-      style={{ backgroundColor: 'var(--bg-secondary)', borderBottom: '1px solid var(--border)', color: 'var(--text-primary)' }}
+      style={{ backgroundColor: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-primary)' }}
     >
       {/* Left: Mobile Toggle & Breadcrumbs / Page Context */}
       <div className="flex items-center gap-2.5 min-w-0">
@@ -139,18 +139,18 @@ export default function Header() {
           className="w-full flex items-center justify-between px-3.5 py-1.5 rounded-md transition-colors cursor-pointer text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           aria-label="Open Command Center (Command K)"
           style={{
-            backgroundColor: 'var(--input-bg)',
-            border: '1px solid var(--border)',
-            color: 'var(--text-primary)'
+            backgroundColor: 'var(--color-surface-secondary)',
+            border: '1px solid var(--color-border)',
+            color: 'var(--color-text-primary)'
           }}
         >
           <div className="flex items-center gap-2">
             <Search className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
-            <span style={{ color: 'var(--text-muted)' }}>Search datasets, tables, or users...</span>
+            <span style={{ color: 'var(--color-text-muted)' }}>Search datasets, tables, or users...</span>
           </div>
           <kbd
             className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-mono font-medium"
-            style={{ backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }}
+            style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)' }}
           >
             ⌘K
           </kbd>
@@ -198,13 +198,13 @@ export default function Header() {
               role="dialog"
               aria-label="Alerts & Events"
               className="absolute right-0 mt-2 w-[calc(100vw-1.5rem)] sm:w-96 max-w-sm rounded-md shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150"
-              style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+              style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-primary)' }}
             >
               <div
                 className="px-4 py-2.5 flex items-center justify-between"
-                style={{ borderBottom: '1px solid var(--border)' }}
+                style={{ borderBottom: '1px solid var(--color-border)' }}
               >
-                <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Alerts & Events</span>
+                <span className="text-xs font-bold" style={{ color: 'var(--color-text-primary)' }}>Alerts & Events</span>
                 <button
                   type="button"
                   className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
@@ -213,7 +213,7 @@ export default function Header() {
                   Close
                 </button>
               </div>
-              <div className="max-h-80 overflow-y-auto" style={{ borderColor: 'var(--border)' }}>
+              <div className="max-h-80 overflow-y-auto" style={{ borderColor: 'var(--color-border)' }}>
                 {activities.slice(0, 5).map((act) => (
                   <div key={act.id} className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors flex items-start gap-3 text-xs">
                     <div className={`p-1.5 rounded-md ${act.iconBg} ${act.iconColor} shrink-0 mt-0.5`} aria-hidden="true">
@@ -226,14 +226,18 @@ export default function Header() {
                   </div>
                 ))}
               </div>
-              <div className="p-2 border-t border-slate-100 dark:border-slate-800 text-center">
+              <div 
+                className="p-2 text-center"
+                style={{ borderTop: '1px solid var(--color-border)' }}
+              >
                 <button
                   type="button"
                   onClick={() => {
                     setNotificationsOpen(false);
                     navigate('/dashboard');
                   }}
-                  className="text-xs text-blue-600 dark:text-blue-400 font-medium hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
+                  className="text-xs font-medium hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
+                  style={{ color: 'var(--color-brand)' }}
                 >
                   View all in Activity Timeline
                 </button>
@@ -243,26 +247,32 @@ export default function Header() {
         </div>
 
         {/* Divider */}
-        <div className="hidden sm:block h-5 w-px bg-slate-200 dark:bg-slate-800" aria-hidden="true" />
+        <div className="hidden sm:block h-5 w-px" style={{ backgroundColor: 'var(--color-border)' }} aria-hidden="true" />
 
         {/* User Profile Dropdown */}
         <Dropdown
           align="right"
           width="w-56"
           trigger={
-            <div className="flex items-center gap-2.5 p-1 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer">
+            <div className="flex items-center gap-2.5 p-1 rounded-md transition-colors cursor-pointer">
               <div className={`w-8 h-8 rounded-full ${currentUser?.avatarBg || 'bg-blue-600'} text-white font-bold text-xs flex items-center justify-center shadow-xs`}>
                 {currentUser?.avatar || 'R'}
               </div>
               <div className="hidden md:flex flex-col text-left">
-                <span className="text-xs font-semibold text-slate-900 dark:text-white leading-tight">
+                <span 
+                  className="text-xs font-semibold leading-tight"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
                   {currentUser?.name || 'Raghuveer'}
                 </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 leading-tight">
+                <span 
+                  className="text-[10px] leading-tight"
+                  style={{ color: 'var(--color-text-muted)' }}
+                >
                   {currentUser?.role || 'Data Analyst'}
                 </span>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden md:block" aria-hidden="true" />
+              <ChevronDown className="w-3.5 h-3.5 hidden md:block" style={{ color: 'var(--color-text-muted)' }} aria-hidden="true" />
             </div>
           }
           items={[

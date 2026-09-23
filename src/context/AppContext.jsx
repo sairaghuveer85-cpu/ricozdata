@@ -101,14 +101,14 @@ export function AppProvider({ children }) {
   }, []);
 
   // Persistent Mock Data with automatic schema reconciliation
-  const [rawDatasets, setDatasets] = useLocalStorage('ricoz_datasets', INITIAL_DATASETS);
-  const [users, setUsers] = useLocalStorage('ricoz_users', INITIAL_USERS);
+  const [rawDatasets, setDatasets] = useLocalStorage('ricoz_datasets_v4', INITIAL_DATASETS);
+  const [users, setUsers] = useLocalStorage('ricoz_users_v4', INITIAL_USERS);
   const [domains] = useState(DOMAIN_REGISTRY);
-  const [activities, setActivities] = useLocalStorage('ricoz_activities', INITIAL_ACTIVITIES);
-  const [glossaryTerms, setGlossaryTerms] = useLocalStorage('ricoz_glossary', INITIAL_GLOSSARY_TERMS);
-  const [policies, setPolicies] = useLocalStorage('ricoz_policies', INITIAL_POLICIES);
-  const [rules] = useLocalStorage('ricoz_rules', INITIAL_RULES);
-  const [issues, setIssues] = useLocalStorage('ricoz_issues', QUALITY_ISSUES);
+  const [activities, setActivities] = useLocalStorage('ricoz_activities_v4', INITIAL_ACTIVITIES);
+  const [glossaryTerms, setGlossaryTerms] = useLocalStorage('ricoz_glossary_v4', INITIAL_GLOSSARY_TERMS);
+  const [policies, setPolicies] = useLocalStorage('ricoz_policies_v4', INITIAL_POLICIES);
+  const [rules] = useLocalStorage('ricoz_rules_v4', INITIAL_RULES);
+  const [issues, setIssues] = useLocalStorage('ricoz_issues_v4', QUALITY_ISSUES);
 
   // Reconcile datasets so any previously cached localStorage entries gain normalized ownerId, domainId, statistics
   const datasets = useMemo(() => {
@@ -140,10 +140,10 @@ export function AppProvider({ children }) {
 
   // Recent visited pages
   const [recentPages, setRecentPages] = useLocalStorage('ricoz_recent_pages', [
-    { title: 'Customer Database', path: '/catalog/customer-database', category: 'Dataset' },
-    { title: 'Data Lineage', path: '/lineage/customer-database', category: 'Lineage' },
+    { title: 'Customer Master', path: '/catalog/customer-master', category: 'Dataset' },
+    { title: 'Data Lineage', path: '/lineage/customer-master', category: 'Lineage' },
     { title: 'PII Data Access Policy', path: '/governance', category: 'Policy' },
-    { title: 'Data Quality Dashboard', path: '/quality/customer-database', category: 'Quality' }
+    { title: 'Data Quality Dashboard', path: '/quality/customer-master', category: 'Quality' }
   ]);
 
   const addRecentPage = useCallback((title, path, category) => {

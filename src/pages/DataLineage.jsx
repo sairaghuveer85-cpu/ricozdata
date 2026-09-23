@@ -101,7 +101,14 @@ LEFT JOIN scored_churn s ON c.contact_id = s.customer_id;`;
         </div>
 
         {/* Legend matching Screen 5 specification */}
-        <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-4 text-xs text-slate-600 dark:text-slate-300 p-2.5 rounded-lg bg-slate-50 dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800">
+        <div 
+          className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-4 text-xs p-2.5 rounded-lg"
+          style={{
+            backgroundColor: 'var(--color-surface)',
+            border: '1px solid var(--color-border)',
+            color: 'var(--color-text-secondary)'
+          }}
+        >
           <div className="flex items-center gap-1.5 font-medium">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-2xs shrink-0" />
             <span className="text-[11px] sm:text-xs">SOURCE</span>
@@ -125,9 +132,14 @@ LEFT JOIN scored_churn s ON c.contact_id = s.customer_id;`;
           <button
             type="button"
             onClick={handleRefresh}
-            className={`p-2 rounded-md bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
+            className={`p-2 rounded-md transition-colors cursor-pointer ${
               isRefreshing ? 'animate-spin' : ''
             }`}
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              color: 'var(--color-text-secondary)'
+            }}
             title="Refresh Lineage Graph"
           >
             <RefreshCw className="w-4 h-4" />

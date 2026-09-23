@@ -13,24 +13,12 @@ export default function CatalogFilters({
 }) {
   const { datasets } = useApp();
 
-  const sources = [
-    { label: 'Snowflake', count: datasets.filter(d => d.source === 'Snowflake').length },
-    { label: 'BigQuery', count: datasets.filter(d => d.source === 'BigQuery').length },
-    { label: 'PostgreSQL', count: datasets.filter(d => d.source === 'PostgreSQL').length },
-    { label: 'MySQL', count: datasets.filter(d => d.source === 'MySQL').length }
-  ];
-
-  const domains = [
-    { label: 'Customer 360', count: datasets.filter(d => d.domain === 'Customer 360' || d.domainId === 'customer').length },
-    { label: 'Finance', count: datasets.filter(d => d.domain === 'Finance' || d.domainId === 'finance').length },
-    { label: 'Product', count: datasets.filter(d => d.domain === 'Product' || d.domainId === 'product').length },
-    { label: 'Marketing', count: datasets.filter(d => d.domain === 'Marketing' || d.domainId === 'marketing').length },
-    { label: 'HR', count: datasets.filter(d => d.domain === 'HR' || d.domainId === 'hr').length }
-  ];
+  const sources = [...new Set(datasets.map(d => d.source))].map(label => ({ label, count: datasets.filter(d => d.source === label).length }));
+  const domains = [...new Set(datasets.map(d => d.domain))].map(label => ({ label, count: datasets.filter(d => d.domain === label).length }));
 
   const certifications = [
-    { label: 'Certified', count: datasets.filter(d => d.status === 'Certified').length },
-    { label: 'In Review', count: datasets.filter(d => d.status === 'In Review').length }
+    { label: 'Certified', count: datasets.filter(d => d.certificationStatus === 'certified').length },
+    { label: 'In Review', count: datasets.filter(d => d.certificationStatus === 'in_review').length }
   ];
 
   const toggleFilter = (list, setList, item) => {
@@ -44,17 +32,30 @@ export default function CatalogFilters({
   const hasActiveFilters = selectedSources.length > 0 || selectedDomains.length > 0 || selectedCertifications.length > 0;
 
   return (
-    <div className="rounded-lg p-4 border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] space-y-5">
-      <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-[#1D3047]">
-        <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-          <Filter className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
+    <div 
+      className="rounded-lg p-4 space-y-5"
+      style={{
+        backgroundColor: 'var(--color-surface)',
+        border: '1px solid var(--color-border)'
+      }}
+    >
+      <div 
+        className="flex items-center justify-between pb-2.5 border-b"
+        style={{ borderColor: 'var(--color-border)' }}
+      >
+        <div 
+          className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider"
+          style={{ color: 'var(--color-text-primary)' }}
+        >
+          <Filter className="w-3.5 h-3.5" style={{ color: 'var(--color-text-muted)' }} aria-hidden="true" />
           <span>Facets</span>
         </div>
         {hasActiveFilters && (
           <button
             type="button"
             onClick={onReset}
-            className="inline-flex items-center gap-1 text-[11px] font-medium text-blue-600 dark:text-blue-400 cursor-pointer hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
+            className="inline-flex items-center gap-1 text-[11px] font-medium cursor-pointer hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
+            style={{ color: 'var(--color-brand)' }}
           >
             <RotateCcw className="w-3 h-3" aria-hidden="true" />
             <span>Reset</span>

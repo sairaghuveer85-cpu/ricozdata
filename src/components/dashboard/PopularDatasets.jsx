@@ -13,14 +13,23 @@ export default function PopularDatasets() {
       <div>
         <div className="flex items-center justify-between mb-3">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
+            <h3 
+              className="text-sm font-semibold"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
               High-Demand Datasets
             </h3>
-            <span className="text-[11px] text-slate-400">Most queried production assets</span>
+            <span 
+              className="text-[11px]"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              Most queried production assets
+            </span>
           </div>
           <NavLink
             to="/catalog"
-            className="text-xs text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded font-medium"
+            className="text-xs hover:underline flex items-center gap-0.5 focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded font-medium"
+            style={{ color: 'var(--color-brand)' }}
           >
             <span>Explore catalog</span>
             <ChevronRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -29,13 +38,22 @@ export default function PopularDatasets() {
 
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="border-b border-slate-100 dark:border-[#1D3047] text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+            <tr 
+              className="border-b text-[10px] font-bold uppercase tracking-wider"
+              style={{ 
+                borderColor: 'var(--color-border)',
+                color: 'var(--color-text-muted)'
+              }}
+            >
               <th className="pb-2 font-medium">Dataset</th>
               <th className="pb-2 font-medium text-center">Quality</th>
               <th className="pb-2 font-medium text-right">Views</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-[#1D3047]">
+          <tbody 
+            className="divide-y"
+            style={{ borderColor: 'var(--color-border)' }}
+          >
             {popular.map((dataset) => (
               <tr
                 key={dataset.id}
@@ -49,20 +67,35 @@ export default function PopularDatasets() {
                     openDrawer('dataset', dataset);
                   }
                 }}
-                className="hover:bg-slate-50/80 dark:hover:bg-[#111E30]/70 transition-colors cursor-pointer group focus:outline-none focus-visible:bg-slate-50 dark:focus-visible:bg-[#111E30]"
+                className="transition-colors cursor-pointer group focus:outline-none"
+                style={{ borderBottomColor: 'var(--color-border)' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-surface-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 <td className="py-2.5 pr-2">
-                  <span className="font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors block truncate">
+                  <span 
+                    className="font-semibold transition-colors block truncate"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
                     {dataset.name}
                   </span>
-                  <span className="text-[11px] text-slate-400 dark:text-slate-500 block truncate">
+                  <span 
+                    className="text-[11px] block truncate"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
                     {dataset.domain} • {dataset.owner}
                   </span>
                 </td>
-                <td className="py-2.5 px-2 text-center font-bold text-slate-800 dark:text-slate-200 tabular-nums">
+                <td 
+                  className="py-2.5 px-2 text-center font-bold tabular-nums"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
                   {dataset.quality}%
                 </td>
-                <td className="py-2.5 pl-2 text-right text-slate-500 dark:text-slate-400 tabular-nums">
+                <td 
+                  className="py-2.5 pl-2 text-right tabular-nums"
+                  style={{ color: 'var(--color-text-secondary)' }}
+                >
                   {dataset.usage?.replace(' views', '') || '1.2k'}
                 </td>
               </tr>

@@ -95,10 +95,10 @@ export function getPoliciesForDataset(policies = [], datasetId) {
  * Returns lineage graph nodes and edges for a dataset
  */
 export function getLineageForDataset(datasetId) {
-  if (!datasetId) return DATASET_LINEAGE_GRAPHS['customer-database'];
+  if (!datasetId) return DATASET_LINEAGE_GRAPHS['customer-master'];
   return (
     DATASET_LINEAGE_GRAPHS[datasetId] ||
-    DATASET_LINEAGE_GRAPHS['customer-database']
+    DATASET_LINEAGE_GRAPHS['customer-master']
   );
 }
 

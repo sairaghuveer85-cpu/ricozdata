@@ -109,7 +109,7 @@ export default function DatasetTable({
                       <span className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white truncate">
                         {dataset.name}
                       </span>
-                      {dataset.certified && (
+                      {dataset.certificationStatus === 'certified' && (
                         <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" aria-label="Certified Dataset" />
                       )}
                     </div>

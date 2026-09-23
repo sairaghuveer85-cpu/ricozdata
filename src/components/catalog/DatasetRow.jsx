@@ -68,7 +68,7 @@ export default function DatasetRow({
               <span className="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
                 {dataset.name}
               </span>
-              {dataset.certified && (
+              {dataset.certificationStatus === 'certified' && (
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" aria-label="Certified Dataset" />
               )}
             </div>

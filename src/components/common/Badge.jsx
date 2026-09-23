@@ -15,19 +15,23 @@ export default function Badge({
     switch (status) {
       case 'Certified':
       case 'Active':
+      case 'active':
       case 'Resolved':
+      case 'resolved':
       case 'Compliant':
         styleClasses = 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/80';
         dotColor = 'bg-emerald-500';
         break;
       case 'In Review':
       case 'In Progress':
+      case 'investigating':
       case 'Warning':
       case 'Medium':
         styleClasses = 'bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800/80';
         dotColor = 'bg-amber-500';
         break;
       case 'Open':
+      case 'open':
       case 'High':
       case 'Danger':
         styleClasses = 'bg-rose-50 dark:bg-rose-950/50 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800/80';
