@@ -76,23 +76,29 @@ export default function Settings() {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 items-start">
-        {/* Navigation Sidebar: Horizontal scrollable strip on mobile, vertical on md+ */}
-        <div className="bg-white dark:bg-[#0B1628] rounded-lg border border-slate-200 dark:border-slate-800 p-1.5 shadow-2xs flex md:flex-col overflow-x-auto no-scrollbar gap-1 md:space-y-0.5 shrink-0">
+        {/* Navigation Sidebar */}
+        <div
+          role="tablist"
+          aria-label="Settings categories"
+          className="bg-white dark:bg-[#0D1828] rounded-lg border border-slate-200 dark:border-[#1D3047] p-1.5 shadow-2xs flex md:flex-col overflow-x-auto no-scrollbar gap-1 md:space-y-0.5 shrink-0"
+        >
           {navSections.map(sec => {
             const Icon = sec.icon;
             const isActive = activeSection === sec.id;
             return (
               <button
                 key={sec.id}
+                role="tab"
+                aria-selected={isActive}
                 type="button"
                 onClick={() => setActiveSection(sec.id)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer text-left whitespace-nowrap shrink-0 ${
+                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer text-left whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                   isActive
                     ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-semibold border border-blue-200 dark:border-blue-900/50'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:text-white'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#111E30] hover:text-slate-900 dark:text-white'
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}`} />
+                <Icon className={`w-3.5 h-3.5 shrink-0 ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400'}`} aria-hidden="true" />
                 <span>{sec.label}</span>
               </button>
             );
@@ -100,17 +106,17 @@ export default function Settings() {
         </div>
 
         {/* Content Pane */}
-        <div className="md:col-span-3 min-w-0">
+        <div role="tabpanel" className="md:col-span-3 min-w-0">
           {/* 1. PROFILE */}
           {activeSection === 'profile' && (
-            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs space-y-5">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Personal Profile</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage your credentials, role, and avatar</p>
               </div>
 
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 pb-4 border-b border-slate-100 dark:border-slate-800">
-                <div className={`w-12 h-12 rounded-full ${currentUser?.avatarBg || 'bg-blue-600'} text-white font-bold text-lg flex items-center justify-center shrink-0`}>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 pb-4 border-b border-slate-100 dark:border-[#1D3047]">
+                <div className={`w-12 h-12 rounded-full ${currentUser?.avatarBg || 'bg-blue-600'} text-white font-bold text-lg flex items-center justify-center shrink-0`} aria-hidden="true">
                   {profileName.trim().charAt(0).toUpperCase()}
                 </div>
                 <div className="min-w-0">
@@ -148,7 +154,7 @@ export default function Settings() {
 
           {/* 2. WORKSPACE */}
           {activeSection === 'workspace' && (
-            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs space-y-5">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Workspace Configuration</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage enterprise domain boundaries and governance limits</p>
@@ -162,13 +168,14 @@ export default function Settings() {
                 />
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label htmlFor="retention-days-select" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                     Default Audit Retention (Days)
                   </label>
                   <select
+                    id="retention-days-select"
                     value={retentionDays}
                     onChange={(e) => setRetentionDays(e.target.value)}
-                    className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] p-2 text-xs text-slate-900 dark:text-white"
+                    className="w-full rounded-md border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] p-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="30">30 Days</option>
                     <option value="90">90 Days (Enterprise Standard)</option>
@@ -178,10 +185,13 @@ export default function Settings() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label htmlFor="cloud-region-select" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                     Primary Data Center / Cloud Region
                   </label>
-                  <select className="w-full rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] p-2 text-xs text-slate-900 dark:text-white">
+                  <select
+                    id="cloud-region-select"
+                    className="w-full rounded-md border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] p-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
                     <option>US-East (AWS N. Virginia)</option>
                     <option>EU-Central (Frankfurt)</option>
                     <option>AP-South (Mumbai)</option>
@@ -199,58 +209,67 @@ export default function Settings() {
 
           {/* 3. NOTIFICATIONS */}
           {activeSection === 'notifications' && (
-            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs space-y-5">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Alert Notifications</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Control how and when RicozData dispatches incident notifications</p>
               </div>
 
-              <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs space-y-3">
+              <div className="divide-y divide-slate-100 dark:divide-[#1D3047] text-xs space-y-3">
                 <div className="pt-2 flex items-center justify-between gap-4">
                   <div>
-                    <div className="font-semibold text-slate-900 dark:text-white">Email Incident Digest</div>
+                    <label htmlFor="email-incident-digest" className="font-semibold text-slate-900 dark:text-white block cursor-pointer">
+                      Email Incident Digest
+                    </label>
                     <div className="text-slate-500 dark:text-slate-400 text-[11px]">Daily executive summary of quality scores and unresolved issues</div>
                   </div>
                   <input
                     type="checkbox"
+                    id="email-incident-digest"
                     checked={emailAlerts}
                     onChange={(e) => setEmailAlerts(e.target.checked)}
-                    className="w-4 h-4 rounded-xs text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20 cursor-pointer shrink-0"
+                    className="w-4 h-4 rounded-sm text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer shrink-0"
                   />
                 </div>
 
                 <div className="pt-3 flex items-center justify-between gap-4">
                   <div>
-                    <div className="font-semibold text-slate-900 dark:text-white">Slack Webhook Routing</div>
+                    <label htmlFor="slack-webhook-routing" className="font-semibold text-slate-900 dark:text-white block cursor-pointer">
+                      Slack Webhook Routing
+                    </label>
                     <div className="text-slate-500 dark:text-slate-400 text-[11px]">Real-time broadcasts for High Severity violations</div>
                   </div>
                   <input
                     type="checkbox"
+                    id="slack-webhook-routing"
                     checked={slackAlerts}
                     onChange={(e) => setSlackAlerts(e.target.checked)}
-                    className="w-4 h-4 rounded-xs text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20 cursor-pointer shrink-0"
+                    className="w-4 h-4 rounded-sm text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer shrink-0"
                   />
                 </div>
 
                 <div className="pt-3 flex items-center justify-between gap-4">
                   <div>
-                    <div className="font-semibold text-slate-900 dark:text-white">Automated Schema Drift Alerts</div>
+                    <label htmlFor="schema-drift-alerts" className="font-semibold text-slate-900 dark:text-white block cursor-pointer">
+                      Automated Schema Drift Alerts
+                    </label>
                     <div className="text-slate-500 dark:text-slate-400 text-[11px]">Instant alert when warehouse schema changes violate constraints</div>
                   </div>
                   <input
                     type="checkbox"
+                    id="schema-drift-alerts"
                     checked={driftAlerts}
                     onChange={(e) => setDriftAlerts(e.target.checked)}
-                    className="w-4 h-4 rounded-xs text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20 cursor-pointer shrink-0"
+                    className="w-4 h-4 rounded-sm text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer shrink-0"
                   />
                 </div>
               </div>
             </div>
           )}
 
-          {/* 4. APPEARANCE: Light, Dark, System */}
+          {/* 4. APPEARANCE */}
           {activeSection === 'appearance' && (
-            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs space-y-5">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Theme & Appearance</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Customize UI contrast, dark mode, and layout density</p>
@@ -265,39 +284,39 @@ export default function Settings() {
                   <button
                     type="button"
                     onClick={() => setTheme('light')}
-                    className={`p-3 rounded-md border flex flex-col items-center gap-2 cursor-pointer transition-all ${
+                    className={`p-3 rounded-md border flex flex-col items-center gap-2 cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                       theme === 'light'
                         ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/30 text-blue-900 dark:text-blue-300 font-semibold'
-                        : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300'
+                        : 'border-slate-200 dark:border-[#1D3047] hover:bg-slate-50 dark:hover:bg-[#111E30] text-slate-700 dark:text-slate-300'
                     }`}
                   >
-                    <Sun className="w-4 h-4 text-amber-500" />
+                    <Sun className="w-4 h-4 text-amber-500" aria-hidden="true" />
                     <span className="text-xs font-medium">Light Mode</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setTheme('system')}
-                    className={`p-3 rounded-md border flex flex-col items-center gap-2 cursor-pointer transition-all ${
+                    className={`p-3 rounded-md border flex flex-col items-center gap-2 cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                       theme === 'system'
-                        ? 'border-blue-600 bg-blue-50/50 dark:bg-[#111C2E] text-blue-900 dark:text-blue-300 font-semibold'
-                        : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300'
+                        ? 'border-blue-600 bg-blue-50/50 dark:bg-[#111E30] text-blue-900 dark:text-blue-300 font-semibold'
+                        : 'border-slate-200 dark:border-[#1D3047] hover:bg-slate-50 dark:hover:bg-[#111E30] text-slate-700 dark:text-slate-300'
                     }`}
                   >
-                    <Laptop className="w-4 h-4 text-slate-400" />
+                    <Laptop className="w-4 h-4 text-slate-400" aria-hidden="true" />
                     <span className="text-xs font-medium">System Preference</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setTheme('dark')}
-                    className={`p-3 rounded-md border flex flex-col items-center gap-2 cursor-pointer transition-all ${
+                    className={`p-3 rounded-md border flex flex-col items-center gap-2 cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                       theme === 'dark'
-                        ? 'border-blue-500 bg-[#111C2E] text-white font-semibold'
-                        : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-300'
+                        ? 'border-blue-500 bg-[#111E30] text-white font-semibold'
+                        : 'border-slate-200 dark:border-[#1D3047] hover:bg-slate-50 dark:hover:bg-[#111E30] text-slate-700 dark:text-slate-300'
                     }`}
                   >
-                    <Moon className="w-4 h-4 text-blue-400" />
+                    <Moon className="w-4 h-4 text-blue-400" aria-hidden="true" />
                     <span className="text-xs font-medium">Dark Mode (#07111F)</span>
                   </button>
                 </div>
@@ -312,10 +331,10 @@ export default function Settings() {
                   <button
                     type="button"
                     onClick={() => setDensity('compact')}
-                    className={`p-2.5 rounded-md border text-left cursor-pointer transition-colors ${
+                    className={`p-2.5 rounded-md border text-left cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                       density === 'compact'
                         ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-300 font-semibold'
-                        : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                        : 'border-slate-200 dark:border-[#1D3047] hover:bg-slate-50 dark:hover:bg-[#111E30] text-slate-700 dark:text-slate-300'
                     }`}
                   >
                     Compact (Default)
@@ -323,10 +342,10 @@ export default function Settings() {
                   <button
                     type="button"
                     onClick={() => setDensity('spacious')}
-                    className={`p-2.5 rounded-md border text-left cursor-pointer transition-colors ${
+                    className={`p-2.5 rounded-md border text-left cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                       density === 'spacious'
                         ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-300 font-semibold'
-                        : 'border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'
+                        : 'border-slate-200 dark:border-[#1D3047] hover:bg-slate-50 dark:hover:bg-[#111E30] text-slate-700 dark:text-slate-300'
                     }`}
                   >
                     Spacious
@@ -338,14 +357,14 @@ export default function Settings() {
 
           {/* 5. SECURITY */}
           {activeSection === 'security' && (
-            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs space-y-5">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Security & API Keys</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage two-factor authentication, personal access tokens, and sessions</p>
               </div>
 
               <div className="space-y-3 text-xs">
-                <div className="p-3.5 rounded-md bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="p-3.5 rounded-md bg-slate-50 dark:bg-[#111E30] border border-slate-200 dark:border-[#1D3047] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
                     <div className="font-semibold text-slate-900 dark:text-white">Two-Factor Authentication (2FA / WebAuthn)</div>
                     <div className="text-slate-500 dark:text-slate-400 text-[11px]">Enforce hardware security key or TOTP authenticator</div>
@@ -355,7 +374,7 @@ export default function Settings() {
                   </span>
                 </div>
 
-                <div className="p-3.5 rounded-md bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="p-3.5 rounded-md bg-slate-50 dark:bg-[#111E30] border border-slate-200 dark:border-[#1D3047] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="min-w-0">
                     <div className="font-semibold text-slate-900 dark:text-white">Production API Access Token</div>
                     <div className="text-slate-500 dark:text-slate-400 font-mono text-[11px] mt-0.5 truncate">
@@ -384,7 +403,7 @@ export default function Settings() {
 
           {/* 6. INTEGRATIONS */}
           {activeSection === 'integrations' && (
-            <div className="bg-white dark:bg-[#0B1628] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-2xs space-y-5">
+            <div className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs space-y-5">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Connected Platforms & Connectors</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage bidirectional syncs across cloud data warehouses and catalogs</p>
@@ -401,14 +420,14 @@ export default function Settings() {
                 ].map((integ, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-md border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-[#111C2E] flex items-center justify-between text-xs gap-2"
+                    className="p-3 rounded-md border border-slate-200 dark:border-[#1D3047] bg-slate-50/50 dark:bg-[#111E30] flex items-center justify-between text-xs gap-2"
                   >
                     <div className="min-w-0">
                       <div className="font-semibold text-slate-900 dark:text-white truncate">{integ.name}</div>
                       <div className="text-[11px] text-slate-400 mt-0.5 truncate">{integ.type} • Synced {integ.sync}</div>
                     </div>
                     <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800/60 shrink-0">
-                      <CheckCircle2 className="w-3 h-3" />
+                      <CheckCircle2 className="w-3 h-3" aria-hidden="true" />
                       {integ.status}
                     </span>
                   </div>

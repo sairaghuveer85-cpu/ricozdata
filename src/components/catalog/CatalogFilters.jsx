@@ -1,3 +1,4 @@
+import React from 'react';
 import { Filter } from 'lucide-react';
 
 export default function CatalogFilters({
@@ -56,14 +57,14 @@ export default function CatalogFilters({
         style={{ borderBottom: '1px solid var(--border)' }}
       >
         <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>
-          <Filter className="w-3.5 h-3.5" style={{ color: 'var(--text-muted)' }} />
+          <Filter className="w-3.5 h-3.5" style={{ color: 'var(--text-muted)' }} aria-hidden="true" />
           <span>Filters</span>
         </div>
         {hasActiveFilters && (
           <button
             type="button"
             onClick={onReset}
-            className="text-[11px] font-medium cursor-pointer hover:underline"
+            className="text-[11px] font-medium cursor-pointer hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
             style={{ color: 'var(--brand)' }}
           >
             Clear all
@@ -84,7 +85,7 @@ export default function CatalogFilters({
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => toggleFilter(selectedSources, setSelectedSources, src.label)}
-                    className="w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20"
+                    className="w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer"
                   />
                   <span className={isChecked ? 'font-semibold text-slate-900 dark:text-white' : ''}>{src.label}</span>
                 </div>
@@ -108,7 +109,7 @@ export default function CatalogFilters({
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => toggleFilter(selectedDomains, setSelectedDomains, dom.label)}
-                    className="w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20"
+                    className="w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer"
                   />
                   <span className={isChecked ? 'font-semibold text-slate-900 dark:text-white' : ''}>{dom.label}</span>
                 </div>
@@ -132,7 +133,7 @@ export default function CatalogFilters({
                     type="checkbox"
                     checked={isChecked}
                     onChange={() => toggleFilter(selectedCertifications, setSelectedCertifications, cert.label)}
-                    className="w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20"
+                    className="w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer"
                   />
                   <span className={isChecked ? 'font-semibold text-slate-900 dark:text-white' : ''}>{cert.label}</span>
                 </div>

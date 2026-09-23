@@ -19,13 +19,23 @@ export default function MainLayout() {
       className="flex min-h-screen transition-colors w-full overflow-x-hidden"
       style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}
     >
+      {/* Accessible skip link */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+
       {/* Sidebar navigation (remains intentionally dark in both themes) */}
       <Sidebar />
 
       {/* Main app viewport */}
       <div className="flex-1 flex flex-col min-w-0 w-full" style={{ backgroundColor: 'var(--bg-primary)' }}>
         <Header />
-        <main className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto" style={{ backgroundColor: 'var(--bg-primary)' }}>
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="flex-1 p-3.5 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto focus:outline-none"
+          style={{ backgroundColor: 'var(--bg-primary)' }}
+        >
           <Outlet />
         </main>
       </div>

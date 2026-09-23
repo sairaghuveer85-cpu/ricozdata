@@ -46,13 +46,14 @@ export default function DatasetTable({
       {/* Mobile Responsive Cards (< md) */}
       <div className="md:hidden space-y-3">
         {/* Select All Controls */}
-        <div className="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-[#111C2E] rounded-lg border border-slate-200 dark:border-slate-800 text-xs">
+        <div className="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-[#0D1828] rounded-md border border-slate-200 dark:border-[#1D3047] text-xs">
           <label className="flex items-center gap-2 cursor-pointer font-medium text-slate-700 dark:text-slate-300">
             <input
               type="checkbox"
+              aria-label="Select all datasets"
               checked={allSelected}
               onChange={handleSelectAll}
-              className="w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20 cursor-pointer"
+              className="w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer"
             />
             <span>Select All ({datasets.length})</span>
           </label>
@@ -75,11 +76,20 @@ export default function DatasetTable({
           return (
             <div
               key={dataset.id}
+              tabIndex={0}
+              role="button"
+              aria-label={`View details for ${dataset.name}`}
               onClick={() => openDrawer('dataset', dataset)}
-              className={`p-3.5 rounded-lg border transition-all cursor-pointer bg-white dark:bg-[#0B1628] shadow-2xs space-y-3 ${
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  openDrawer('dataset', dataset);
+                }
+              }}
+              className={`p-3.5 rounded-lg border transition-all cursor-pointer bg-white dark:bg-[#0D1828] shadow-2xs space-y-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                 isSelected
                   ? 'border-blue-500/50 bg-blue-50/20 dark:bg-blue-950/20'
-                  : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                  : 'border-slate-200 dark:border-[#1D3047] hover:border-slate-300 dark:hover:border-slate-700'
               }`}
             >
               {/* Card Header: Checkbox + Name + Certified Badge */}
@@ -88,9 +98,10 @@ export default function DatasetTable({
                   <div onClick={(e) => e.stopPropagation()} className="pt-0.5 shrink-0">
                     <input
                       type="checkbox"
+                      aria-label={`Select ${dataset.name}`}
                       checked={isSelected}
                       onChange={() => handleToggleSelect(dataset.id)}
-                      className="w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20 cursor-pointer"
+                      className="w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer"
                     />
                   </div>
                   <div className="min-w-0">
@@ -99,7 +110,7 @@ export default function DatasetTable({
                         {dataset.name}
                       </span>
                       {dataset.certified && (
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" title="Certified Dataset" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0" aria-label="Certified Dataset" />
                       )}
                     </div>
                     {dataset.description && (
@@ -116,7 +127,7 @@ export default function DatasetTable({
               </div>
 
               {/* Card Details: Domain, Owner, Quality, Updated */}
-              <div className="pt-2.5 border-t border-slate-100 dark:border-slate-800/80 grid grid-cols-2 gap-2 text-xs">
+              <div className="pt-2.5 border-t border-slate-100 dark:border-[#1D3047] grid grid-cols-2 gap-2 text-xs">
                 <div>
                   <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider block">Domain</span>
                   <span className="font-medium text-slate-700 dark:text-slate-300 text-xs truncate block">{dataset.domain}</span>
@@ -141,7 +152,7 @@ export default function DatasetTable({
                   <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider block">Updated</span>
                   <div className="flex items-center justify-between text-slate-400 text-xs mt-0.5">
                     <span className="truncate">{dataset.updated}</span>
-                    <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 shrink-0 ml-1" />
+                    <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 shrink-0 ml-1" aria-hidden="true" />
                   </div>
                 </div>
               </div>
@@ -151,17 +162,18 @@ export default function DatasetTable({
       </div>
 
       {/* Desktop Table (>= md) */}
-      <div className="hidden md:block bg-white dark:bg-[#0B1628] rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden" style={{ boxShadow: 'var(--shadow-sm)' }}>
+      <div className="hidden md:block bg-white dark:bg-[#0D1828] rounded-lg border border-slate-200 dark:border-[#1D3047] overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse" aria-label="Data Catalog Datasets">
             <thead>
-              <tr className="bg-slate-50/80 dark:bg-[#111C2E] border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider sticky top-0 z-10">
+              <tr className="bg-slate-50/80 dark:bg-[#111E30] border-b border-slate-200 dark:border-[#1D3047] text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider sticky top-0 z-10">
                 <th className="py-2.5 px-4 w-10">
                   <input
                     type="checkbox"
+                    aria-label="Select all datasets"
                     checked={allSelected}
                     onChange={handleSelectAll}
-                    className="w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20 cursor-pointer"
+                    className="w-4 h-4 rounded text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer"
                   />
                 </th>
                 <th className="py-2.5 px-4">Dataset Name</th>
@@ -172,7 +184,7 @@ export default function DatasetTable({
                 <th className="py-2.5 px-4">Updated</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+            <tbody className="divide-y divide-slate-100 dark:divide-[#1D3047]">
               {datasets.map((dataset) => (
                 <DatasetRow
                   key={dataset.id}

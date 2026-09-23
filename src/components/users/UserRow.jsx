@@ -6,13 +6,22 @@ import Dropdown from '../common/Dropdown';
 export default function UserRow({ user, onSelect, onDelete }) {
   return (
     <tr
+      tabIndex={0}
+      role="button"
+      aria-label={`User ${user.name}, role ${user.role}`}
       onClick={() => onSelect && onSelect(user)}
-      className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors cursor-pointer group"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onSelect && onSelect(user);
+        }
+      }}
+      className="hover:bg-slate-50/70 dark:hover:bg-[#111E30]/40 transition-colors cursor-pointer group focus:outline-none focus-visible:bg-slate-50 dark:focus-visible:bg-[#111E30]"
     >
-      {/* Name with Avatar circle matching reference */}
+      {/* Name with Avatar circle */}
       <td className="py-2.5 px-4">
         <div className="flex items-center gap-2.5">
-          <div className={`w-7 h-7 rounded-full ${user.avatarBg || 'bg-blue-600'} text-white font-semibold text-xs flex items-center justify-center shrink-0`}>
+          <div className={`w-7 h-7 rounded-full ${user.avatarBg || 'bg-blue-600'} text-white font-semibold text-xs flex items-center justify-center shrink-0`} aria-hidden="true">
             {user.avatar || 'U'}
           </div>
           <div className="min-w-0">
@@ -33,7 +42,7 @@ export default function UserRow({ user, onSelect, onDelete }) {
         {user.email}
       </td>
 
-      {/* Role - clean text matching Screen 9 */}
+      {/* Role */}
       <td className="py-2.5 px-4">
         <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">
           {user.role}
@@ -50,24 +59,26 @@ export default function UserRow({ user, onSelect, onDelete }) {
         <Badge status={user.status} size="sm" dot />
       </td>
 
-      {/* Hover actions: View, Edit, More */}
+      {/* Actions: View, Edit, More (visible on focus-within as well as hover) */}
       <td className="py-2.5 px-4 text-right whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-within:opacity-100 transition-opacity">
           <button
             type="button"
             onClick={() => onSelect && onSelect(user)}
-            className="p-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
+            aria-label={`View details for ${user.name}`}
+            className="p-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             title="View User Details"
           >
-            <Eye className="w-3.5 h-3.5" />
+            <Eye className="w-3.5 h-3.5" aria-hidden="true" />
           </button>
           <button
             type="button"
             onClick={() => onSelect && onSelect(user)}
-            className="p-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer"
+            aria-label={`Edit user ${user.name}`}
+            className="p-1 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             title="Edit User"
           >
-            <Edit3 className="w-3.5 h-3.5" />
+            <Edit3 className="w-3.5 h-3.5" aria-hidden="true" />
           </button>
           <Dropdown
             align="right"
@@ -75,9 +86,10 @@ export default function UserRow({ user, onSelect, onDelete }) {
             trigger={
               <button
                 type="button"
-                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded cursor-pointer"
+                aria-label={`More actions for ${user.name}`}
+                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               >
-                <MoreHorizontal className="w-3.5 h-3.5" />
+                <MoreHorizontal className="w-3.5 h-3.5" aria-hidden="true" />
               </button>
             }
             items={[

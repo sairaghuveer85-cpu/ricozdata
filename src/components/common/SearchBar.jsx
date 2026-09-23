@@ -7,7 +7,8 @@ export default function SearchBar({
   placeholder = 'Search...',
   className = '',
   size = 'md',
-  onClear
+  onClear,
+  'aria-label': ariaLabel
 }) {
   const sizeClasses = {
     sm: 'py-1.5 pl-8 pr-7 text-xs',
@@ -23,7 +24,7 @@ export default function SearchBar({
 
   return (
     <div className={`relative flex items-center w-full ${className}`}>
-      <div className={`absolute pointer-events-none text-slate-400 dark:text-slate-500 flex items-center ${iconSizes[size]}`}>
+      <div className={`absolute pointer-events-none text-slate-400 dark:text-slate-500 flex items-center ${iconSizes[size]}`} aria-hidden="true">
         <Search className="w-full h-full" />
       </div>
       <input
@@ -31,7 +32,8 @@ export default function SearchBar({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full rounded-lg transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 ${sizeClasses[size]}`}
+        aria-label={ariaLabel || placeholder}
+        className={`w-full rounded-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${sizeClasses[size]}`}
         style={{
           backgroundColor: 'var(--input-bg)',
           border: '1px solid var(--border)',
@@ -45,9 +47,10 @@ export default function SearchBar({
             onChange('');
             onClear && onClear();
           }}
-          className="absolute right-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 rounded cursor-pointer"
+          aria-label="Clear search"
+          className="absolute right-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 rounded-sm cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
-          <X className="w-3.5 h-3.5" />
+          <X className="w-3.5 h-3.5" aria-hidden="true" />
         </button>
       )}
     </div>

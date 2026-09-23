@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ResponsiveContainer,
   LineChart,
@@ -17,11 +17,11 @@ const CustomTooltip = ({ active, payload, label, isDark }) => {
   if (active && payload && payload.length) {
     return (
       <div
-        className="text-xs rounded p-2.5 shadow-sm"
+        className="text-xs rounded-md p-2.5 shadow-sm"
         style={{
-          backgroundColor: isDark ? '#0F1B2D' : '#FFFFFF',
-          color: isDark ? '#F8FAFC' : '#0F172A',
-          border: `1px solid ${isDark ? '#1E3048' : '#E2E8F0'}`
+          backgroundColor: isDark ? '#0D1828' : '#FFFFFF',
+          color: isDark ? '#F8FAFC' : '#111827',
+          border: `1px solid ${isDark ? '#1D3047' : '#E2E8F0'}`
         }}
       >
         <p className="font-semibold text-slate-700 dark:text-slate-300">
@@ -45,20 +45,41 @@ export default function QualityChart() {
 
   const [timeRange, setTimeRange] = useState('Last 6 months');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
 
-  const gridStroke = isDark ? '#1e293b' : '#f1f5f9';
-  const axisStroke = isDark ? '#334155' : '#e2e8f0';
-  const tickColor = isDark ? '#94a3b8' : '#64748b';
-  const brandColor = isDark ? '#3b82f6' : '#2563eb';
-  const referenceLineStroke = isDark ? '#475569' : '#94a3b8';
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && dropdownOpen) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [dropdownOpen]);
+
+  const gridStroke = isDark ? '#1D3047' : '#F1F4F8';
+  const axisStroke = isDark ? '#2A4363' : '#E2E8F0';
+  const tickColor = isDark ? '#8290A3' : '#64748B';
+  const brandColor = isDark ? '#60A5FA' : '#2563EB';
+  const referenceLineStroke = isDark ? '#475569' : '#94A3B8';
 
   return (
     <div
+      role="region"
+      aria-label="Data Quality Trend Chart"
       className="p-5 rounded-lg flex flex-col h-full"
       style={{
         backgroundColor: 'var(--surface)',
-        border: '1px solid var(--border)',
-        borderRadius: '8px'
+        border: '1px solid var(--border)'
       }}
     >
       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-4">
@@ -77,27 +98,33 @@ export default function QualityChart() {
         </div>
 
         {/* Timeframe Selector */}
-        <div className="relative self-start sm:self-auto">
+        <div className="relative self-start sm:self-auto" ref={dropdownRef}>
           <button
             type="button"
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="inline-flex items-center gap-1.5 text-xs rounded-md px-2.5 py-1 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] hover:bg-slate-50 dark:hover:bg-slate-850 transition-colors cursor-pointer"
+            aria-haspopup="true"
+            aria-expanded={dropdownOpen}
+            className="inline-flex items-center gap-1.5 text-xs rounded-md px-2.5 py-1 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] hover:bg-slate-50 dark:hover:bg-[#111E30] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
           >
             <span>{timeRange}</span>
-            <ChevronDown className="w-3 h-3 text-slate-400" />
+            <ChevronDown className="w-3 h-3 text-slate-400" aria-hidden="true" />
           </button>
 
           {dropdownOpen && (
-            <div className="absolute right-0 mt-1 w-32 rounded-md shadow-md py-1 z-30 text-xs bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800">
+            <div
+              role="menu"
+              className="absolute right-0 mt-1 w-32 rounded-md shadow-md py-1 z-30 text-xs bg-white dark:bg-[#0D1828] border border-slate-200 dark:border-[#1D3047]"
+            >
               {['Last 3 months', 'Last 6 months', 'Year to date'].map((range) => (
                 <button
                   key={range}
+                  role="menuitem"
                   type="button"
                   onClick={() => {
                     setTimeRange(range);
                     setDropdownOpen(false);
                   }}
-                  className={`w-full text-left px-3 py-1.5 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors ${
+                  className={`w-full text-left px-3 py-1.5 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#111E30] transition-colors focus:outline-none focus:bg-slate-50 dark:focus:bg-[#111E30] ${
                     timeRange === range
                       ? 'text-blue-600 dark:text-blue-400 font-semibold'
                       : 'text-slate-700 dark:text-slate-300'
@@ -146,21 +173,21 @@ export default function QualityChart() {
               dataKey="score"
               stroke={brandColor}
               strokeWidth={2}
-              dot={{ stroke: brandColor, strokeWidth: 1.5, r: 3, fill: isDark ? '#0B1628' : '#FFFFFF' }}
-              activeDot={{ r: 5, stroke: brandColor, strokeWidth: 2, fill: isDark ? '#0B1628' : '#FFFFFF' }}
+              dot={{ stroke: brandColor, strokeWidth: 1.5, r: 3, fill: isDark ? '#0D1828' : '#FFFFFF' }}
+              activeDot={{ r: 5, stroke: brandColor, strokeWidth: 2, fill: isDark ? '#0D1828' : '#FFFFFF' }}
             />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      <div className="pt-3 mt-2 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+      <div className="pt-3 mt-2 border-t border-slate-100 dark:border-[#1D3047] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-slate-500 dark:text-slate-400">
         <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <span className="flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 inline-block shrink-0" />
+            <span className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 inline-block shrink-0" aria-hidden="true" />
             <span>Actual Score (92.4%)</span>
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-2.5 h-0.5 bg-slate-400 dark:bg-slate-500 inline-block shrink-0" />
+            <span className="w-2.5 h-0.5 bg-slate-400 dark:bg-slate-500 inline-block shrink-0" aria-hidden="true" />
             <span>Target Line (90.0%)</span>
           </span>
         </div>

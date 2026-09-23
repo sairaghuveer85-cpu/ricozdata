@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Users as UsersIcon, Shield, Layers, CheckCircle2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import PageHeader from '../components/layout/PageHeader';
 import Button from '../components/common/Button';
 import UserTable from '../components/users/UserTable';
@@ -36,8 +36,8 @@ export default function Users() {
       />
 
       {/* Tabs matching Screen 9: Users, Roles, Groups */}
-      <div className="border-b border-slate-200 dark:border-slate-800 -mx-3.5 px-3.5 sm:mx-0 sm:px-0">
-        <nav className="flex space-x-6 overflow-x-auto no-scrollbar py-0.5">
+      <div className="border-b border-slate-200 dark:border-[#1D3047] -mx-3.5 px-3.5 sm:mx-0 sm:px-0">
+        <nav role="tablist" aria-label="User directory views" className="flex space-x-6 overflow-x-auto no-scrollbar py-0.5">
           {[
             { id: 'users', label: 'Users' },
             { id: 'roles', label: 'Roles' },
@@ -45,10 +45,12 @@ export default function Users() {
           ].map(tab => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
               className={`
-                py-3 px-1 border-b-2 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0
+                py-3 px-1 border-b-2 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-xs
                 ${activeTab === tab.id
                   ? 'border-blue-600 text-blue-600 dark:text-blue-400'
                   : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700'

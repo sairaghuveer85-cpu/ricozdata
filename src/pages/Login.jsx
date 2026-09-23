@@ -64,7 +64,7 @@ export default function Login() {
       {/* Left: Dark Navy Visual Area with Enterprise Brand Hero */}
       <div className="relative w-full md:w-[52%] lg:w-[55%] bg-[#08101e] p-6 sm:p-10 lg:p-16 flex flex-col justify-between text-white overflow-hidden select-none min-h-0 md:min-h-screen border-b md:border-b-0 md:border-r border-slate-800">
         {/* Subtle Architectural SVG Data Grid Background */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-25">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-25" aria-hidden="true">
           <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <pattern id="gridPattern" width="40" height="40" patternUnits="userSpaceOnUse">
               <circle cx="2" cy="2" r="1" fill="#475569" opacity="0.4" />
@@ -87,7 +87,7 @@ export default function Login() {
 
         {/* Top: Brand Logo */}
         <div className="relative z-10 flex items-center gap-3">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-2xs shrink-0">
+          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-md bg-blue-600 flex items-center justify-center text-white shadow-2xs shrink-0" aria-hidden="true">
             <Database className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
           <div>
@@ -109,7 +109,7 @@ export default function Login() {
             </p>
 
             {/* Mobile compact tagline */}
-            <div className="sm:hidden mt-3 inline-flex items-center gap-2 px-2.5 py-1 rounded bg-slate-900/80 border border-slate-800 text-[11px] text-blue-400 font-medium">
+            <div className="sm:hidden mt-3 inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-slate-900/80 border border-slate-800 text-[11px] text-blue-400 font-medium">
               <span>Catalog • Quality • Lineage • Governance</span>
             </div>
 
@@ -127,7 +127,7 @@ export default function Login() {
                     key={idx}
                     className="flex items-center gap-3 p-2.5 rounded-md bg-slate-900/60 border border-slate-800 transition-colors"
                   >
-                    <div className="w-7 h-7 rounded-md bg-blue-950/80 border border-blue-900/50 flex items-center justify-center text-blue-400 shrink-0">
+                    <div className="w-7 h-7 rounded-md bg-blue-950/80 border border-blue-900/50 flex items-center justify-center text-blue-400 shrink-0" aria-hidden="true">
                       <Icon className="w-3.5 h-3.5" />
                     </div>
                     <div>
@@ -149,7 +149,7 @@ export default function Login() {
       </div>
 
       {/* Right: Authentication Form Panel */}
-      <div className="flex-1 flex items-center justify-center p-5 sm:p-10 lg:p-16 bg-white dark:bg-[#0b1322] transition-colors">
+      <div className="flex-1 flex items-center justify-center p-5 sm:p-10 lg:p-16 bg-white dark:bg-[#07111F] transition-colors">
         <div className="w-full max-w-md space-y-5 sm:space-y-6">
           {/* Header */}
           <div>
@@ -162,7 +162,7 @@ export default function Login() {
           </div>
 
           {/* Quick Demo Helper for convenience */}
-          <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs">
+          <div className="flex items-center justify-between p-2.5 rounded-md bg-slate-50 dark:bg-[#0D1828] border border-slate-200 dark:border-[#1D3047] text-xs">
             <div className="text-slate-600 dark:text-slate-400">
               <span className="font-semibold text-slate-800 dark:text-slate-200">Demo Login:</span> test@example.com
             </div>
@@ -174,7 +174,7 @@ export default function Login() {
                 setPassword('password');
                 setError('');
               }}
-              className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+              className="text-[11px] font-semibold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
             >
               Fill Demo
             </button>
@@ -183,6 +183,7 @@ export default function Login() {
           {error && (
             <div
               id="login-error-message"
+              role="alert"
               className="p-3 rounded-md bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-xs text-rose-700 dark:text-rose-300 font-medium animate-in fade-in duration-150"
             >
               {error}
@@ -190,8 +191,11 @@ export default function Login() {
           )}
 
           {isSuccess && (
-            <div className="p-3 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-xs text-emerald-700 dark:text-emerald-300 font-semibold flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <div
+              role="status"
+              className="p-3 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-xs text-emerald-700 dark:text-emerald-300 font-semibold flex items-center gap-2"
+            >
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
               <span>Authentication successful. Loading workspace...</span>
             </div>
           )}
@@ -208,7 +212,7 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="test@example.com"
-                className="w-full h-11 sm:h-10 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
+                className="w-full h-11 sm:h-10 rounded-md border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                 required
               />
             </div>
@@ -224,17 +228,17 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full h-11 sm:h-10 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 px-3 py-2 pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-colors"
+                  className="w-full h-11 sm:h-10 rounded-md border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                   required
                 />
                 <button
                   type="button"
                   id="toggle-password-btn"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? <EyeOff className="w-4 h-4" aria-hidden="true" /> : <Eye className="w-4 h-4" aria-hidden="true" />}
                 </button>
               </div>
             </div>
@@ -246,7 +250,7 @@ export default function Login() {
                   id="remember-me"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-3.5 h-3.5 rounded-xs text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500/20"
+                  className="w-3.5 h-3.5 rounded-sm text-blue-600 border-slate-300 dark:border-slate-700 focus:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500"
                 />
                 <span>Remember me</span>
               </label>
@@ -256,7 +260,7 @@ export default function Login() {
                   e.preventDefault();
                   alert('A secure password reset link has been dispatched to your corporate email.');
                 }}
-                className="font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                className="font-medium text-blue-600 dark:text-blue-400 hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
               >
                 Forgot password?
               </a>
@@ -274,8 +278,8 @@ export default function Login() {
 
           {/* Social Divider */}
           <div className="relative flex items-center justify-center pt-2">
-            <div className="border-t border-slate-200 dark:border-slate-800 w-full" />
-            <span className="bg-white dark:bg-[#0b1322] px-3 text-[11px] text-slate-400 font-medium uppercase tracking-wider absolute">
+            <div className="border-t border-slate-200 dark:border-[#1D3047] w-full" />
+            <span className="bg-white dark:bg-[#07111F] px-3 text-[11px] text-slate-400 font-medium uppercase tracking-wider absolute">
               or continue with
             </span>
           </div>
@@ -286,9 +290,9 @@ export default function Login() {
               type="button"
               id="google-signin-btn"
               onClick={() => handleSocialLogin('Google')}
-              className="flex items-center justify-center gap-2.5 px-3 py-2 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] hover:bg-slate-50 dark:hover:bg-slate-800/80 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer shadow-2xs"
+              className="flex items-center justify-center gap-2.5 px-3 py-2 rounded-md border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] hover:bg-slate-50 dark:hover:bg-[#111E30] text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -313,9 +317,9 @@ export default function Login() {
               type="button"
               id="microsoft-signin-btn"
               onClick={() => handleSocialLogin('Microsoft')}
-              className="flex items-center justify-center gap-2.5 px-3 py-2 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0f172a] hover:bg-slate-50 dark:hover:bg-slate-800/80 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer shadow-2xs"
+              className="flex items-center justify-center gap-2.5 px-3 py-2 rounded-md border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] hover:bg-slate-50 dark:hover:bg-[#111E30] text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer shadow-2xs focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
             >
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
+              <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
                 <rect x="1" y="1" width="10" height="10" fill="#F25022" />
                 <rect x="13" y="1" width="10" height="10" fill="#7FBA00" />
                 <rect x="1" y="13" width="10" height="10" fill="#00A4EF" />
@@ -335,7 +339,7 @@ export default function Login() {
                   e.preventDefault();
                   alert('Please contact your RicozData enterprise system administrator at admin@ricozdata.com');
                 }}
-                className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+                className="font-semibold text-blue-600 dark:text-blue-400 hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
               >
                 Contact your administrator
               </a>

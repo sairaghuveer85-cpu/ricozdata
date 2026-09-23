@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useId, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
@@ -11,20 +11,47 @@ export default function Drawer({
   footer,
   width = 'max-w-md'
 }) {
+  const titleId = useId();
+  const subtitleId = useId();
+  const drawerRef = useRef(null);
+  const previousActiveElementRef = useRef(null);
+
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
     if (isOpen) {
+      previousActiveElementRef.current = document.activeElement;
       document.body.style.overflow = 'hidden';
+
+      const timer = setTimeout(() => {
+        if (drawerRef.current) {
+          const focusable = drawerRef.current.querySelector(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          if (focusable) {
+            focusable.focus();
+          } else {
+            drawerRef.current.focus();
+          }
+        }
+      }, 50);
+
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+          e.stopPropagation();
+          onClose();
+        }
+      };
+
       window.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        clearTimeout(timer);
+        document.body.style.overflow = 'unset';
+        window.removeEventListener('keydown', handleKeyDown);
+        if (previousActiveElementRef.current && typeof previousActiveElementRef.current.focus === 'function') {
+          previousActiveElementRef.current.focus();
+        }
+      };
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
   }, [isOpen, onClose]);
 
   return (
@@ -40,16 +67,23 @@ export default function Drawer({
             className="fixed inset-0 backdrop-blur-xs transition-opacity"
             style={{ backgroundColor: 'var(--overlay)' }}
             onClick={onClose}
+            aria-hidden="true"
           />
 
           {/* Drawer Slide-in Panel */}
           <div className="fixed inset-y-0 right-0 flex max-w-full pl-0 sm:pl-10 pointer-events-auto">
             <motion.div
+              ref={drawerRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={title ? titleId : undefined}
+              aria-describedby={subtitle ? subtitleId : undefined}
+              tabIndex={-1}
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className={`w-full sm:w-screen ${width} max-w-full shadow-2xl flex flex-col h-full`}
+              className={`w-full sm:w-screen ${width} max-w-full shadow-2xl flex flex-col h-full focus:outline-none`}
               style={{
                 backgroundColor: 'var(--surface)',
                 borderLeft: '1px solid var(--border)',
@@ -63,11 +97,11 @@ export default function Drawer({
                 style={{ borderBottom: '1px solid var(--border)' }}
               >
                 <div className="min-w-0 pr-2">
-                  <h3 className="text-sm sm:text-base font-bold truncate" style={{ color: 'var(--text-primary)' }}>
+                  <h3 id={titleId} className="text-sm sm:text-base font-bold truncate" style={{ color: 'var(--text-primary)' }}>
                     {title}
                   </h3>
                   {subtitle && (
-                    <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-muted)' }}>
+                    <p id={subtitleId} className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-muted)' }}>
                       {subtitle}
                     </p>
                   )}
@@ -76,10 +110,9 @@ export default function Drawer({
                   type="button"
                   onClick={onClose}
                   aria-label="Close drawer"
-                  className="rounded-lg p-1.5 transition-colors cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
-                  style={{ color: 'var(--text-muted)' }}
+                  className="rounded-md p-1.5 transition-colors cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shrink-0"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
 

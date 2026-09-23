@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useId, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
@@ -11,20 +11,48 @@ export default function Modal({
   maxWidth = 'max-w-lg',
   footer
 }) {
+  const titleId = useId();
+  const subtitleId = useId();
+  const modalRef = useRef(null);
+  const previousActiveElementRef = useRef(null);
+
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
     if (isOpen) {
+      previousActiveElementRef.current = document.activeElement;
       document.body.style.overflow = 'hidden';
+
+      // Focus modal container on open
+      const timer = setTimeout(() => {
+        if (modalRef.current) {
+          const focusable = modalRef.current.querySelector(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          if (focusable) {
+            focusable.focus();
+          } else {
+            modalRef.current.focus();
+          }
+        }
+      }, 50);
+
+      const handleKeyDown = (e) => {
+        if (e.key === 'Escape') {
+          e.stopPropagation();
+          onClose();
+        }
+      };
+
       window.addEventListener('keydown', handleKeyDown);
+
+      return () => {
+        clearTimeout(timer);
+        document.body.style.overflow = 'unset';
+        window.removeEventListener('keydown', handleKeyDown);
+        if (previousActiveElementRef.current && typeof previousActiveElementRef.current.focus === 'function') {
+          previousActiveElementRef.current.focus();
+        }
+      };
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-      window.removeEventListener('keydown', handleKeyDown);
-    };
   }, [isOpen, onClose]);
 
   return (
@@ -40,16 +68,23 @@ export default function Modal({
             className="fixed inset-0 backdrop-blur-xs"
             style={{ backgroundColor: 'var(--overlay)' }}
             onClick={onClose}
+            aria-hidden="true"
           />
 
           {/* Modal Dialog */}
           <div className="flex min-h-full items-center justify-center p-3 sm:p-4 text-center">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 8 }}
+              ref={modalRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={title ? titleId : undefined}
+              aria-describedby={subtitle ? subtitleId : undefined}
+              tabIndex={-1}
+              initial={{ opacity: 0, scale: 0.96, y: 8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 8 }}
-              transition={{ duration: 0.18, ease: 'easeOut' }}
-              className={`relative transform overflow-hidden rounded-xl text-left shadow-2xl transition-all sm:my-8 w-[calc(100%-0.5rem)] sm:w-full ${maxWidth} max-h-[calc(100dvh-2rem)] flex flex-col z-10`}
+              exit={{ opacity: 0, scale: 0.96, y: 8 }}
+              transition={{ duration: 0.16, ease: 'easeOut' }}
+              className={`relative transform overflow-hidden rounded-enterprise-modal text-left shadow-2xl transition-all sm:my-8 w-[calc(100%-0.5rem)] sm:w-full ${maxWidth} max-h-[calc(100dvh-2rem)] flex flex-col z-10 focus:outline-none`}
               style={{
                 backgroundColor: 'var(--surface)',
                 border: '1px solid var(--border)',
@@ -63,19 +98,22 @@ export default function Modal({
                 style={{ borderBottom: '1px solid var(--border)' }}
               >
                 <div className="min-w-0 pr-2">
-                  <h3 className="text-sm sm:text-base font-bold truncate" style={{ color: 'var(--text-primary)' }}>{title}</h3>
+                  <h3 id={titleId} className="text-sm sm:text-base font-bold truncate" style={{ color: 'var(--text-primary)' }}>
+                    {title}
+                  </h3>
                   {subtitle && (
-                    <p className="mt-0.5 text-xs truncate" style={{ color: 'var(--text-muted)' }}>{subtitle}</p>
+                    <p id={subtitleId} className="mt-0.5 text-xs truncate" style={{ color: 'var(--text-muted)' }}>
+                      {subtitle}
+                    </p>
                   )}
                 </div>
                 <button
                   type="button"
                   onClick={onClose}
                   aria-label="Close modal"
-                  className="rounded-lg p-1.5 transition-colors cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 shrink-0"
-                  style={{ color: 'var(--text-muted)' }}
+                  className="rounded-md p-1.5 transition-colors cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shrink-0"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
 

@@ -9,27 +9,32 @@ export default function ToastContainer() {
   const getIcon = (type) => {
     switch (type) {
       case 'success':
-        return <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />;
+        return <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" aria-hidden="true" />;
       case 'error':
-        return <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" />;
+        return <AlertCircle className="w-4 h-4 text-rose-500 shrink-0" aria-hidden="true" />;
       case 'warning':
-        return <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />;
+        return <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" aria-hidden="true" />;
       default:
-        return <Info className="w-4 h-4 text-blue-500 shrink-0" />;
+        return <Info className="w-4 h-4 text-blue-500 shrink-0" aria-hidden="true" />;
     }
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full">
+    <div
+      aria-live="polite"
+      aria-relevant="additions text"
+      className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full"
+    >
       <AnimatePresence>
         {toasts.map((toast) => (
           <motion.div
             key={toast.id}
+            role={toast.type === 'error' ? 'alert' : 'status'}
             initial={{ opacity: 0, y: 15, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.18, ease: 'easeOut' }}
-            className="pointer-events-auto flex items-start gap-3 p-3.5 rounded-xl shadow-xl"
+            className="pointer-events-auto flex items-start gap-3 p-3.5 rounded-md shadow-lg"
             style={{
               backgroundColor: 'var(--surface)',
               border: '1px solid var(--border)',
@@ -52,9 +57,10 @@ export default function ToastContainer() {
             <button
               type="button"
               onClick={() => removeToast(toast.id)}
-              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 rounded cursor-pointer transition-colors"
+              aria-label="Dismiss notification"
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 rounded cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shrink-0"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
           </motion.div>
         ))}

@@ -55,9 +55,12 @@ export default function Reports() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {reports.map((rep, idx) => (
-          <div key={idx} className="bg-white dark:bg-[#0B1628] rounded-xl p-4 sm:p-5 border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div
+            key={idx}
+            className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+          >
             <div className="flex items-center gap-3.5 min-w-0">
-              <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-md bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0" aria-hidden="true">
                 <FileText className="w-5 h-5" />
               </div>
               <div className="min-w-0">
@@ -70,6 +73,7 @@ export default function Reports() {
               variant="secondary"
               size="xs"
               icon={Download}
+              aria-label={`Export ${rep.title} as ${rep.type}`}
               onClick={() => alert(`Downloading ${rep.title}`)}
               className="w-full sm:w-auto shrink-0 justify-center"
             >
@@ -80,11 +84,11 @@ export default function Reports() {
       </div>
 
       {/* Audit Log Stream */}
-      <div className="bg-white dark:bg-[#0B1628] rounded-xl border border-slate-200 dark:border-slate-800 shadow-xs p-4 sm:p-5">
+      <div className="bg-white dark:bg-[#0D1828] rounded-lg border border-slate-200 dark:border-[#1D3047] shadow-2xs p-4 sm:p-5">
         <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4">
           Recent System Audit Stream
         </h3>
-        <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+        <div className="divide-y divide-slate-100 dark:divide-[#1D3047] text-xs">
           {INITIAL_ACTIVITIES.map(act => (
             <div key={act.id} className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
               <div>

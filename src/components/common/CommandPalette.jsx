@@ -35,6 +35,7 @@ export default function CommandPalette() {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef(null);
+  const listRef = useRef(null);
 
   useEffect(() => {
     if (isCommandOpen) {
@@ -250,6 +251,8 @@ export default function CommandPalette() {
 
   if (!isCommandOpen) return null;
 
+  const activeItemId = filteredItems[selectedIndex] ? `cmd-item-${filteredItems[selectedIndex].id}` : undefined;
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto p-3 sm:p-6 md:p-20 flex items-start justify-center">
       {/* Backdrop */}
@@ -257,15 +260,19 @@ export default function CommandPalette() {
         className="fixed inset-0 backdrop-blur-xs transition-opacity"
         style={{ backgroundColor: 'var(--overlay)' }}
         onClick={() => setIsCommandOpen(false)}
+        aria-hidden="true"
       />
 
       {/* Palette Container */}
       <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Command Palette"
         initial={{ opacity: 0, scale: 0.96, y: -10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96, y: -10 }}
         transition={{ duration: 0.15 }}
-        className="relative w-full max-w-xl rounded-xl shadow-2xl overflow-hidden z-10"
+        className="relative w-full max-w-xl rounded-enterprise-modal shadow-2xl overflow-hidden z-10"
         style={{
           backgroundColor: 'var(--surface)',
           border: '1px solid var(--border)',
@@ -277,10 +284,16 @@ export default function CommandPalette() {
           className="flex items-center px-4 py-3.5"
           style={{ borderBottom: '1px solid var(--border)' }}
         >
-          <Search className="w-4 h-4 mr-3 shrink-0" style={{ color: 'var(--text-muted)' }} />
+          <Search className="w-4 h-4 mr-3 shrink-0" style={{ color: 'var(--text-muted)' }} aria-hidden="true" />
           <input
             ref={inputRef}
             type="text"
+            role="combobox"
+            aria-expanded="true"
+            aria-autocomplete="list"
+            aria-controls="command-palette-results"
+            aria-activedescendant={activeItemId}
+            aria-label="Type a command or search"
             value={query}
             onChange={(e) => {
               setQuery(e.target.value);
@@ -300,9 +313,15 @@ export default function CommandPalette() {
         </div>
 
         {/* Results List */}
-        <div className="max-h-80 overflow-y-auto p-2">
+        <div
+          id="command-palette-results"
+          ref={listRef}
+          role="listbox"
+          aria-label="Commands and search results"
+          className="max-h-80 overflow-y-auto p-2"
+        >
           {filteredItems.length === 0 ? (
-            <div className="p-8 text-center text-xs" style={{ color: 'var(--text-muted)' }}>
+            <div role="status" className="p-8 text-center text-xs" style={{ color: 'var(--text-muted)' }}>
               No results found for &ldquo;<span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{query}</span>&rdquo;
             </div>
           ) : (
@@ -312,9 +331,12 @@ export default function CommandPalette() {
               return (
                 <div
                   key={item.id}
+                  id={`cmd-item-${item.id}`}
+                  role="option"
+                  aria-selected={isSelected}
                   onClick={() => item.perform()}
                   onMouseEnter={() => setSelectedIndex(idx)}
-                  className="flex items-center justify-between px-3 py-2.5 rounded-lg text-xs cursor-pointer transition-colors"
+                  className="flex items-center justify-between px-3 py-2.5 rounded-md text-xs cursor-pointer transition-colors"
                   style={{
                     backgroundColor: isSelected ? 'var(--surface-active)' : 'transparent',
                     color: isSelected ? 'var(--brand)' : 'var(--text-primary)'
@@ -327,6 +349,7 @@ export default function CommandPalette() {
                         backgroundColor: isSelected ? 'var(--brand)' : 'var(--bg-tertiary)',
                         color: isSelected ? '#FFFFFF' : 'var(--text-secondary)'
                       }}
+                      aria-hidden="true"
                     >
                       <Icon className="w-3.5 h-3.5" />
                     </div>
@@ -352,7 +375,7 @@ export default function CommandPalette() {
                     >
                       {item.category}
                     </span>
-                    {isSelected && <ArrowRight className="w-3.5 h-3.5" style={{ color: 'var(--brand)' }} />}
+                    {isSelected && <ArrowRight className="w-3.5 h-3.5" style={{ color: 'var(--brand)' }} aria-hidden="true" />}
                   </div>
                 </div>
               );

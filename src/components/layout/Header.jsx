@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, NavLink } from 'react-router-dom';
 import {
   Search,
@@ -29,6 +29,27 @@ export default function Header() {
   } = useApp();
 
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const notificationsRef = useRef(null);
+
+  // Close notifications on click outside or Escape
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (notificationsRef.current && !notificationsRef.current.contains(e.target)) {
+        setNotificationsOpen(false);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && notificationsOpen) {
+        setNotificationsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [notificationsOpen]);
 
   // Dynamic breadcrumbs based on route
   const getBreadcrumbs = () => {
@@ -78,25 +99,25 @@ export default function Header() {
           type="button"
           onClick={() => setSidebarOpen(true)}
           aria-label="Open navigation menu"
-          className="lg:hidden p-2 -ml-1 rounded-lg text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0"
+          className="lg:hidden p-2 -ml-1 rounded-md text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-5 h-5" aria-hidden="true" />
         </button>
 
         {/* Dynamic Breadcrumbs for sm+ */}
-        <nav className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 min-w-0">
-          <NavLink to="/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium shrink-0">
+        <nav aria-label="Breadcrumb" className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 min-w-0">
+          <NavLink to="/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors font-medium shrink-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded">
             RicozData
           </NavLink>
           {breadcrumbs.map((crumb, idx) => (
             <React.Fragment key={idx}>
-              <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 shrink-0" />
+              <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 shrink-0" aria-hidden="true" />
               {crumb.path ? (
-                <NavLink to={crumb.path} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate">
+                <NavLink to={crumb.path} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors truncate focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded">
                   {crumb.label}
                 </NavLink>
               ) : (
-                <span className="text-slate-900 dark:text-white font-semibold truncate">
+                <span aria-current="page" className="text-slate-900 dark:text-white font-semibold truncate">
                   {crumb.label}
                 </span>
               )}
@@ -110,12 +131,13 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Center: Global Search trigger matching Screen 2 */}
+      {/* Center: Global Search trigger matching Command Palette */}
       <div className="flex-1 max-w-md mx-4 hidden md:block">
         <button
           type="button"
           onClick={() => setIsCommandOpen(true)}
-          className="w-full flex items-center justify-between px-3.5 py-1.5 rounded-md transition-colors cursor-pointer text-xs"
+          className="w-full flex items-center justify-between px-3.5 py-1.5 rounded-md transition-colors cursor-pointer text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+          aria-label="Open Command Center (Command K)"
           style={{
             backgroundColor: 'var(--input-bg)',
             border: '1px solid var(--border)',
@@ -123,7 +145,7 @@ export default function Header() {
           }}
         >
           <div className="flex items-center gap-2">
-            <Search className="w-3.5 h-3.5 text-slate-400" />
+            <Search className="w-3.5 h-3.5 text-slate-400" aria-hidden="true" />
             <span style={{ color: 'var(--text-muted)' }}>Search datasets, tables, or users...</span>
           </div>
           <kbd
@@ -142,9 +164,9 @@ export default function Header() {
           type="button"
           onClick={() => setIsCommandOpen(true)}
           aria-label="Search"
-          className="md:hidden p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+          className="md:hidden p-2 rounded-md text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
         >
-          <Search className="w-4 h-4" />
+          <Search className="w-4 h-4" aria-hidden="true" />
         </button>
 
         {/* Polished 3-Option Theme Switcher (Available on sm+; mobile access in drawer) */}
@@ -153,25 +175,29 @@ export default function Header() {
         </div>
 
         {/* Notifications Popover */}
-        <div className="relative">
+        <div className="relative" ref={notificationsRef}>
           <button
             type="button"
             onClick={() => {
               setNotificationsOpen(!notificationsOpen);
               if (unreadNotifications > 0) setUnreadNotifications(0);
             }}
-            className="relative p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-            aria-label="Notifications"
+            aria-haspopup="true"
+            aria-expanded={notificationsOpen}
+            className="relative p-2 rounded-md text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            aria-label={`Notifications ${unreadNotifications > 0 ? `(${unreadNotifications} unread)` : ''}`}
           >
-            <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+            <Bell className="w-4 h-4 sm:w-5 sm:h-5" aria-hidden="true" />
             {unreadNotifications > 0 && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-600 ring-2 ring-white dark:ring-[#0B1628]" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-600 ring-2 ring-white dark:ring-[#0D1828]" aria-hidden="true" />
             )}
           </button>
 
           {notificationsOpen && (
             <div
-              className="absolute right-0 mt-2 w-[calc(100vw-1.5rem)] sm:w-96 max-w-sm rounded-xl shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150"
+              role="dialog"
+              aria-label="Alerts & Events"
+              className="absolute right-0 mt-2 w-[calc(100vw-1.5rem)] sm:w-96 max-w-sm rounded-md shadow-2xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150"
               style={{ backgroundColor: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
             >
               <div
@@ -179,14 +205,18 @@ export default function Header() {
                 style={{ borderBottom: '1px solid var(--border)' }}
               >
                 <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Alerts & Events</span>
-                <span className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer" onClick={() => setNotificationsOpen(false)}>
+                <button
+                  type="button"
+                  className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
+                  onClick={() => setNotificationsOpen(false)}
+                >
                   Close
-                </span>
+                </button>
               </div>
               <div className="max-h-80 overflow-y-auto" style={{ borderColor: 'var(--border)' }}>
                 {activities.slice(0, 5).map((act) => (
                   <div key={act.id} className="p-3 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors flex items-start gap-3 text-xs">
-                    <div className={`p-1.5 rounded-md ${act.iconBg} ${act.iconColor} shrink-0 mt-0.5`}>
+                    <div className={`p-1.5 rounded-md ${act.iconBg} ${act.iconColor} shrink-0 mt-0.5`} aria-hidden="true">
                       <AlertTriangle className="w-3.5 h-3.5" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -203,7 +233,7 @@ export default function Header() {
                     setNotificationsOpen(false);
                     navigate('/dashboard');
                   }}
-                  className="text-xs text-blue-600 dark:text-blue-400 font-medium hover:underline"
+                  className="text-xs text-blue-600 dark:text-blue-400 font-medium hover:underline focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
                 >
                   View all in Activity Timeline
                 </button>
@@ -213,14 +243,14 @@ export default function Header() {
         </div>
 
         {/* Divider */}
-        <div className="hidden sm:block h-5 w-px bg-slate-200 dark:bg-slate-800" />
+        <div className="hidden sm:block h-5 w-px bg-slate-200 dark:bg-slate-800" aria-hidden="true" />
 
         {/* User Profile Dropdown */}
         <Dropdown
           align="right"
           width="w-56"
           trigger={
-            <div className="flex items-center gap-2.5 p-1 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer">
+            <div className="flex items-center gap-2.5 p-1 rounded-md hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer">
               <div className={`w-8 h-8 rounded-full ${currentUser?.avatarBg || 'bg-blue-600'} text-white font-bold text-xs flex items-center justify-center shadow-xs`}>
                 {currentUser?.avatar || 'R'}
               </div>
@@ -232,7 +262,7 @@ export default function Header() {
                   {currentUser?.role || 'Data Analyst'}
                 </span>
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden md:block" />
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden md:block" aria-hidden="true" />
             </div>
           }
           items={[

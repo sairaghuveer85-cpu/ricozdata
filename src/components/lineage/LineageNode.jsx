@@ -20,11 +20,15 @@ const iconMap = {
   Layers
 };
 
-export default function LineageNode({ data }) {
+export default function LineageNode({ data, selected }) {
   const Icon = iconMap[data.icon] || Database;
   const isPrimary = data.isPrimary;
+  const isSelected = selected || data.selected;
 
   const getBorderColor = () => {
+    if (isSelected) {
+      return 'border-blue-600 dark:border-blue-400 ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-[#07111F] shadow-md';
+    }
     switch (data.categoryType) {
       case 'source':
         return 'border-emerald-400 dark:border-emerald-600/80';
@@ -35,20 +39,20 @@ export default function LineageNode({ data }) {
       case 'destination':
         return 'border-cyan-400 dark:border-cyan-600/80';
       default:
-        return 'border-slate-200 dark:border-slate-700';
+        return 'border-slate-200 dark:border-[#1D3047]';
     }
   };
 
   const getBadgeStyle = () => {
     switch (data.categoryType) {
       case 'source':
-        return 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-800/60';
+        return 'bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-950/50 dark:text-emerald-300 dark:border-emerald-800/80';
       case 'transformation':
-        return 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-800/60';
+        return 'bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-950/50 dark:text-amber-300 dark:border-amber-800/80';
       case 'dataset':
-        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-800/60';
+        return 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/50 dark:text-blue-300 dark:border-blue-800/80';
       case 'destination':
-        return 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-950/40 dark:text-cyan-400 dark:border-cyan-800/60';
+        return 'bg-cyan-50 text-cyan-800 border-cyan-200 dark:bg-cyan-950/50 dark:text-cyan-300 dark:border-cyan-800/80';
       default:
         return 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700';
     }
@@ -56,21 +60,24 @@ export default function LineageNode({ data }) {
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={`Data node ${data.label}, type ${data.category}`}
       className={`
-        bg-white dark:bg-[#0c1322] rounded-lg p-3 min-w-[200px] border shadow-2xs transition-all hover:shadow-xs
+        bg-white dark:bg-[#0D1828] rounded-lg p-3 min-w-[200px] border shadow-2xs transition-all hover:shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
         ${getBorderColor()}
       `}
     >
       <Handle
         type="target"
         position={Position.Left}
-        className="w-2 h-2 !bg-blue-600 dark:!bg-blue-400 !border-2 !border-white dark:!border-[#0c1322]"
+        className="w-2 h-2 !bg-blue-600 dark:!bg-blue-400 !border-2 !border-white dark:!border-[#0D1828]"
       />
 
       <div className="flex items-start gap-2.5">
         <div className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${
           isPrimary ? 'bg-blue-600 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200'
-        }`}>
+        }`} aria-hidden="true">
           <Icon className="w-3.5 h-3.5" />
         </div>
 
@@ -92,7 +99,7 @@ export default function LineageNode({ data }) {
       <Handle
         type="source"
         position={Position.Right}
-        className="w-2 h-2 !bg-blue-600 dark:!bg-blue-400 !border-2 !border-white dark:!border-[#0c1322]"
+        className="w-2 h-2 !bg-blue-600 dark:!bg-blue-400 !border-2 !border-white dark:!border-[#0D1828]"
       />
     </div>
   );

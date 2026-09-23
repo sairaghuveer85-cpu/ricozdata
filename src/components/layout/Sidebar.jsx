@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -11,16 +11,11 @@ import {
   BarChart2,
   Users,
   Settings,
-  ChevronDown,
   ChevronLeft,
-  ChevronRight,
   LogOut,
-  Sparkles,
-  CheckCircle2,
   X
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import Dropdown from '../common/Dropdown';
 import ThemeSelector from '../common/ThemeSelector';
 
 export default function Sidebar() {
@@ -35,7 +30,18 @@ export default function Sidebar() {
     logout
   } = useApp();
 
-  const [currentWorkspace, setCurrentWorkspace] = useState('Production');
+  // Escape key handler for mobile drawer
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && sidebarOpen) {
+        setSidebarOpen(false);
+      }
+    };
+    if (sidebarOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [sidebarOpen, setSidebarOpen]);
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -71,8 +77,8 @@ export default function Sidebar() {
       <div className="h-16 px-4 border-b border-[#172337] flex items-center justify-between">
         {!sidebarCollapsed ? (
           <div className="flex items-center justify-between w-full">
-            <NavLink to="/dashboard" className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-md bg-blue-600 flex items-center justify-center text-white shrink-0">
+            <NavLink to="/dashboard" className="flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md">
+              <div className="w-7 h-7 rounded-md bg-blue-600 flex items-center justify-center text-white shrink-0" aria-hidden="true">
                 <Database className="w-4 h-4 text-white" />
               </div>
               <span className="text-sm font-bold text-white tracking-tight leading-none">RicozData</span>
@@ -82,10 +88,12 @@ export default function Sidebar() {
             <button
               type="button"
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="p-1 rounded text-slate-400 hover:text-white hover:bg-[#111C2E] transition-colors cursor-pointer"
-              title="Collapse Sidebar"
+              className="p-1 rounded-md text-slate-400 hover:text-white hover:bg-[#111C2E] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              aria-label="Collapse sidebar navigation"
+              aria-expanded="true"
+              title="Collapse sidebar"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-4 h-4" aria-hidden="true" />
             </button>
           </div>
         ) : (
@@ -93,17 +101,19 @@ export default function Sidebar() {
             <button
               type="button"
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="w-7 h-7 rounded-md bg-blue-600 flex items-center justify-center text-white cursor-pointer"
-              title="Expand Sidebar"
+              className="w-7 h-7 rounded-md bg-blue-600 flex items-center justify-center text-white cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              aria-label="Expand sidebar navigation"
+              aria-expanded="false"
+              title="Expand sidebar"
             >
-              <Database className="w-4 h-4 text-white" />
+              <Database className="w-4 h-4 text-white" aria-hidden="true" />
             </button>
           </div>
         )}
       </div>
 
       {/* Navigation Items */}
-      <div className="flex-1 py-4 px-3 space-y-1 overflow-y-auto overflow-x-hidden">
+      <nav aria-label="Main Navigation" className="flex-1 py-4 px-3 space-y-1 overflow-y-auto overflow-x-hidden">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item);
@@ -112,8 +122,9 @@ export default function Sidebar() {
               key={item.path}
               to={item.path}
               title={sidebarCollapsed ? item.name : undefined}
+              aria-current={active ? 'page' : undefined}
               className={`
-                group flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-colors duration-150
+                group flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
                 ${active
                   ? 'bg-blue-600 text-white font-semibold'
                   : 'text-slate-400 hover:text-slate-200 hover:bg-[#111C2E]'
@@ -121,7 +132,7 @@ export default function Sidebar() {
                 ${sidebarCollapsed ? 'justify-center px-0' : ''}
               `}
             >
-              <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} />
+              <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} aria-hidden="true" />
               
               {!sidebarCollapsed && (
                 <span className="truncate">{item.name}</span>
@@ -129,7 +140,7 @@ export default function Sidebar() {
             </NavLink>
           );
         })}
-      </div>
+      </nav>
 
       {/* Bottom User Profile */}
       <div className="p-3 border-t border-[#172337]">
@@ -154,10 +165,11 @@ export default function Sidebar() {
             <button
               type="button"
               onClick={handleLogout}
-              className="p-1 rounded text-slate-400 hover:text-rose-400 hover:bg-[#111C2E] transition-colors cursor-pointer"
+              className="p-1.5 rounded-md text-slate-400 hover:text-rose-400 hover:bg-[#111C2E] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               title="Sign out"
+              aria-label="Sign out"
             >
-              <LogOut className="w-3.5 h-3.5" />
+              <LogOut className="w-3.5 h-3.5" aria-hidden="true" />
             </button>
           )}
         </div>
@@ -168,7 +180,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar (Persistent) */}
-      <aside className="hidden lg:block shrink-0 h-screen sticky top-0 z-30">
+      <aside aria-label="Desktop Sidebar" className="hidden lg:block shrink-0 h-screen sticky top-0 z-30">
         {desktopSidebarContent}
       </aside>
 
@@ -184,10 +196,14 @@ export default function Sidebar() {
               transition={{ duration: 0.18 }}
               className="fixed inset-0 bg-slate-950/70 backdrop-blur-xs"
               onClick={() => setSidebarOpen(false)}
+              aria-hidden="true"
             />
 
             {/* Mobile Drawer Panel */}
             <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Navigation Menu"
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
@@ -200,9 +216,9 @@ export default function Sidebar() {
                 <NavLink
                   to="/dashboard"
                   onClick={() => setSidebarOpen(false)}
-                  className="flex items-center gap-2.5"
+                  className="flex items-center gap-2.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md"
                 >
-                  <div className="w-7 h-7 rounded-md bg-blue-600 flex items-center justify-center text-white shrink-0">
+                  <div className="w-7 h-7 rounded-md bg-blue-600 flex items-center justify-center text-white shrink-0" aria-hidden="true">
                     <Database className="w-4 h-4 text-white" />
                   </div>
                   <span className="text-sm font-bold text-white tracking-tight leading-none">RicozData</span>
@@ -211,15 +227,15 @@ export default function Sidebar() {
                 <button
                   type="button"
                   onClick={() => setSidebarOpen(false)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#111C2E] transition-colors cursor-pointer"
+                  className="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-[#111C2E] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                   aria-label="Close navigation"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
 
               {/* Navigation Links */}
-              <div className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+              <nav aria-label="Mobile Navigation" className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const active = isActive(item);
@@ -228,20 +244,21 @@ export default function Sidebar() {
                       key={item.path}
                       to={item.path}
                       onClick={() => setSidebarOpen(false)}
+                      aria-current={active ? 'page' : undefined}
                       className={`
-                        group flex items-center gap-3 px-3 py-2.5 rounded-md text-xs font-medium transition-colors duration-150
+                        group flex items-center gap-3 px-3 py-2.5 rounded-md text-xs font-medium transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
                         ${active
                           ? 'bg-blue-600 text-white font-semibold'
                           : 'text-slate-400 hover:text-slate-200 hover:bg-[#111C2E]'
                         }
                       `}
                     >
-                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} />
+                      <Icon className={`w-4 h-4 shrink-0 ${active ? 'text-white' : 'text-slate-400 group-hover:text-slate-200'}`} aria-hidden="true" />
                       <span className="truncate">{item.name}</span>
                     </NavLink>
                   );
                 })}
-              </div>
+              </nav>
 
               {/* Theme Control in Mobile Navigation (Accessible) */}
               <div className="px-4 py-3 border-t border-[#172337] flex items-center justify-between shrink-0">
@@ -269,11 +286,11 @@ export default function Sidebar() {
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-[#111C2E] transition-colors cursor-pointer"
+                    className="p-1.5 rounded-md text-slate-400 hover:text-rose-400 hover:bg-[#111C2E] transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                     title="Sign out"
                     aria-label="Sign out"
                   >
-                    <LogOut className="w-4 h-4" />
+                    <LogOut className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </div>
               </div>
