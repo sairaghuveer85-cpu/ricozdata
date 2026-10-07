@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import Button from '../components/common/Button';
+import { buildApiUrl } from '../services/apiConfig';
 
 export default function AcceptInvitation() {
   const navigate = useNavigate();
@@ -58,8 +59,8 @@ export default function AcceptInvitation() {
     setLoading(true);
 
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
-      const res = await fetch(`${backendUrl}/api/users/invitations/${encodeURIComponent(token)}/accept`, {
+      const apiUrl = buildApiUrl(`/users/invitations/${encodeURIComponent(token)}/accept`);
+      const res = await fetch(apiUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -121,8 +122,7 @@ export default function AcceptInvitation() {
 
   const handleGoogleAccept = () => {
     // Fulfill invitation directly through Google OAuth
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
-    window.location.href = `${backendUrl}/api/auth/google`;
+    window.location.href = buildApiUrl('/auth/google');
   };
 
   return (

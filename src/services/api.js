@@ -1,4 +1,6 @@
-const API_BASE_URL = import.meta.env?.VITE_API_URL || import.meta.env?.VITE_API_BASE_URL || 'http://localhost:5000/api';
+import { API_BASE_URL, BACKEND_URL, buildApiUrl } from './apiConfig';
+
+export { API_BASE_URL, BACKEND_URL, buildApiUrl };
 
 // Cooldown and guard against concurrent 401 event storms
 let isHandlingUnauthorized = false;
@@ -67,7 +69,7 @@ export async function apiRequest(endpoint, options = {}) {
     ...(options.headers || {})
   };
 
-  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  const url = buildApiUrl(endpoint);
 
   try {
     const response = await fetch(url, {

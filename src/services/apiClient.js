@@ -9,8 +9,9 @@
  * - Standardized error and response envelope normalization
  */
 
-const rawBase = import.meta.env.VITE_BACKEND_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000';
-const BASE_URL = rawBase.replace(/\/+$/, '').replace(/\/api\/v1\/?$/, '').replace(/\/api\/?$/, '');
+import { BACKEND_URL, API_BASE_URL, buildApiUrl } from './apiConfig';
+
+const BASE_URL = BACKEND_URL;
 
 class ApiClient {
   constructor() {
@@ -65,22 +66,15 @@ class ApiClient {
    */
   async refreshToken() {
     try {
-      const response = await fetch(`${BASE_URL}/api/auth/refresh`, {
+      const refreshUrl = buildApiUrl('/auth/refresh');
+      const response = await fetch(refreshUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include'
       });
 
       if (!response.ok) {
-        // Fallback to legacy unversioned endpoint if needed
-        const legacyRes = await fetch(`${BASE_URL}/api/auth/refresh`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include'
-        });
-        if (!legacyRes.ok) return null;
-        const legacyData = await legacyRes.json();
-        return legacyData.data?.accessToken || null;
+        return null;
       }
 
       const data = await response.json();
@@ -99,11 +93,7 @@ class ApiClient {
    * @returns {Promise<{ success: boolean, data: any, error: any, meta: any }>}
    */
   async request(endpoint, options = {}) {
-    const fullPath = endpoint.startsWith('http')
-      ? endpoint
-      : endpoint.startsWith('/api')
-        ? `${BASE_URL}${endpoint}`
-        : `${BASE_URL}/api${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+    const fullPath = buildApiUrl(endpoint);
 
     const headers = {
       'Content-Type': 'application/json',
@@ -214,6 +204,10 @@ class ApiClient {
     return this.request(endpoint, { ...options, method: 'POST', body });
   }
 
+  put(endpoint, body, options = {}) {
+    return this.request(endpoint, { ...options, method: 'PUT', body });
+  }
+
   patch(endpoint, body, options = {}) {
     return this.request(endpoint, { ...options, method: 'PATCH', body });
   }
@@ -223,5 +217,6 @@ class ApiClient {
   }
 }
 
+export { BACKEND_URL, API_BASE_URL, buildApiUrl };
 export const apiClient = new ApiClient();
 export default apiClient;
