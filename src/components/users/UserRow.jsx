@@ -1,9 +1,30 @@
 import React from 'react';
 import Badge from '../common/Badge';
+import RoleBadge from './RoleBadge';
 import { MoreHorizontal, Trash2, Eye, Edit3 } from 'lucide-react';
 import Dropdown from '../common/Dropdown';
+import { useApp } from '../../context/AppContext';
+import { PERMISSIONS } from '../../constants/rbac';
 
 export default function UserRow({ user, onSelect, onDelete }) {
+  const { currentUser, canManage, hasPermission } = useApp();
+
+  const isSelf = currentUser?.id === user.id || currentUser?.email === user.email;
+  const canDelete = hasPermission(PERMISSIONS.USER_DELETE) && canManage(user.role) && !isSelf;
+
+  const dropdownItems = [
+    ...(canDelete
+      ? [
+          {
+            label: 'Delete User',
+            icon: Trash2,
+            danger: true,
+            onClick: () => onDelete && onDelete(user.id),
+          },
+        ]
+      : []),
+  ];
+
   return (
     <tr
       tabIndex={0}
@@ -21,7 +42,10 @@ export default function UserRow({ user, onSelect, onDelete }) {
       {/* Name with Avatar circle */}
       <td className="py-2.5 px-4">
         <div className="flex items-center gap-2.5">
-          <div className={`w-7 h-7 rounded-full ${user.avatarBg || 'bg-blue-600'} text-white font-semibold text-xs flex items-center justify-center shrink-0`} aria-hidden="true">
+          <div
+            className={`w-7 h-7 rounded-full ${user.avatarBg || 'bg-blue-600'} text-white font-semibold text-xs flex items-center justify-center shrink-0`}
+            aria-hidden="true"
+          >
             {user.avatar || 'U'}
           </div>
           <div className="min-w-0">
@@ -44,14 +68,12 @@ export default function UserRow({ user, onSelect, onDelete }) {
 
       {/* Role */}
       <td className="py-2.5 px-4">
-        <span className="text-xs text-slate-700 dark:text-slate-300 font-medium">
-          {user.role}
-        </span>
+        <RoleBadge role={user.role} />
       </td>
 
       {/* Last Active */}
       <td className="py-2.5 px-4 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
-        {user.lastActive || 'Today at 10:14 AM'}
+        {user.lastActive || 'Never'}
       </td>
 
       {/* Status */}
@@ -80,27 +102,22 @@ export default function UserRow({ user, onSelect, onDelete }) {
           >
             <Edit3 className="w-3.5 h-3.5" aria-hidden="true" />
           </button>
-          <Dropdown
-            align="right"
-            width="w-36"
-            trigger={
-              <button
-                type="button"
-                aria-label={`More actions for ${user.name}`}
-                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
-              >
-                <MoreHorizontal className="w-3.5 h-3.5" aria-hidden="true" />
-              </button>
-            }
-            items={[
-              {
-                label: 'Delete User',
-                icon: Trash2,
-                danger: true,
-                onClick: () => onDelete && onDelete(user.id)
+          {dropdownItems.length > 0 && (
+            <Dropdown
+              align="right"
+              width="w-36"
+              trigger={
+                <button
+                  type="button"
+                  aria-label={`More actions for ${user.name}`}
+                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+                >
+                  <MoreHorizontal className="w-3.5 h-3.5" aria-hidden="true" />
+                </button>
               }
-            ]}
-          />
+              items={dropdownItems}
+            />
+          )}
         </div>
       </td>
     </tr>

@@ -2,8 +2,54 @@ import React, { useState } from 'react';
 import UserRow from './UserRow';
 import UserDrawer from './UserDrawer';
 import Badge from '../common/Badge';
-import { Trash2, ChevronRight, Clock, Mail } from 'lucide-react';
-import { INITIAL_ROLES, INITIAL_GROUPS } from '../../data/users';
+import RoleBadge from './RoleBadge';
+import { ChevronRight, Clock, Mail } from 'lucide-react';
+import { ROLES, ROLE_LABELS, ROLE_PERMISSIONS, mapLegacyRole } from '../../constants/rbac';
+
+const STANDARDIZED_ROLES = [
+  {
+    id: ROLES.SUPER_ADMIN,
+    name: ROLE_LABELS[ROLES.SUPER_ADMIN],
+    roleKey: ROLES.SUPER_ADMIN,
+    description: 'Unrestricted full access across all platform modules, system configuration, and tenant security controls.',
+    permissions: ROLE_PERMISSIONS[ROLES.SUPER_ADMIN],
+  },
+  {
+    id: ROLES.ADMIN,
+    name: ROLE_LABELS[ROLES.ADMIN],
+    roleKey: ROLES.ADMIN,
+    description: 'Enterprise governance administration with full data, policy, and user management capabilities.',
+    permissions: ROLE_PERMISSIONS[ROLES.ADMIN],
+  },
+  {
+    id: ROLES.DATA_STEWARD,
+    name: ROLE_LABELS[ROLES.DATA_STEWARD],
+    roleKey: ROLES.DATA_STEWARD,
+    description: 'Domain stewardship responsible for metadata certification, business glossary terms, and data quality rules.',
+    permissions: ROLE_PERMISSIONS[ROLES.DATA_STEWARD],
+  },
+  {
+    id: ROLES.DATA_ENGINEER,
+    name: ROLE_LABELS[ROLES.DATA_ENGINEER],
+    roleKey: ROLES.DATA_ENGINEER,
+    description: 'Data platform engineering with schema editing, pipeline lineage management, and quality telemetry access.',
+    permissions: ROLE_PERMISSIONS[ROLES.DATA_ENGINEER],
+  },
+  {
+    id: ROLES.DATA_ANALYST,
+    name: ROLE_LABELS[ROLES.DATA_ANALYST],
+    roleKey: ROLES.DATA_ANALYST,
+    description: 'Data discovery, catalog search, dataset registration, and read access to governance assets.',
+    permissions: ROLE_PERMISSIONS[ROLES.DATA_ANALYST],
+  },
+  {
+    id: ROLES.VIEWER,
+    name: ROLE_LABELS[ROLES.VIEWER],
+    roleKey: ROLES.VIEWER,
+    description: 'Read-only access across datasets, quality scores, lineage graphs, and enterprise glossary.',
+    permissions: ROLE_PERMISSIONS[ROLES.VIEWER],
+  },
+];
 
 export default function UserTable({ users = [], activeTab = 'users', onDeleteUser }) {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -17,14 +63,16 @@ export default function UserTable({ users = [], activeTab = 'users', onDeleteUse
   if (activeTab === 'roles') {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {INITIAL_ROLES.map((role) => {
-          const matchingUsers = users.filter(u => u.role?.toLowerCase() === role.name.toLowerCase() || u.roleId === role.id);
-          const count = matchingUsers.length > 0 ? matchingUsers.length : role.usersCount;
+        {STANDARDIZED_ROLES.map((role) => {
+          const matchingUsers = users.filter((u) => mapLegacyRole(u.role) === role.roleKey);
+          const count = matchingUsers.length;
           return (
             <div key={role.id} className="enterprise-panel rounded-lg p-4 sm:p-5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-sm font-semibold text-slate-900 dark:text-white">{role.name}</h4>
+                  <h4 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+                    <RoleBadge role={role.roleKey} />
+                  </h4>
                   <span className="text-xs bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium px-2 py-0.5 rounded-md tabular-nums">
                     {count} users
                   </span>
@@ -33,34 +81,68 @@ export default function UserTable({ users = [], activeTab = 'users', onDeleteUse
                   {role.description}
                 </p>
               </div>
-            <div>
-              <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
-                Privileges
-              </div>
-              <div className="flex flex-wrap gap-1.5">
-                {role.permissions.map((p, idx) => (
-                  <span key={idx} className="text-[10px] bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-sm border border-slate-200/80 dark:border-[#1D3047]">
-                    {p.replace(/_/g, ' ')}
-                  </span>
-                ))}
+              <div>
+                <div className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">
+                  Permissions ({role.permissions.length})
+                </div>
+                <div className="flex flex-wrap gap-1.5 max-h-36 overflow-y-auto pr-1">
+                  {role.permissions.map((p, idx) => (
+                    <span
+                      key={idx}
+                      className="text-[10px] bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-sm border border-slate-200/80 dark:border-[#1D3047] font-mono"
+                    >
+                      {p.replace(/_/g, ' ')}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
       </div>
     );
   }
 
+  const dynamicGroups = React.useMemo(() => {
+    const deptMap = {};
+    if (Array.isArray(users)) {
+      users.forEach(u => {
+        const dept = u.department || 'Data Platform';
+        if (!deptMap[dept]) {
+          deptMap[dept] = {
+            id: `group-${dept.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+            name: `${dept} Working Group`,
+            description: `Governed domain operations and asset stewardship for ${dept}.`,
+            membersCount: 0,
+            lead: u.name
+          };
+        }
+        deptMap[dept].membersCount += 1;
+        if (u.role?.toLowerCase().includes('manager') || u.role?.toLowerCase().includes('lead') || u.role?.toLowerCase().includes('admin')) {
+          deptMap[dept].lead = u.name;
+        }
+      });
+    }
+    return Object.values(deptMap);
+  }, [users]);
+
   if (activeTab === 'groups') {
+    if (dynamicGroups.length === 0) {
+      return (
+        <div className="py-12 text-center text-xs text-slate-500 dark:text-slate-400">
+          No organizational groups identified from registered users.
+        </div>
+      );
+    }
+
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {INITIAL_GROUPS.map((group) => (
+        {dynamicGroups.map((group) => (
           <div key={group.id} className="enterprise-panel rounded-lg p-4 sm:p-5">
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-sm font-semibold text-slate-900 dark:text-white">{group.name}</h4>
               <span className="text-xs text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 rounded-md border border-blue-200 dark:border-blue-900/60 tabular-nums">
-                {group.membersCount} members
+                {group.membersCount} {group.membersCount === 1 ? 'member' : 'members'}
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">
@@ -87,7 +169,11 @@ export default function UserTable({ users = [], activeTab = 'users', onDeleteUse
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-3 min-w-0">
-                <div className={`w-9 h-9 rounded-full ${user.avatarBg || 'bg-blue-600'} text-white font-bold text-xs flex items-center justify-center shrink-0`}>
+                <div
+                  className={`w-9 h-9 rounded-full ${
+                    user.avatarBg || 'bg-blue-600'
+                  } text-white font-bold text-xs flex items-center justify-center shrink-0`}
+                >
                   {user.avatar || 'U'}
                 </div>
                 <div className="min-w-0">
@@ -105,14 +191,12 @@ export default function UserTable({ users = [], activeTab = 'users', onDeleteUse
 
             <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5 border-t border-slate-100 dark:border-slate-800/60 text-xs">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium text-[11px]">
-                  {user.role}
-                </span>
+                <RoleBadge role={user.role} />
                 <Badge status={user.status} size="xs" dot />
               </div>
               <div className="flex items-center gap-1 text-[11px] text-slate-400">
                 <Clock className="w-3 h-3" />
-                <span>{user.lastActive || 'Active today'}</span>
+                <span>{user.lastActive || 'Never'}</span>
               </div>
             </div>
           </div>

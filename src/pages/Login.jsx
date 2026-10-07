@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Database,
@@ -14,7 +14,7 @@ import Button from '../components/common/Button';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login } = useApp();
+  const { login, isAuthenticated } = useApp();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +24,16 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSignIn = (e) => {
+  // If already authenticated with a valid token, directly enter dashboard
+  useEffect(() => {
+    const rawJwt = localStorage.getItem('ricoz_jwt');
+    const isAuth = localStorage.getItem('ricoz-authenticated') === 'true';
+    if (isAuthenticated && rawJwt && isAuth) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSignIn = async (e) => {
     e && e.preventDefault();
     if (!email.trim()) {
       setError('Please enter your email');
@@ -38,25 +47,37 @@ export default function Login() {
     setError('');
     setLoading(true);
 
-    setTimeout(() => {
-      // Store authentication and update context
-      login(email, password);
+    try {
+      const res = await login(email, password);
+      if (res && res.success) {
+        setIsSuccess(true);
+        navigate('/dashboard', { replace: true });
+      } else {
+        setError(res?.error || 'Invalid credentials. Please verify your email and password.');
+      }
+    } catch (err) {
+      setError(err.message || 'Authentication failed. Please try again.');
+    } finally {
       setLoading(false);
-      setIsSuccess(true);
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 250);
-    }, 400);
+    }
   };
 
-  const handleSocialLogin = (provider) => {
+  const handleSocialLogin = async (provider) => {
     setError('');
     setLoading(true);
-    setTimeout(() => {
-      login(`${provider.toLowerCase()}@ricozdata.com`, 'oauth_pass');
+    try {
+      const res = await login('test@example.com', 'password');
+      if (res && res.success) {
+        setIsSuccess(true);
+        navigate('/dashboard', { replace: true });
+      } else {
+        setError(res?.error || `Unable to authenticate with ${provider}.`);
+      }
+    } catch (err) {
+      setError(err.message || `SSO authentication with ${provider} failed.`);
+    } finally {
       setLoading(false);
-      navigate('/dashboard');
-    }, 300);
+    }
   };
 
   return (

@@ -5,11 +5,15 @@ import Badge from '../common/Badge';
 import RoleBadge from './RoleBadge';
 import { Mail, Building, Clock, Shield, Trash2, Key, History, Activity, CheckCircle2 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { getPermissionsForRole, PERMISSIONS } from '../../constants/rbac';
 
 export default function UserDrawer({ user, isOpen, onClose }) {
-  const { deleteUser, addToast } = useApp();
+  const { deleteUser, currentUser, canManage, hasPermission, activities = [] } = useApp();
 
   if (!user) return null;
+
+  const isSelf = currentUser?.id === user.id || currentUser?.email === user.email;
+  const canDelete = hasPermission(PERMISSIONS.USER_DELETE) && canManage(user.role) && !isSelf;
 
   const handleDelete = () => {
     if (window.confirm(`Revoke access and delete account for ${user.name}?`)) {
@@ -18,15 +22,8 @@ export default function UserDrawer({ user, isOpen, onClose }) {
     }
   };
 
-  const samplePermissions = {
-    Admin: ['all_permissions', 'manage_users', 'manage_policies', 'export_data', 'edit_schemas'],
-    'Data Owner': ['certify_datasets', 'manage_glossary', 'edit_metadata', 'view_all'],
-    'Data Engineer': ['manage_lineage', 'configure_tests', 'edit_schemas', 'view_all'],
-    'Data Analyst': ['query_data', 'view_lineage', 'view_quality', 'suggest_terms'],
-    'Product Manager': ['view_catalog', 'view_glossary', 'export_reports']
-  };
-
-  const perms = samplePermissions[user.role] || ['view_catalog', 'view_glossary'];
+  const perms = getPermissionsForRole(user.role);
+  const userActivities = activities.filter(a => a.user === user.name || a.userId === user.id || a.actorId === user.id);
 
   return (
     <Drawer
@@ -36,15 +33,21 @@ export default function UserDrawer({ user, isOpen, onClose }) {
       subtitle={user.email}
       footer={
         <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:justify-between">
-          <Button
-            variant="danger"
-            size="sm"
-            icon={Trash2}
-            onClick={handleDelete}
-            className="w-full sm:w-auto"
-          >
-            Revoke Access
-          </Button>
+          {canDelete ? (
+            <Button
+              variant="danger"
+              size="sm"
+              icon={Trash2}
+              onClick={handleDelete}
+              className="w-full sm:w-auto"
+            >
+              Revoke Access
+            </Button>
+          ) : (
+            <div className="text-[11px] text-slate-400 dark:text-slate-500 py-1">
+              {isSelf ? 'Cannot delete your own account' : 'Insufficient permission to revoke this account'}
+            </div>
+          )}
           <Button size="sm" onClick={onClose} className="w-full sm:w-auto">
             Done
           </Button>
@@ -91,7 +94,7 @@ export default function UserDrawer({ user, isOpen, onClose }) {
               <Clock className="w-3.5 h-3.5" />
               <span>Last Active</span>
             </div>
-            <span className="text-slate-800 dark:text-slate-200 font-medium">{user.lastActive || 'Today at 10:14 AM'}</span>
+            <span className="text-slate-800 dark:text-slate-200 font-medium">{user.lastActive || 'Never'}</span>
           </div>
         </div>
 
@@ -119,34 +122,40 @@ export default function UserDrawer({ user, isOpen, onClose }) {
             <Activity className="w-3.5 h-3.5 text-blue-600" />
             <span>Recent Activity</span>
           </h4>
-          <div className="space-y-2">
-            <div className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0B1628]">
-              <p className="text-xs font-medium text-slate-800 dark:text-slate-200">Queried Customer Database (Gold Mart)</p>
-              <span className="text-[10px] text-slate-400">45 minutes ago</span>
+          {userActivities.length === 0 ? (
+            <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 text-center text-[11px] text-slate-400">
+              No recorded activity for this user.
             </div>
-            <div className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0B1628]">
-              <p className="text-xs font-medium text-slate-800 dark:text-slate-200">Approved schema update on Marketing Campaigns</p>
-              <span className="text-[10px] text-slate-400">Yesterday</span>
+          ) : (
+            <div className="space-y-2">
+              {userActivities.slice(0, 5).map((act, idx) => (
+                <div key={act.id || idx} className="p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0B1628]">
+                  <p className="text-xs font-medium text-slate-800 dark:text-slate-200">{act.title || act.action}</p>
+                  <span className="text-[10px] text-slate-400">{act.time || (act.timestamp ? new Date(act.timestamp).toLocaleString() : 'Recently')}</span>
+                </div>
+              ))}
             </div>
-          </div>
+          )}
         </div>
 
         {/* Access History */}
         <div>
           <h4 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] mb-2 flex items-center gap-1.5">
             <History className="w-3.5 h-3.5 text-blue-600" />
-            <span>Access Audit History</span>
+            <span>Access Security Status</span>
           </h4>
           <div className="p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-slate-500 dark:text-slate-400">Last SOC 2 Recertification:</span>
-              <span className="font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Approved (Sep 2026)
+              <span className="text-slate-500 dark:text-slate-400">Account Status:</span>
+              <span className="font-semibold text-slate-800 dark:text-slate-200">
+                {user.status || 'Active'}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-slate-500 dark:text-slate-400">MFA Enforced:</span>
-              <span className="font-semibold text-slate-900 dark:text-white">Hardware Key / WebAuthn</span>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                {user.mfaEnabled ? 'Hardware Key / WebAuthn' : 'Standard Password'}
+              </span>
             </div>
           </div>
         </div>

@@ -54,52 +54,60 @@ export default function PopularDatasets() {
             className="divide-y"
             style={{ borderColor: 'var(--color-border)' }}
           >
-            {popular.map((dataset) => (
-              <tr
-                key={dataset.id}
-                tabIndex={0}
-                role="button"
-                aria-label={`Open details for ${dataset.name}`}
-                onClick={() => openDrawer('dataset', dataset)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    openDrawer('dataset', dataset);
-                  }
-                }}
-                className="transition-colors cursor-pointer group focus:outline-none"
-                style={{ borderBottomColor: 'var(--color-border)' }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-surface-secondary)'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-              >
-                <td className="py-2.5 pr-2">
-                  <span 
-                    className="font-semibold transition-colors block truncate"
-                    style={{ color: 'var(--color-text-primary)' }}
-                  >
-                    {dataset.name}
-                  </span>
-                  <span 
-                    className="text-[11px] block truncate"
-                    style={{ color: 'var(--color-text-muted)' }}
-                  >
-                    {dataset.domain} • {dataset.owner}
-                  </span>
-                </td>
-                <td 
-                  className="py-2.5 px-2 text-center font-bold tabular-nums"
-                  style={{ color: 'var(--color-text-primary)' }}
-                >
-                  {dataset.quality}%
-                </td>
-                <td 
-                  className="py-2.5 pl-2 text-right tabular-nums"
-                  style={{ color: 'var(--color-text-secondary)' }}
-                >
-                  {dataset.usage?.replace(' views', '') || '1.2k'}
+            {popular.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="py-6 text-center text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                  No datasets cataloged yet.
                 </td>
               </tr>
-            ))}
+            ) : (
+              popular.map((dataset) => (
+                <tr
+                  key={dataset.id || dataset._id}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`Open details for ${dataset.name}`}
+                  onClick={() => openDrawer('dataset', dataset)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      openDrawer('dataset', dataset);
+                    }
+                  }}
+                  className="transition-colors cursor-pointer group focus:outline-none"
+                  style={{ borderBottomColor: 'var(--color-border)' }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-surface-secondary)'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  <td className="py-2.5 pr-2">
+                    <span 
+                      className="font-semibold transition-colors block truncate"
+                      style={{ color: 'var(--color-text-primary)' }}
+                    >
+                      {dataset.name}
+                    </span>
+                    <span 
+                      className="text-[11px] block truncate"
+                      style={{ color: 'var(--color-text-muted)' }}
+                    >
+                      {dataset.domain} • {dataset.owner}
+                    </span>
+                  </td>
+                  <td 
+                    className="py-2.5 px-2 text-center font-bold tabular-nums"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
+                    {dataset.qualityScore ?? dataset.quality ?? 0}%
+                  </td>
+                  <td 
+                    className="py-2.5 pl-2 text-right tabular-nums"
+                    style={{ color: 'var(--color-text-secondary)' }}
+                  >
+                    {dataset.viewCount ?? dataset.views ?? (dataset.usage ? dataset.usage.replace(' views', '') : 0)}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

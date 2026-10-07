@@ -12,13 +12,12 @@ import {
   Columns,
   Lock,
   Eye,
-  Calendar,
   Globe
 } from 'lucide-react';
 import Badge from '../common/Badge';
 
-export default function DatasetOverview({ dataset, onUpdateTags }) {
-  const [tags, setTags] = useState(dataset.tags || ['customer', 'marketing', 'pii', 'sales', 'production']);
+export default function DatasetOverview({ dataset = {}, onUpdateTags }) {
+  const [tags, setTags] = useState(Array.isArray(dataset.tags) ? dataset.tags : []);
   const [isAddingTag, setIsAddingTag] = useState(false);
   const [newTagInput, setNewTagInput] = useState('');
 
@@ -32,20 +31,28 @@ export default function DatasetOverview({ dataset, onUpdateTags }) {
     setIsAddingTag(false);
   };
 
+  const resolvedColumns = dataset.columnsCount !== undefined && dataset.columnsCount !== null
+    ? dataset.columnsCount
+    : (Array.isArray(dataset.columns) ? dataset.columns.length : 'Not Available');
+
+  const resolvedUsage = dataset.usage || (dataset.views !== undefined ? `${dataset.views.toLocaleString()} views` : '0 views');
+  const resolvedUpdated = dataset.lastUpdatedDate || dataset.updated || 'Not Available';
+  const resolvedRows = dataset.rows || (dataset.rowCount !== undefined ? `${dataset.rowCount} rows` : 'Not Available');
+
   const metadataItems = [
-    { label: 'Owner', value: dataset.owner || 'Priya S.', icon: User },
-    { label: 'Domain', value: dataset.domain || 'Marketing', icon: Globe },
-    { label: 'Source', value: dataset.source || 'Snowflake', icon: Database, isLink: true },
-    { label: 'Last Updated', value: dataset.updated || '2 hours ago', icon: Clock },
-    { label: 'Rows', value: dataset.rows || '12.4M', icon: Layers },
-    { label: 'Columns', value: dataset.columnsCount || 48, icon: Columns },
-    { label: 'Sensitivity', value: dataset.sensitivity || 'PII', icon: Lock, isHighlight: true },
-    { label: 'Usage', value: dataset.usage || '1.4k views', icon: Eye },
+    { label: 'Owner', value: dataset.owner || 'Unassigned', icon: User },
+    { label: 'Domain', value: dataset.domain || 'Unassigned', icon: Globe },
+    { label: 'Source', value: dataset.source || 'External Source', icon: Database, isLink: true },
+    { label: 'Last Updated', value: resolvedUpdated, icon: Clock },
+    { label: 'Rows', value: resolvedRows, icon: Layers },
+    { label: 'Columns', value: resolvedColumns, icon: Columns },
+    { label: 'Sensitivity', value: dataset.sensitivity || 'Internal', icon: Lock, isHighlight: dataset.sensitivity === 'Confidential' || dataset.sensitivity === 'Restricted' },
+    { label: 'Usage', value: resolvedUsage, icon: Eye },
   ];
 
   return (
     <div className="space-y-6">
-      {/* 8-Property Technical Metadata Grid (Screen 4) */}
+      {/* 8-Property Technical Metadata Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {metadataItems.map((item, idx) => (
           <div
@@ -81,11 +88,11 @@ export default function DatasetOverview({ dataset, onUpdateTags }) {
               Description
             </h3>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-              {dataset.longDescription || dataset.description}
+              {dataset.longDescription || dataset.description || 'No description available'}
             </p>
             <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-              <span>Data classification: <strong className="text-slate-900 dark:text-white">Confidential PII</strong></span>
-              <span>Update cadence: <strong className="text-slate-900 dark:text-white">Hourly Micro-batch</strong></span>
+              <span>Data classification: <strong className="text-slate-900 dark:text-white">{dataset.classification || dataset.sensitivity || 'Not Specified'}</strong></span>
+              <span>Update cadence: <strong className="text-slate-900 dark:text-white">{dataset.refreshFrequency || dataset.sourceDetails?.syncSchedule || 'On-Demand'}</strong></span>
             </div>
           </div>
 
@@ -106,6 +113,10 @@ export default function DatasetOverview({ dataset, onUpdateTags }) {
                   #{tag}
                 </span>
               ))}
+
+              {tags.length === 0 && !isAddingTag && (
+                <span className="text-xs text-slate-400 italic">No tags assigned</span>
+              )}
 
               {isAddingTag ? (
                 <div className="inline-flex items-center gap-1">
@@ -151,51 +162,46 @@ export default function DatasetOverview({ dataset, onUpdateTags }) {
               <span className="text-[11px] text-slate-400">PDF & Guides</span>
             </div>
             <div className="space-y-2.5">
-              {(dataset.documentation || [
-                { name: 'Customer Data Guide.pdf', size: '2.4 MB', updated: '3 days ago' },
-                { name: 'PII Protocol Spec.pdf', size: '890 KB', updated: '2 weeks ago' }
-              ]).map((doc, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between p-2.5 rounded-md border border-slate-100 dark:border-slate-800/80 hover:border-blue-200 dark:hover:border-blue-900/60 hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition-all group"
-                >
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-7 h-7 rounded-md bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                      <FileText className="w-3.5 h-3.5" />
-                    </div>
-                    <div className="min-w-0">
-                      <span className="text-xs font-medium text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate block">
-                        {doc.name}
-                      </span>
-                      <div className="text-[11px] text-slate-400">
-                        {doc.size} • {doc.updated || 'Recently'}
+              {Array.isArray(dataset.documentation) && dataset.documentation.length > 0 ? (
+                dataset.documentation.map((doc, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center justify-between p-2.5 rounded-md border border-slate-100 dark:border-slate-800/80 hover:border-blue-200 dark:hover:border-blue-900/60 hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition-all group"
+                  >
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-7 h-7 rounded-md bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                        <FileText className="w-3.5 h-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-xs font-medium text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate block">
+                          {doc.name || doc.title || 'Document'}
+                        </span>
+                        <div className="text-[11px] text-slate-400">
+                          {doc.size || 'Attached'} • {doc.updated || 'Recently'}
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-1 shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => alert(`Downloading ${doc.name}...`)}
-                      className="p-1 rounded text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                      title="Download document"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                    </button>
-                    <a
-                      href="#preview"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        alert(`Opening preview for ${doc.name}...`);
-                      }}
-                      className="p-1 rounded text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                      title="Open Document"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {doc.url && (
+                        <a
+                          href={doc.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-1 rounded text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                          title="Open Document"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                    </div>
                   </div>
+                ))
+              ) : (
+                <div className="p-4 rounded-md border border-dashed border-slate-200 dark:border-slate-800 text-center text-xs text-slate-400">
+                  No documentation files attached
                 </div>
-              ))}
+              )}
             </div>
           </div>
 
@@ -205,20 +211,26 @@ export default function DatasetOverview({ dataset, onUpdateTags }) {
               <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                 Certification & Compliance
               </h3>
-              <Badge status={dataset.status} size="sm" dot />
+              <Badge status={dataset.status || 'Active'} size="sm" dot />
             </div>
             <div className="p-3 rounded-md bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-700/60 space-y-2">
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500 dark:text-slate-400">Certified By:</span>
-                <span className="font-semibold text-slate-900 dark:text-white">Central Governance Guild</span>
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {dataset.certifiedBy || (dataset.certificationStatus === 'Certified' ? 'Enterprise Governance' : 'Not Certified')}
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500 dark:text-slate-400">Certified Date:</span>
-                <span className="font-semibold text-slate-900 dark:text-white">Aug 14, 2026</span>
+                <span className="font-semibold text-slate-900 dark:text-white">
+                  {dataset.certifiedAt ? new Date(dataset.certifiedAt).toLocaleDateString() : 'Not Certified'}
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-slate-500 dark:text-slate-400">Steward:</span>
-                <span className="font-semibold text-blue-600 dark:text-blue-400">{dataset.owner}</span>
+                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                  {dataset.steward || dataset.owner || 'Unassigned'}
+                </span>
               </div>
             </div>
           </div>

@@ -2,23 +2,34 @@ import React, { useState } from 'react';
 import Modal from '../common/Modal';
 import Button from '../common/Button';
 import Input from '../common/Input';
-import { USER_ROLES } from '../../utils/constants';
+import { ROLES, ROLE_LABELS } from '../../constants/rbac';
+import { useApp } from '../../context/AppContext';
 
 export default function AddUserModal({ isOpen, onClose, onAdd }) {
+  const { currentUser } = useApp();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    role: 'Data Analyst',
+    password: 'Password123!',
+    role: ROLES.DATA_ANALYST,
     department: 'Analytics',
-    status: 'Active'
+    status: 'ACTIVE',
   });
 
   const [errors, setErrors] = useState({});
 
+  // Determine allowed roles to assign
+  const isSuperAdmin = currentUser?.role === ROLES.SUPER_ADMIN;
+  const assignableRoles = Object.values(ROLES).filter((r) => {
+    if (r === ROLES.SUPER_ADMIN && !isSuperAdmin) return false;
+    return true;
+  });
+
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
@@ -28,6 +39,7 @@ export default function AddUserModal({ isOpen, onClose, onAdd }) {
     if (!formData.name.trim()) newErrors.name = 'Full name is required';
     if (!formData.email.trim()) newErrors.email = 'Corporate email is required';
     else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Invalid email address';
+    if (!formData.password || formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -39,9 +51,10 @@ export default function AddUserModal({ isOpen, onClose, onAdd }) {
     setFormData({
       name: '',
       email: '',
-      role: 'Data Analyst',
+      password: 'Password123!',
+      role: ROLES.DATA_ANALYST,
       department: 'Analytics',
-      status: 'Active'
+      status: 'ACTIVE',
     });
   };
 
@@ -74,11 +87,21 @@ export default function AddUserModal({ isOpen, onClose, onAdd }) {
 
         <Input
           label="Corporate Email"
-          placeholder="e.g. maya.patel@ricozdata.com"
+          placeholder="e.g. maya.patel@ricoz-industries.demo"
           type="email"
           value={formData.email}
           onChange={(e) => handleChange('email', e.target.value)}
           error={errors.email}
+          required
+        />
+
+        <Input
+          label="Initial Password"
+          placeholder="Password123!"
+          type="password"
+          value={formData.password}
+          onChange={(e) => handleChange('password', e.target.value)}
+          error={errors.password}
           required
         />
 
@@ -92,8 +115,10 @@ export default function AddUserModal({ isOpen, onClose, onAdd }) {
               onChange={(e) => handleChange('role', e.target.value)}
               className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111C2E] text-xs text-slate-900 dark:text-white py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
             >
-              {USER_ROLES.map(r => (
-                <option key={r} value={r} className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">{r}</option>
+              {assignableRoles.map((r) => (
+                <option key={r} value={r} className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">
+                  {ROLE_LABELS[r] || r}
+                </option>
               ))}
             </select>
           </div>
@@ -121,8 +146,9 @@ export default function AddUserModal({ isOpen, onClose, onAdd }) {
             onChange={(e) => handleChange('status', e.target.value)}
             className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111C2E] text-xs text-slate-900 dark:text-white py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
           >
-            <option value="Active" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Active</option>
-            <option value="Inactive" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Inactive</option>
+            <option value="ACTIVE" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Active</option>
+            <option value="INACTIVE" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Inactive</option>
+            <option value="SUSPENDED" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Suspended</option>
           </select>
         </div>
       </form>

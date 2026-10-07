@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import DatasetHeader from '../components/dataset/DatasetHeader';
 import DatasetTabs from '../components/dataset/DatasetTabs';
@@ -8,44 +8,77 @@ import DatasetQuality from '../components/dataset/DatasetQuality';
 import DatasetLineage from '../components/dataset/DatasetLineage';
 import DatasetActivity from '../components/dataset/DatasetActivity';
 import PolicyTable from '../components/governance/PolicyTable';
+import DatasetQueryStudio from '../components/dataset/DatasetQueryStudio';
 import Modal from '../components/common/Modal';
 import Button from '../components/common/Button';
 import { useApp } from '../context/AppContext';
+import datasetApi from '../services/datasetApi';
 
 export default function DatasetDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { datasets, policies, updateDataset, deleteDataset, getEnrichedDataset, getDatasetPolicies } = useApp();
+  const { policies, updateDataset, deleteDataset } = useApp();
 
   const [activeTab, setActiveTab] = useState('overview');
   const [isQueryModalOpen, setIsQueryModalOpen] = useState(false);
-  const [sqlQuery, setSqlQuery] = useState(`SELECT \n  customer_id, email, first_name, last_name, tier\nFROM \n  SNOWFLAKE_PROD.MARKETING.CUSTOMER_DATABASE \nWHERE \n  churn_risk_score > 0.75 \nLIMIT 50;`);
-  const [queryResult, setQueryResult] = useState(null);
 
-  // Find dataset and enrich with resolved owner and quality data
-  const rawDataset = datasets.find(d => d.id === id) || datasets[0];
-  const dataset = (getEnrichedDataset && rawDataset) ? (getEnrichedDataset(rawDataset.id) || rawDataset) : rawDataset;
+  const [dataset, setDataset] = useState(null);
+  const [relatedDatasets, setRelatedDatasets] = useState([]);
+  const [activity, setActivity] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const datasetPolicies = getDatasetPolicies ? getDatasetPolicies(dataset?.id) : policies;
+  const fetchDatasetDetails = async () => {
+    try {
+      setLoading(true);
+      const res = await datasetApi.getDatasetById(id);
+      const ds = res?.data?.data || res?.data || res;
+      setDataset(ds && typeof ds === 'object' && ds.name ? ds : null);
+      setRelatedDatasets(res?.related || res?.data?.related || ds?.relatedDatasets || []);
+      setActivity(res?.activity || res?.data?.activity || ds?.activity || []);
+    } catch (error) {
+      console.error('Failed to fetch dataset details:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (id) {
+      fetchDatasetDetails();
+    }
+  }, [id]);
 
   const handleDelete = () => {
-    if (window.confirm(`Are you sure you want to delete dataset "${dataset.name}"?`)) {
-      deleteDataset(dataset.id);
+    if (window.confirm(`Are you sure you want to delete dataset "${dataset?.name}"?`)) {
+      deleteDataset(dataset._id || dataset.id);
       navigate('/catalog');
     }
   };
 
-  const handleExecuteQuery = () => {
-    setQueryResult([
-      { customer_id: 'CUST-98214', email: 'elena.rostova@example.com', first_name: 'Elena', last_name: 'Rostova', tier: 'Platinum' },
-      { customer_id: 'CUST-98215', email: 'marcus.vance@example.com', first_name: 'Marcus', last_name: 'Vance', tier: 'Gold' },
-      { customer_id: 'CUST-98216', email: 'david.choi@example.com', first_name: 'David', last_name: 'Choi', tier: 'Silver' }
-    ]);
-  };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-20">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <span className="ml-3 text-sm text-slate-500 dark:text-slate-400">Loading dataset details...</span>
+      </div>
+    );
+  }
+
+  if (!dataset) {
+    return (
+      <div className="text-center py-20">
+        <h2 className="text-base font-semibold text-slate-900 dark:text-white">Dataset Not Found</h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">The requested dataset could not be retrieved from the catalog.</p>
+        <Button size="sm" className="mt-4" onClick={() => navigate('/catalog')}>
+          Return to Catalog
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* Header matching Screen 4 */}
+      {/* Header */}
       <DatasetHeader
         dataset={dataset}
         onOpenQuery={() => setIsQueryModalOpen(true)}
@@ -60,14 +93,61 @@ export default function DatasetDetails() {
 
       {/* Tab Content Panels */}
       {activeTab === 'overview' && (
-        <DatasetOverview
-          dataset={dataset}
-          onUpdateTags={(tags) => updateDataset(dataset.id, { tags })}
-        />
+        <div className="space-y-6">
+          <DatasetOverview
+            dataset={dataset}
+            onUpdateTags={(tags) => updateDataset(dataset._id || dataset.id, { tags })}
+          />
+
+          {/* Related Datasets Section */}
+          {relatedDatasets.length > 0 && (
+            <div className="theme-card rounded-lg border border-slate-200 dark:border-[#1D3047] p-4 space-y-3">
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+                Related Datasets ({relatedDatasets.length})
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {relatedDatasets.map((rel) => (
+                  <div
+                    key={rel._id}
+                    onClick={() => navigate(`/catalog/${rel._id}`)}
+                    className="p-3 rounded border border-slate-100 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600 cursor-pointer bg-slate-50/50 dark:bg-[#0E1B2E]/50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                        {rel.name}
+                      </span>
+                      <span className="text-[10px] text-slate-400">{rel.domain}</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-1">
+                      {rel.description}
+                    </p>
+                    {rel.relationshipReasons && rel.relationshipReasons.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1">
+                        {rel.relationshipReasons.map((reason, rIdx) => (
+                          <span
+                            key={rIdx}
+                            className="text-[9px] bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded border border-blue-100 dark:border-blue-900/40"
+                          >
+                            {reason}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
       {activeTab === 'schema' && (
-        <DatasetSchema schema={dataset.schema || []} />
+        <DatasetSchema
+          schema={dataset.schema || []}
+          dataset={dataset}
+          datasetId={dataset._id || dataset.id}
+          onUpdateSuccess={fetchDatasetDetails}
+        />
       )}
 
       {activeTab === 'quality' && (
@@ -85,83 +165,35 @@ export default function DatasetDetails() {
               Enforced Governance Policies
             </h3>
             <span className="text-xs text-slate-500 dark:text-slate-400">
-              {datasetPolicies.length} {datasetPolicies.length === 1 ? 'policy' : 'policies'} applied
+              {policies.length} policies applied
             </span>
           </div>
-          <PolicyTable
-            policies={datasetPolicies}
-          />
+          <PolicyTable policies={policies} />
         </div>
       )}
 
       {activeTab === 'activity' && (
-        <DatasetActivity dataset={dataset} />
+        <DatasetActivity dataset={dataset} activities={activity} />
+      )}
+
+      {activeTab === 'query' && (
+        <DatasetQueryStudio dataset={dataset} />
       )}
 
       {/* SQL Query Modal */}
       <Modal
         isOpen={isQueryModalOpen}
-        onClose={() => {
-          setIsQueryModalOpen(false);
-          setQueryResult(null);
-        }}
+        onClose={() => setIsQueryModalOpen(false)}
         title={`Interactive SQL Studio — ${dataset.name}`}
-        subtitle={`Execute read-only queries against ${dataset.source} production replica`}
-        maxWidth="max-w-3xl"
+        subtitle={`Execute read-only queries against ${dataset.source || 'configured'} data source`}
+        maxWidth="max-w-4xl"
         footer={
-          <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:justify-end">
-            <Button variant="secondary" size="sm" onClick={() => setIsQueryModalOpen(false)} className="w-full sm:w-auto">
-              Close
-            </Button>
-            <Button size="sm" onClick={handleExecuteQuery} className="w-full sm:w-auto">
-              Run SQL Query
-            </Button>
-          </div>
+          <Button variant="secondary" size="sm" onClick={() => setIsQueryModalOpen(false)}>
+            Close
+          </Button>
         }
       >
-        <div className="space-y-4">
-          <div className="bg-slate-900 dark:bg-[#07111F] rounded-lg p-3 text-white font-mono text-xs shadow-inner border border-slate-800">
-            <textarea
-              rows={5}
-              value={sqlQuery}
-              onChange={(e) => setSqlQuery(e.target.value)}
-              className="w-full bg-transparent border-0 text-emerald-400 font-mono text-xs focus:outline-none resize-none"
-            />
-          </div>
-
-          {queryResult && (
-            <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden bg-white dark:bg-[#0B1628]">
-              <div className="bg-slate-50 dark:bg-[#111C2E] px-3 py-1.5 border-b border-slate-200 dark:border-slate-800 text-[11px] font-semibold text-slate-600 dark:text-slate-300 flex justify-between">
-                <span>Query Result (3 rows returned in 12ms)</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">✓ Success</span>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-slate-50 dark:bg-[#111C2E] text-[11px] text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
-                    <tr>
-                      <th className="p-2">customer_id</th>
-                      <th className="p-2">email</th>
-                      <th className="p-2">first_name</th>
-                      <th className="p-2">last_name</th>
-                      <th className="p-2">tier</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-                    {queryResult.map((row, i) => (
-                      <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                        <td className="p-2 font-mono text-slate-900 dark:text-white">{row.customer_id}</td>
-                        <td className="p-2 font-mono text-slate-600 dark:text-slate-400">{row.email}</td>
-                        <td className="p-2">{row.first_name}</td>
-                        <td className="p-2">{row.last_name}</td>
-                        <td className="p-2 font-semibold text-blue-600 dark:text-blue-400">{row.tier}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
+        <DatasetQueryStudio dataset={dataset} />
       </Modal>
     </div>
   );

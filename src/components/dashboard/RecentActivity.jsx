@@ -61,35 +61,41 @@ export default function RecentActivity() {
           className="divide-y"
           style={{ borderColor: 'var(--color-border)' }}
         >
-          {activities.slice(0, 5).map((act) => (
-            <div
-              key={act.id}
-              className="py-2.5 flex items-center justify-between gap-3 text-xs transition-colors rounded px-1"
-              style={{ 
-                borderBottomColor: 'var(--color-border)'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-surface-secondary)'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${getStatusDot(act.type)}`} aria-hidden="true" />
-                <div className="min-w-0">
-                  <span 
-                    className="font-medium truncate block"
-                    style={{ color: 'var(--color-text-primary)' }}
-                  >
-                    {act.target ? `${act.target} — ${act.title.toLowerCase()}` : act.title}
-                  </span>
-                </div>
-              </div>
-              <span 
-                className="text-[11px] whitespace-nowrap shrink-0"
-                style={{ color: 'var(--color-text-muted)' }}
-              >
-                {getShortTime(act.time)}
-              </span>
+          {activities.length === 0 ? (
+            <div className="py-6 text-center text-xs" style={{ color: 'var(--color-text-muted)' }}>
+              No recent activity events recorded yet.
             </div>
-          ))}
+          ) : (
+            activities.slice(0, 5).map((act) => (
+              <div
+                key={act.id || act._id}
+                className="py-2.5 flex items-center justify-between gap-3 text-xs transition-colors rounded px-1"
+                style={{ 
+                  borderBottomColor: 'var(--color-border)'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-surface-secondary)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${getStatusDot(act.type)}`} aria-hidden="true" />
+                  <div className="min-w-0">
+                    <span 
+                      className="font-medium truncate block"
+                      style={{ color: 'var(--color-text-primary)' }}
+                    >
+                      {act.target ? `${act.target} — ${act.title.toLowerCase()}` : act.title}
+                    </span>
+                  </div>
+                </div>
+                <span 
+                  className="text-[11px] whitespace-nowrap shrink-0"
+                  style={{ color: 'var(--color-text-muted)' }}
+                >
+                  {getShortTime(act.time || act.timestamp)}
+                </span>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

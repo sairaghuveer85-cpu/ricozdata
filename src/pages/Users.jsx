@@ -4,7 +4,9 @@ import PageHeader from '../components/layout/PageHeader';
 import Button from '../components/common/Button';
 import UserTable from '../components/users/UserTable';
 import AddUserModal from '../components/users/AddUserModal';
+import PermissionGate from '../components/auth/PermissionGate';
 import { useApp } from '../context/AppContext';
+import { PERMISSIONS } from '../constants/rbac';
 
 export default function Users() {
   const { users, addUser, deleteUser } = useApp();
@@ -24,14 +26,16 @@ export default function Users() {
         title="User Management"
         subtitle="Manage users and access across your organization."
         actions={
-          <Button
-            size="md"
-            icon={Plus}
-            onClick={() => setIsModalOpen(true)}
-            className="w-full sm:w-auto"
-          >
-            Add User
-          </Button>
+          <PermissionGate permission={PERMISSIONS.USER_CREATE}>
+            <Button
+              size="md"
+              icon={Plus}
+              onClick={() => setIsModalOpen(true)}
+              className="w-full sm:w-auto"
+            >
+              Add User
+            </Button>
+          </PermissionGate>
         }
       />
 
@@ -41,8 +45,8 @@ export default function Users() {
           {[
             { id: 'users', label: 'Users' },
             { id: 'roles', label: 'Roles' },
-            { id: 'groups', label: 'Groups' }
-          ].map(tab => (
+            { id: 'groups', label: 'Groups' },
+          ].map((tab) => (
             <button
               key={tab.id}
               role="tab"
@@ -51,9 +55,10 @@ export default function Users() {
               onClick={() => setActiveTab(tab.id)}
               className={`
                 py-3 px-1 border-b-2 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-xs
-                ${activeTab === tab.id
-                  ? 'border-blue-600 text-blue-600 dark:text-blue-400'
-                  : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700'
+                ${
+                  activeTab === tab.id
+                    ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700'
                 }
               `}
             >

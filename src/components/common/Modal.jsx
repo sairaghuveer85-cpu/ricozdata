@@ -15,18 +15,33 @@ export default function Modal({
   const subtitleId = useId();
   const modalRef = useRef(null);
   const previousActiveElementRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+
+  // Synchronize latest onClose callback to ref without re-triggering modal lifecycle
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
 
   useEffect(() => {
     if (isOpen) {
       previousActiveElementRef.current = document.activeElement;
       document.body.style.overflow = 'hidden';
 
-      // Focus modal container on open
+      // Focus modal container on open, prioritizing first interactive element inside modal body
       const timer = setTimeout(() => {
         if (modalRef.current) {
-          const focusable = modalRef.current.querySelector(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          );
+          // If active element is already inside modal, do not steal focus
+          if (modalRef.current.contains(document.activeElement)) {
+            return;
+          }
+          const bodyContainer = modalRef.current.querySelector('[data-modal-body]') || modalRef.current;
+          const focusable =
+            bodyContainer.querySelector(
+              'input:not([disabled]):not([type="hidden"]), textarea:not([disabled]), select:not([disabled]), button:not([disabled]), [href], [tabindex]:not([tabindex="-1"])'
+            ) ||
+            modalRef.current.querySelector(
+              'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
           if (focusable) {
             focusable.focus();
           } else {
@@ -38,7 +53,7 @@ export default function Modal({
       const handleKeyDown = (e) => {
         if (e.key === 'Escape') {
           e.stopPropagation();
-          onClose();
+          onCloseRef.current?.();
         }
       };
 
@@ -53,7 +68,7 @@ export default function Modal({
         }
       };
     }
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   return (
     <AnimatePresence>
@@ -118,7 +133,7 @@ export default function Modal({
               </div>
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5">
+              <div data-modal-body className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5">
                 {children}
               </div>
 

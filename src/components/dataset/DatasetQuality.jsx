@@ -2,15 +2,18 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ArrowUpRight, ArrowRight, CheckCircle2 } from 'lucide-react';
 import Badge from '../common/Badge';
-import { QUALITY_OVERVIEW, QUALITY_ISSUES } from '../../data/quality';
 import { useApp } from '../../context/AppContext';
 
 export default function DatasetQuality({ dataset }) {
-  const { getQualityForDataset, getDatasetIssues } = useApp();
+  const { getQualityForDataset, getDatasetIssues, qualityOverview, issues } = useApp();
 
-  const quality = (getQualityForDataset ? getQualityForDataset(dataset?.id) : null) || QUALITY_OVERVIEW;
-  const datasetIssues = (getDatasetIssues ? getDatasetIssues(dataset?.id) : null) || QUALITY_ISSUES.filter(i => i.datasetId === dataset?.id);
-  const score = dataset?.quality || quality.score || 95;
+  const rawScore = dataset?.qualityScore ?? dataset?.quality ?? null;
+  const score = rawScore != null ? Number(rawScore) : null;
+  const hasScore = score != null && score > 0;
+  const quality = (getQualityForDataset && dataset?.id) ? getQualityForDataset(dataset.id) : qualityOverview;
+  const datasetIssues = (getDatasetIssues && dataset?.id ? getDatasetIssues(dataset.id) : null) || (issues || []).filter(i => i.datasetId === dataset?.id || i.datasetId === dataset?._id);
+
+  const dimensions = quality?.dimensions || (Array.isArray(dataset?.dimensions) ? dataset.dimensions : []);
 
   return (
     <div className="space-y-6">
@@ -27,8 +30,8 @@ export default function DatasetQuality({ dataset }) {
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               />
               <path
-                className={score >= 90 ? 'text-emerald-500' : score >= 80 ? 'text-blue-500' : 'text-amber-500'}
-                strokeDasharray={`${score}, 100`}
+                className={hasScore ? (score >= 90 ? 'text-emerald-500' : score >= 80 ? 'text-blue-500' : 'text-amber-500') : 'text-slate-300 dark:text-slate-700'}
+                strokeDasharray={`${hasScore ? score : 0}, 100`}
                 strokeWidth="3.5"
                 strokeLinecap="round"
                 stroke="currentColor"
@@ -36,15 +39,19 @@ export default function DatasetQuality({ dataset }) {
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               />
             </svg>
-            <span className="absolute text-sm font-bold text-slate-900 dark:text-white">{score}%</span>
+            <span className="absolute text-sm font-bold text-slate-900 dark:text-white">
+              {hasScore ? `${score}%` : 'N/A'}
+            </span>
           </div>
 
           <div>
             <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">Dataset Quality Score</div>
-            <div className="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">{quality.grade || 'Excellent'}</div>
+            <div className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
+              {hasScore ? (quality?.grade || 'Evaluated') : 'Not Evaluated'}
+            </div>
             <div className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 flex items-center gap-1">
               <ArrowUpRight className="w-3 h-3 text-emerald-500" />
-              <span>{quality.trendText || '+3% from last month'}</span>
+              <span>{hasScore ? (quality?.trendText || 'Verified quality score') : 'No quality scans run yet'}</span>
             </div>
           </div>
         </div>
@@ -53,19 +60,25 @@ export default function DatasetQuality({ dataset }) {
         <div className="theme-card rounded-lg p-5 border border-slate-200 dark:border-slate-800 shadow-2xs md:col-span-2 flex flex-col justify-center space-y-3">
           <div className="flex items-center justify-between text-xs font-semibold text-slate-800 dark:text-slate-200">
             <span>Dimension Compliance</span>
-            <NavLink to={`/quality/${dataset.id}`} className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 text-xs">
+            <NavLink to={`/quality/${dataset?.id || ''}`} className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 text-xs">
               <span>View full quality report</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </NavLink>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-            {(quality.dimensions || QUALITY_OVERVIEW.dimensions).map((dim, idx) => (
-              <div key={idx} className="bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-md border border-slate-100 dark:border-slate-700/60 text-center">
-                <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{dim.name}</div>
-                <div className="text-sm font-bold text-slate-900 dark:text-white mt-1">{dim.score}%</div>
-              </div>
-            ))}
-          </div>
+          {dimensions.length === 0 ? (
+            <div className="py-4 text-center text-xs text-slate-400">
+              No dimension compliance data available yet.
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+              {dimensions.slice(0, 5).map((dim, idx) => (
+                <div key={idx} className="bg-slate-50 dark:bg-slate-800/50 p-2.5 rounded-md border border-slate-100 dark:border-slate-700/60 text-center">
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{dim.name}</div>
+                  <div className="text-sm font-bold text-slate-900 dark:text-white mt-1">{dim.score}%</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

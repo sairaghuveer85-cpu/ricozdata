@@ -15,6 +15,12 @@ export default function Drawer({
   const subtitleId = useId();
   const drawerRef = useRef(null);
   const previousActiveElementRef = useRef(null);
+  const onCloseRef = useRef(onClose);
+
+  // Synchronize latest onClose callback to ref without re-triggering drawer lifecycle
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  });
 
   useEffect(() => {
     if (isOpen) {
@@ -23,9 +29,17 @@ export default function Drawer({
 
       const timer = setTimeout(() => {
         if (drawerRef.current) {
-          const focusable = drawerRef.current.querySelector(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          );
+          if (drawerRef.current.contains(document.activeElement)) {
+            return;
+          }
+          const bodyContainer = drawerRef.current.querySelector('[data-drawer-body]') || drawerRef.current;
+          const focusable =
+            bodyContainer.querySelector(
+              'button:not([disabled]), [href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            ) ||
+            drawerRef.current.querySelector(
+              'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
           if (focusable) {
             focusable.focus();
           } else {
@@ -37,7 +51,7 @@ export default function Drawer({
       const handleKeyDown = (e) => {
         if (e.key === 'Escape') {
           e.stopPropagation();
-          onClose();
+          onCloseRef.current?.();
         }
       };
 
@@ -52,7 +66,7 @@ export default function Drawer({
         }
       };
     }
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   return (
     <AnimatePresence>
@@ -117,7 +131,7 @@ export default function Drawer({
               </div>
 
               {/* Body */}
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
+              <div data-drawer-body className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
                 {children}
               </div>
 

@@ -2,47 +2,74 @@ import React, { useState } from 'react';
 import Modal from '../common/Modal';
 import Button from '../common/Button';
 import Input from '../common/Input';
+import { useApp } from '../../context/AppContext';
 
 export default function PolicyModal({ isOpen, onClose, onAdd }) {
+  const { datasets } = useApp();
+
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    appliesTo: 'Customer Data',
-    status: 'Active',
-    category: 'Security',
-    enforcementLevel: 'Strict'
+    category: 'Data Protection',
+    status: 'draft',
+    severity: 'Medium',
+    priority: 'Medium',
+    datasetIds: [],
+    reviewFrequency: 'Quarterly',
   });
 
   const [errors, setErrors] = useState({});
 
   const handleChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
+      setErrors((prev) => ({ ...prev, [field]: '' }));
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleDatasetToggle = (dsId) => {
+    setFormData((prev) => {
+      const exists = prev.datasetIds.includes(dsId);
+      return {
+        ...prev,
+        datasetIds: exists
+          ? prev.datasetIds.filter((id) => id !== dsId)
+          : [...prev.datasetIds, dsId],
+      };
+    });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = 'Policy name is required';
-    if (!formData.description.trim()) newErrors.description = 'Description is required';
+    if (!formData.name.trim() || formData.name.trim().length < 3) {
+      newErrors.name = 'Policy name is required (min 3 characters)';
+    }
+    if (!formData.description.trim() || formData.description.trim().length < 10) {
+      newErrors.description = 'Description is required (min 10 characters)';
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
-    onAdd(formData);
-    onClose();
-    setFormData({
-      name: '',
-      description: '',
-      appliesTo: 'Customer Data',
-      status: 'Active',
-      category: 'Security',
-      enforcementLevel: 'Strict'
-    });
+    try {
+      await onAdd(formData);
+      onClose();
+      setFormData({
+        name: '',
+        description: '',
+        category: 'Data Protection',
+        status: 'draft',
+        severity: 'Medium',
+        priority: 'Medium',
+        datasetIds: [],
+        reviewFrequency: 'Quarterly',
+      });
+    } catch (err) {
+      // toast shown in context
+    }
   };
 
   return (
@@ -50,7 +77,7 @@ export default function PolicyModal({ isOpen, onClose, onAdd }) {
       isOpen={isOpen}
       onClose={onClose}
       title="Create Governance Policy"
-      subtitle="Define organizational security, retention, or privacy guardrails"
+      subtitle="Define organizational requirements, ownership, and target datasets"
       footer={
         <>
           <Button variant="secondary" size="sm" onClick={onClose}>
@@ -62,84 +89,115 @@ export default function PolicyModal({ isOpen, onClose, onAdd }) {
         </>
       }
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3.5 text-xs">
         <Input
           label="Policy Name"
-          placeholder="e.g. Geographic Data Residency Restriction"
+          placeholder="e.g. Sensitive Customer Personal Information Protection Policy"
           value={formData.name}
           onChange={(e) => handleChange('name', e.target.value)}
           error={errors.name}
           required
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-              Applies To
-            </label>
+            <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Category</label>
             <select
-              value={formData.appliesTo}
-              onChange={(e) => handleChange('appliesTo', e.target.value)}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111C2E] text-xs text-slate-900 dark:text-white py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              value={formData.category}
+              onChange={(e) => handleChange('category', e.target.value)}
+              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111C2E] p-2 text-slate-900 dark:text-white"
             >
-              <option value="Customer Data" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Customer Data</option>
-              <option value="All Datasets" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">All Datasets</option>
-              <option value="PII Columns" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">PII Columns</option>
-              <option value="All Users" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">All Users</option>
-              <option value="Financial Tables" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Financial Tables</option>
+              <option value="Data Protection">Data Protection</option>
+              <option value="Access Control">Access Control</option>
+              <option value="Data Quality">Data Quality</option>
+              <option value="Lifecycle">Lifecycle</option>
+              <option value="Data Sharing">Data Sharing</option>
+              <option value="Security">Security</option>
             </select>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-              Status
-            </label>
+            <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Initial Status</label>
             <select
               value={formData.status}
               onChange={(e) => handleChange('status', e.target.value)}
-              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111C2E] text-xs text-slate-900 dark:text-white py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111C2E] p-2 text-slate-900 dark:text-white"
             >
-              <option value="Active" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Active</option>
-              <option value="Inactive" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Inactive</option>
+              <option value="draft">Draft</option>
+              <option value="under_review">Under Review</option>
+              <option value="active">Active</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Severity / Priority</label>
+            <select
+              value={formData.severity}
+              onChange={(e) => {
+                handleChange('severity', e.target.value);
+                handleChange('priority', e.target.value);
+              }}
+              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111C2E] p-2 text-slate-900 dark:text-white"
+            >
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Review Frequency</label>
+            <select
+              value={formData.reviewFrequency}
+              onChange={(e) => handleChange('reviewFrequency', e.target.value)}
+              className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111C2E] p-2 text-slate-900 dark:text-white"
+            >
+              <option value="Monthly">Monthly</option>
+              <option value="Quarterly">Quarterly</option>
+              <option value="Semiannual">Semiannual</option>
+              <option value="Annual">Annual</option>
             </select>
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-            Category
+          <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">
+            Target Catalog Datasets ({formData.datasetIds.length} selected)
           </label>
-          <select
-            value={formData.category}
-            onChange={(e) => handleChange('category', e.target.value)}
-            className="w-full rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111C2E] text-xs text-slate-900 dark:text-white py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
-          >
-            <option value="Security" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Security</option>
-            <option value="Lifecycle" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Lifecycle</option>
-            <option value="Privacy" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Privacy</option>
-            <option value="Compliance" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Compliance</option>
-            <option value="Egress" className="bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white">Egress</option>
-          </select>
+          <div className="max-h-28 overflow-y-auto p-2 border border-slate-200 dark:border-slate-800 rounded-lg space-y-1 bg-white dark:bg-[#0B1628]">
+            {datasets.map((d) => {
+              const dsId = d.id || d._id;
+              const isChecked = formData.datasetIds.includes(dsId);
+              return (
+                <label key={dsId} className="flex items-center gap-2 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900 p-1 rounded">
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => handleDatasetToggle(dsId)}
+                    className="rounded text-blue-600 focus:ring-blue-500"
+                  />
+                  <span className="truncate">{d.name} ({d.tableName || 'Table'})</span>
+                </label>
+              );
+            })}
+          </div>
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">
-            Description
-          </label>
+          <label className="block font-medium text-slate-700 dark:text-slate-300 mb-1">Description & Requirements</label>
           <textarea
             rows={3}
             value={formData.description}
             onChange={(e) => handleChange('description', e.target.value)}
-            placeholder="Describe what this policy enforces, triggers, and penalty conditions..."
-            className={`w-full rounded-lg border text-xs py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 ${
-              errors.description
-                ? 'border-red-300 dark:border-red-900 focus:border-red-500'
-                : 'border-slate-200 dark:border-slate-800 focus:border-blue-500'
+            placeholder="Detail the mandatory data protection, classification, or retention requirements..."
+            className={`w-full rounded-lg border p-2 bg-white dark:bg-[#111C2E] text-slate-900 dark:text-white placeholder-slate-400 ${
+              errors.description ? 'border-red-400' : 'border-slate-200 dark:border-slate-800'
             }`}
           />
-          {errors.description && (
-            <p className="mt-1 text-xs text-red-600 dark:text-red-400">{errors.description}</p>
-          )}
+          {errors.description && <p className="mt-1 text-red-500 text-[11px]">{errors.description}</p>}
         </div>
       </form>
     </Modal>

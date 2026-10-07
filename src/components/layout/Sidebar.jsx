@@ -3,10 +3,12 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
+  Server,
   Database,
   ShieldCheck,
   GitFork,
   BookOpen,
+  Sparkles,
   Shield,
   BarChart2,
   Users,
@@ -48,6 +50,7 @@ export default function Sidebar() {
       group: 'Discovery',
       items: [
         { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+        { name: 'Data Sources', path: '/datasources', icon: Server, matchPrefix: '/datasources' },
         { name: 'Data Catalog', path: '/catalog', icon: Database, matchPrefix: '/catalog' }
       ]
     },
@@ -62,6 +65,7 @@ export default function Sidebar() {
       group: 'Governance',
       items: [
         { name: 'Business Glossary', path: '/glossary', icon: BookOpen },
+        { name: 'Glossary Suggestions', path: '/glossary/suggestions', icon: Sparkles },
         { name: 'Governance', path: '/governance', icon: Shield },
         { name: 'Reports', path: '/reports', icon: BarChart2 }
       ]

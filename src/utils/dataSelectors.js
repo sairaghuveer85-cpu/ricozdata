@@ -3,16 +3,12 @@
  * Enables fast cross-entity lookups, joins, and search without state management overhead.
  */
 
-import { DATASET_QUALITY_METRICS, QUALITY_OVERVIEW } from '../data/quality.js';
-import { DATASET_LINEAGE_GRAPHS } from '../data/lineage.js';
-import { DOMAIN_REGISTRY } from '../data/domains.js';
-
 /**
  * Find dataset by ID
  */
 export function getDatasetById(datasets = [], id) {
   if (!id) return null;
-  return datasets.find((d) => d.id === id) || null;
+  return datasets.find((d) => d.id === id || d._id === id) || null;
 }
 
 /**
@@ -21,7 +17,7 @@ export function getDatasetById(datasets = [], id) {
 export function getUserById(users = [], idOrName) {
   if (!idOrName) return null;
   return (
-    users.find((u) => u.id === idOrName) ||
+    users.find((u) => u.id === idOrName || u._id === idOrName) ||
     users.find((u) => u.name?.toLowerCase() === idOrName.toLowerCase()) ||
     null
   );
@@ -30,10 +26,10 @@ export function getUserById(users = [], idOrName) {
 /**
  * Find domain by ID or Name
  */
-export function getDomainById(domains = DOMAIN_REGISTRY, idOrName) {
-  if (!idOrName) return null;
+export function getDomainById(domains = [], idOrName) {
+  if (!idOrName || !Array.isArray(domains)) return null;
   return (
-    domains.find((d) => d.id === idOrName) ||
+    domains.find((d) => d.id === idOrName || d._id === idOrName) ||
     domains.find((d) => d.name?.toLowerCase() === idOrName.toLowerCase()) ||
     null
   );
@@ -45,7 +41,7 @@ export function getDomainById(domains = DOMAIN_REGISTRY, idOrName) {
 export function getDatasetOwner(users = [], dataset) {
   if (!dataset) return null;
   if (dataset.ownerId) {
-    const user = users.find((u) => u.id === dataset.ownerId);
+    const user = users.find((u) => u.id === dataset.ownerId || u._id === dataset.ownerId);
     if (user) return user;
   }
   if (dataset.owner) {
@@ -65,9 +61,34 @@ export function getDatasetOwner(users = [], dataset) {
 /**
  * Resolves quality overview and dimensions for a dataset
  */
-export function getQualityForDataset(datasetId) {
-  if (!datasetId) return QUALITY_OVERVIEW;
-  return DATASET_QUALITY_METRICS[datasetId] || QUALITY_OVERVIEW;
+export function getQualityForDataset(datasetId, datasets = []) {
+  if (!datasetId) return null;
+  const ds = Array.isArray(datasets) ? datasets.find(d => d.id === datasetId || d._id === datasetId) : null;
+  if (!ds) {
+    return {
+      score: 0,
+      grade: 'Unrated',
+      trendText: 'No scan data',
+      dimensions: []
+    };
+  }
+
+  const score = Number(ds.qualityScore ?? ds.quality ?? 0);
+  if (ds.dimensions && Array.isArray(ds.dimensions) && ds.dimensions.length > 0) {
+    return {
+      score,
+      grade: ds.grade || (score >= 90 ? 'Excellent' : score >= 75 ? 'Good' : score > 0 ? 'Needs Review' : 'Unrated'),
+      trendText: ds.trendText || (score > 0 ? 'Verified via quality engine' : 'No scans run'),
+      dimensions: ds.dimensions
+    };
+  }
+
+  return {
+    score: ds.qualityScore !== undefined ? ds.qualityScore : (ds.quality !== undefined ? ds.quality : null),
+    grade: ds.grade || (score >= 90 ? 'Excellent' : score >= 75 ? 'Good' : score > 0 ? 'Needs Review' : 'Unrated'),
+    trendText: ds.trendText || (score > 0 ? 'Verified via quality engine' : 'No scans run'),
+    dimensions: []
+  };
 }
 
 /**
@@ -75,7 +96,7 @@ export function getQualityForDataset(datasetId) {
  */
 export function getIssuesForDataset(issues = [], datasetId) {
   if (!datasetId) return issues;
-  return issues.filter((i) => i.datasetId === datasetId);
+  return issues.filter((i) => i.datasetId === datasetId || i.datasetId?._id === datasetId);
 }
 
 /**
@@ -87,7 +108,7 @@ export function getPoliciesForDataset(policies = [], datasetId) {
     (p) =>
       p.datasetIds?.includes(datasetId) ||
       p.datasetIds?.includes('all') ||
-      p.affectedDatasets?.some((name) => name.toLowerCase().includes(datasetId.replace('-', ' ')))
+      p.affectedDatasets?.some((name) => name.toLowerCase().includes(String(datasetId).replace('-', ' ')))
   );
 }
 
@@ -95,11 +116,8 @@ export function getPoliciesForDataset(policies = [], datasetId) {
  * Returns lineage graph nodes and edges for a dataset
  */
 export function getLineageForDataset(datasetId) {
-  if (!datasetId) return DATASET_LINEAGE_GRAPHS['customer-master'];
-  return (
-    DATASET_LINEAGE_GRAPHS[datasetId] ||
-    DATASET_LINEAGE_GRAPHS['customer-master']
-  );
+  // Real lineage is loaded asynchronously via lineageApi
+  return { nodes: [], edges: [] };
 }
 
 /**

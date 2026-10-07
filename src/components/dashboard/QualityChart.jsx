@@ -9,9 +9,9 @@ import {
   CartesianGrid,
   ReferenceLine
 } from 'recharts';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Activity } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
-import { QUALITY_TRENDS } from '../../data/quality';
+import { useApp } from '../../context/AppContext';
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -42,6 +42,13 @@ const CustomTooltip = ({ active, payload, label }) => {
 export default function QualityChart() {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
+  const { qualityTrends, datasets, qualityRules } = useApp();
+
+  const scoredDatasets = Array.isArray(datasets) ? datasets.filter(d => d.qualityScore != null || d.quality != null) : [];
+  const avgScore = scoredDatasets.length > 0
+    ? (scoredDatasets.reduce((acc, d) => acc + (Number(d.qualityScore ?? d.quality) || 0), 0) / scoredDatasets.length).toFixed(1)
+    : null;
+  const verifiedRulesCount = qualityRules?.length || 0;
 
   const [timeRange, setTimeRange] = useState('Last 6 months');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -89,9 +96,11 @@ export default function QualityChart() {
             >
               Data Quality Progression
             </h3>
-            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-              +3.2% vs previous period
-            </span>
+            {avgScore != null && (
+              <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                Operational Target: 90%
+              </span>
+            )}
           </div>
           <p
             className="text-xs mt-0.5"
@@ -152,47 +161,59 @@ export default function QualityChart() {
         </div>
       </div>
 
-      <div className="flex-1 w-full min-h-[220px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={QUALITY_TRENDS} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="2 2" vertical={false} stroke={gridStroke} />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              axisLine={{ stroke: axisStroke }}
-              tick={{ fill: tickColor, fontSize: 11 }}
-            />
-            <YAxis
-              domain={[60, 100]}
-              ticks={[60, 70, 80, 90, 100]}
-              tickFormatter={(v) => `${v}%`}
-              tickLine={false}
-              axisLine={false}
-              tick={{ fill: tickColor, fontSize: 11 }}
-            />
-            <Tooltip content={<CustomTooltip />} />
-            <ReferenceLine
-              y={90}
-              stroke={referenceLineStroke}
-              strokeDasharray="3 3"
-              label={{
-                value: 'Target 90%',
-                position: 'right',
-                fill: referenceLineStroke,
-                fontSize: 10
-              }}
-            />
-            <Line
-              type="monotone"
-              dataKey="score"
-              stroke={brandColor}
-              strokeWidth={2}
-              dot={{ stroke: brandColor, strokeWidth: 1.5, r: 3, fill: dotFill }}
-              activeDot={{ r: 5, stroke: brandColor, strokeWidth: 2, fill: dotFill }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
+      {(!qualityTrends || qualityTrends.length === 0) ? (
+        <div className="flex-1 w-full min-h-[220px] flex flex-col items-center justify-center text-center p-6 rounded-lg bg-slate-50/50 dark:bg-slate-900/30 border border-dashed border-slate-200 dark:border-slate-800">
+          <Activity className="w-8 h-8 text-slate-400 mb-2" />
+          <h4 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
+            No Quality Trend Data Available
+          </h4>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 max-w-sm">
+            Quality progression trends are recorded over time as automated evaluation scans run on cataloged datasets.
+          </p>
+        </div>
+      ) : (
+        <div className="flex-1 w-full min-h-[220px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={qualityTrends} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="2 2" vertical={false} stroke={gridStroke} />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                axisLine={{ stroke: axisStroke }}
+                tick={{ fill: tickColor, fontSize: 11 }}
+              />
+              <YAxis
+                domain={[60, 100]}
+                ticks={[60, 70, 80, 90, 100]}
+                tickFormatter={(v) => `${v}%`}
+                tickLine={false}
+                axisLine={false}
+                tick={{ fill: tickColor, fontSize: 11 }}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <ReferenceLine
+                y={90}
+                stroke={referenceLineStroke}
+                strokeDasharray="3 3"
+                label={{
+                  value: 'Target 90%',
+                  position: 'right',
+                  fill: referenceLineStroke,
+                  fontSize: 10
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="score"
+                stroke={brandColor}
+                strokeWidth={2}
+                dot={{ stroke: brandColor, strokeWidth: 1.5, r: 3, fill: dotFill }}
+                activeDot={{ r: 5, stroke: brandColor, strokeWidth: 2, fill: dotFill }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
 
       <div
         className="pt-3 mt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px]"
@@ -204,14 +225,18 @@ export default function QualityChart() {
         <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           <span className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full inline-block shrink-0" style={{ backgroundColor: 'var(--color-brand)' }} aria-hidden="true" />
-            <span style={{ color: 'var(--color-text-secondary)' }}>Actual Score (92.4%)</span>
+            <span style={{ color: 'var(--color-text-secondary)' }}>
+              Actual Score {avgScore != null ? `(${avgScore}%)` : '(No Scans)'}
+            </span>
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-2.5 h-0.5 inline-block shrink-0" style={{ backgroundColor: 'var(--color-text-muted)' }} aria-hidden="true" />
             <span style={{ color: 'var(--color-text-secondary)' }}>Target Line (90.0%)</span>
           </span>
         </div>
-        <span className="text-[10px] sm:text-[11px]" style={{ color: 'var(--color-text-muted)' }}>142 validation rules verified</span>
+        <span className="text-[10px] sm:text-[11px]" style={{ color: 'var(--color-text-muted)' }}>
+          {verifiedRulesCount} {verifiedRulesCount === 1 ? 'rule configured' : 'rules configured'}
+        </span>
       </div>
     </div>
   );

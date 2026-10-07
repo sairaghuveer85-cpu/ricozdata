@@ -8,3 +8,19 @@ export const QUALITY_TRENDS = [{ month: 'Apr', score: 82, target: 90, completene
 export const QUALITY_ISSUES = [
   ['issue-leads-email', 'marketing-leads', 'email', 'rule-lead-email-not-null', 'Missing email addresses', 1284, 'Medium', 'open', 'user-007'], ['issue-transactions-orphan', 'customer-transactions', 'customer_id', 'rule-customer-reference', 'Orphaned customer references', 342, 'High', 'investigating', 'user-003'], ['issue-inventory-negative', 'inventory', 'quantity_on_hand', 'rule-inventory-nonnegative', 'Negative inventory values', 76, 'Critical', 'open', 'user-003'], ['issue-orders-discount', 'sales-orders', 'discount', 'rule-discount-threshold', 'Discount exceeds configured threshold', 128, 'Medium', 'resolved', 'user-008'], ['issue-customer-email', 'customer-master', 'email', 'rule-email-not-null', 'Primary email format exceptions', 214, 'Medium', 'investigating', 'user-005'], ['issue-finance-currency', 'finance-transactions', 'currency', 'rule-currency-valid', 'Unsupported currency codes', 19, 'High', 'open', 'user-006'], ['issue-campaign-dates', 'marketing-campaigns', 'end_date', 'rule-campaign-date-order', 'Campaign end date precedes start date', 24, 'Low', 'resolved', 'user-007'], ['issue-product-sku', 'product-master', 'sku', 'rule-product-sku-unique', 'Duplicate active SKU values', 31, 'Medium', 'investigating', 'user-004']
 ].map(([id, datasetId, field, ruleId, issue, count, severity, status, assignedToId]) => ({ id, datasetId, field, column: field, ruleId, issue, count, severity, status, detectedAt: '2026-09-22T08:30:00Z', assignedToId }));
+
+export const INITIAL_QUALITY_RULES = [
+  { id: 'rule-not-null', name: 'Not Null', description: 'Checks if field value is present', dimension: 'Completeness' },
+  { id: 'rule-unique', name: 'Unique', description: 'Checks if field values are unique', dimension: 'Uniqueness' },
+  { id: 'rule-range-nonnegative', name: 'Non-negative', description: 'Checks if field is non-negative', dimension: 'Validity' },
+  { id: 'rule-email-format', name: 'Email Format', description: 'Validates email structure', dimension: 'Validity' }
+];
+
+export const QUALITY_HISTORY = [
+  { date: '2026-04-01', score: 82 },
+  { date: '2026-05-01', score: 80 },
+  { date: '2026-06-01', score: 86 },
+  { date: '2026-07-01', score: 84 },
+  { date: '2026-08-01', score: 89 },
+  { date: '2026-09-01', score: 92 }
+];

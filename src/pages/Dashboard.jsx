@@ -32,39 +32,11 @@ export default function Dashboard() {
     };
   }, [dropdownOpen]);
 
-  const metrics = dashboardMetrics || [
-    {
-      id: 'total-datasets',
-      title: 'TOTAL DATASETS',
-      value: '6',
-      comparison: '+12.4%',
-      isPositive: true,
-      trend: 'up'
-    },
-    {
-      id: 'data-quality',
-      title: 'DATA QUALITY',
-      value: '93%',
-      comparison: '+3.2%',
-      isPositive: true,
-      trend: 'up'
-    },
-    {
-      id: 'policy-violations',
-      title: 'POLICY VIOLATIONS',
-      value: '3',
-      comparison: '-18.6%',
-      isPositive: true,
-      trend: 'down'
-    },
-    {
-      id: 'active-users',
-      title: 'ACTIVE USERS',
-      value: '7',
-      comparison: '+9.1%',
-      isPositive: true,
-      trend: 'up'
-    }
+  const metrics = (dashboardMetrics && dashboardMetrics.length > 0) ? dashboardMetrics : [
+    { id: 'total-datasets', title: 'TOTAL DATASETS', value: '0', comparison: '0 active', isPositive: false, trend: 'neutral' },
+    { id: 'data-quality', title: 'DATA QUALITY', value: 'N/A', comparison: 'No Scans', isPositive: false, trend: 'neutral' },
+    { id: 'policy-violations', title: 'POLICY VIOLATIONS', value: '0', comparison: '0 open', isPositive: true, trend: 'down' },
+    { id: 'active-users', title: 'ACTIVE USERS', value: '0', comparison: '0 registered', isPositive: false, trend: 'neutral' }
   ];
 
   return (
@@ -100,7 +72,7 @@ export default function Dashboard() {
             }}
           >
             <Calendar className="w-3.5 h-3.5" style={{ color: 'var(--color-text-muted)' }} aria-hidden="true" />
-            <span>Sep 18, 2026</span>
+            <span>{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
           </div>
 
           <div className="relative" ref={dropdownRef}>

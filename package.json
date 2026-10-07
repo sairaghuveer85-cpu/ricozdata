@@ -12,7 +12,10 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "@xyflow/react": "^12.11.6",
+    "bcryptjs": "^3.0.3",
+    "express-validator": "^7.3.2",
     "framer-motion": "^13.4.0",
+    "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.47.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

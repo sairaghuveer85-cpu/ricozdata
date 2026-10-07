@@ -9,6 +9,7 @@ export default function DatasetTabs({
     { id: 'schema', label: 'Schema' },
     { id: 'quality', label: 'Data Quality' },
     { id: 'lineage', label: 'Lineage' },
+    { id: 'query', label: 'Query Studio' },
     { id: 'policies', label: 'Policies' },
     { id: 'activity', label: 'Activity' },
   ];

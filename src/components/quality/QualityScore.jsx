@@ -1,10 +1,11 @@
 import React from 'react';
 
-export default function QualityScore({ score = 98, grade = 'Excellent', trend = '↑ 3% from last month' }) {
-  // SVG circular calculation
+export default function QualityScore({ score = null, grade = 'Unrated', trend = null }) {
+  const hasScore = score != null && !isNaN(score);
+  const numScore = hasScore ? Math.max(0, Math.min(100, Number(score))) : 0;
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (score / 100) * circumference;
+  const strokeDashoffset = circumference - (numScore / 100) * circumference;
 
   return (
     <div
@@ -29,10 +30,10 @@ export default function QualityScore({ score = 98, grade = 'Excellent', trend = 
             cx="64"
             cy="64"
             r={radius}
-            className="text-emerald-500 transition-all duration-700 ease-out"
+            className={hasScore ? (numScore >= 90 ? 'text-emerald-500' : numScore >= 75 ? 'text-blue-500' : 'text-amber-500') : 'text-slate-300 dark:text-slate-700'}
             strokeWidth="9"
             strokeDasharray={circumference}
-            strokeDashoffset={strokeDashoffset}
+            strokeDashoffset={hasScore ? strokeDashoffset : circumference}
             strokeLinecap="round"
             stroke="currentColor"
             fill="transparent"
@@ -41,16 +42,16 @@ export default function QualityScore({ score = 98, grade = 'Excellent', trend = 
 
         <div className="absolute flex flex-col items-center justify-center">
           <span className="text-3xl font-bold tabular-nums text-slate-900 dark:text-white tracking-tight">
-            {score}%
+            {hasScore ? `${score}%` : 'N/A'}
           </span>
-          <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 mt-0.5">
-            {grade}
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-0.5">
+            {hasScore ? grade : 'Unrated'}
           </span>
         </div>
       </div>
 
       <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 font-medium">
-        <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{trend}</span>
+        <span>{hasScore ? (trend || 'Verified quality score') : 'Run evaluation to calculate score'}</span>
       </div>
     </div>
   );
