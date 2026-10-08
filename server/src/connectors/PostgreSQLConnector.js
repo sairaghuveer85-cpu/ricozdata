@@ -59,7 +59,7 @@ export class PostgreSQLConnector extends BaseConnector {
       throw new ConnectorConfigurationError('PostgreSQL database name is required in configuration');
     }
 
-    const username = config.username || credentials.username || '';
+    const username = credentials.username || config.username || config.user || '';
     const rawPassword = credentials.password !== undefined ? credentials.password : config.password;
 
     if (rawPassword === undefined || rawPassword === null || (typeof rawPassword === 'string' && rawPassword === '')) {

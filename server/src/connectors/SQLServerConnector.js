@@ -53,8 +53,23 @@ export class SQLServerConnector extends BaseConnector {
       throw new ConnectorConfigurationError('SQL Server database name is required in configuration');
     }
 
-    const username = config.username || creds.username || '';
-    const password = creds.password || '';
+    const username = creds.username || config.username || '';
+    const rawPassword = creds.password !== undefined ? creds.password : config.password;
+
+    if (username && (rawPassword === undefined || rawPassword === null || (typeof rawPassword === 'string' && rawPassword === ''))) {
+      throw new ConnectorAuthenticationError('SQL Server connection requires a password. Please configure valid credentials.');
+    }
+
+    let passwordString;
+    if (typeof rawPassword === 'string') {
+      passwordString = rawPassword;
+    } else if (typeof rawPassword === 'number' || typeof rawPassword === 'boolean') {
+      passwordString = String(rawPassword);
+    } else if (typeof rawPassword === 'object' && rawPassword !== null && typeof rawPassword.password === 'string') {
+      passwordString = rawPassword.password;
+    } else if (rawPassword !== undefined && rawPassword !== null) {
+      throw new ConnectorAuthenticationError('Invalid password format. Password must be a valid string.');
+    }
 
     const encrypt = config.ssl === true || config.ssl === 'true' || config.encrypt === true || config.encrypt === 'true';
     const trustServerCertificate = config.trustServerCertificate !== false && config.sslRejectUnauthorized !== true;
@@ -64,7 +79,7 @@ export class SQLServerConnector extends BaseConnector {
       port: config.instanceName ? undefined : (parseInt(config.port, 10) || 1433),
       database: config.database,
       user: username,
-      password: String(password),
+      password: passwordString !== undefined ? passwordString : undefined,
       domain: config.domain ? String(config.domain).trim() : undefined,
       options: {
         encrypt,
@@ -113,6 +128,7 @@ export class SQLServerConnector extends BaseConnector {
           const latencyMs = Math.round((Number(endHr - startHr) / 1_000_000) * 100) / 100;
 
           const row = result.recordset?.[0] || {};
+          const serverVer = String(row.server_version || '').split('\n')[0] || 'Microsoft SQL Server';
           return {
             success: true,
             connectorType: 'sqlserver',
@@ -121,8 +137,10 @@ export class SQLServerConnector extends BaseConnector {
             checkedAt: new Date().toISOString(),
             details: {
               database: row.current_db || this.context.configuration.database,
-              serverVersion: String(row.server_version || '').split('\n')[0] || 'Microsoft SQL Server',
-              schema: this.schema
+              serverVersion: serverVer,
+              version: serverVer,
+              schema: this.schema,
+              defaultSchema: row.default_schema || this.schema
             }
           };
         } catch (err) {

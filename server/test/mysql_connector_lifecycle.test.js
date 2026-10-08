@@ -27,6 +27,30 @@ describe('MySQL Connector Lifecycle & Verification Suite', () => {
         role: 'admin'
       });
     }
+
+    let pgDs = await DataSource.findOne({ name: /Bus Booking/i });
+    if (!pgDs) {
+      await DataSource.create({
+        name: 'Bus Booking PostgreSQL',
+        type: 'postgresql',
+        status: 'CONNECTED',
+        healthStatus: 'HEALTHY',
+        configuration: {
+          host: 'postgres.internal',
+          port: 5432,
+          database: 'bus_booking',
+          schema: 'public'
+        },
+        connectionConfig: {
+          host: 'postgres.internal',
+          port: 5432,
+          database: 'bus_booking',
+          schema: 'public'
+        },
+        createdBy: testUser._id,
+        ownerId: testUser._id
+      });
+    }
   });
 
   after(async () => {

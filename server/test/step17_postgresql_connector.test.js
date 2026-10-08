@@ -128,7 +128,8 @@ test('Step 17 — PostgreSQL Connector Verification', async (t) => {
       dataSourceId: 'ds-1',
       organizationId: 'org-1',
       sourceType: 'postgresql',
-      configuration: { host: '127.0.0.1', port: 5432, database: 'analytics', poolSize: 3 }
+      configuration: { host: '127.0.0.1', port: 5432, database: 'analytics', poolSize: 3 },
+      credentials: { username: 'testuser', password: 'secretPassword123' }
     });
     const connector = new PostgreSQLConnector(ctx);
 

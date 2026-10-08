@@ -18,31 +18,66 @@ export class ConnectorContext {
    * @param {Object} [params.timeouts={}] - Operation timeouts in milliseconds
    * @param {AbortSignal} [params.abortSignal] - Optional AbortSignal for cooperative cancellation
    */
-  constructor({
-    dataSourceId,
-    organizationId,
-    sourceType,
-    configuration = {},
-    credentials = {},
-    timeouts = {},
-    abortSignal = null
-  }) {
+  constructor(params = {}, ...positional) {
+    let opts = {};
+    if (typeof params === 'string') {
+      opts = {
+        dataSourceId: params,
+        sourceType: positional[0],
+        configuration: positional[1] || {},
+        credentials: positional[2] || {},
+        timeouts: positional[3] || {},
+        abortSignal: positional[4] || null
+      };
+    } else {
+      opts = params || {};
+    }
+
+    const {
+      dataSourceId,
+      organizationId,
+      sourceType,
+      configuration = {},
+      credentials = {},
+      timeouts = {},
+      abortSignal = null
+    } = opts;
+
     this.dataSourceId = String(dataSourceId || '');
     this.organizationId = String(organizationId || '');
     this.sourceType = String(sourceType || '').toLowerCase();
     
-    // Deep clone configuration while stripping accidental secret fields
+    // Extract raw credentials safely before sanitizing configuration
+    let creds = {};
+    if (typeof credentials === 'string') {
+      creds = { password: credentials };
+    } else if (credentials && typeof credentials === 'object') {
+      creds = { ...credentials };
+    }
+
+    // If password or username was provided in configuration object, migrate into credentials
+    if (!creds.password && configuration && typeof configuration === 'object' && configuration.password !== undefined) {
+      creds.password = configuration.password;
+    }
+    if (!creds.username && configuration && typeof configuration === 'object') {
+      if (configuration.username) creds.username = configuration.username;
+      else if (configuration.user) creds.username = configuration.user;
+    }
+
+    // Deep clone configuration while stripping secret fields
     this.configuration = this._sanitizeConfig(configuration);
     
     // Hold credentials in a private memory reference
-    this._credentials = Object.freeze({ ...(credentials || {}) });
+    this._credentials = Object.freeze(creds);
     
     // Centralized timeout policies (in milliseconds)
+    const connectTimeout = Number(timeouts.connect || configuration.connectTimeout || configuration.connectionTimeout || configuration.timeout) || 10000;
+    const queryTimeout = Number(timeouts.query || configuration.queryTimeout || configuration.statement_timeout || configuration.requestTimeout) || 15000;
     this.timeouts = {
-      connect: timeouts.connect || 10000,
-      query: timeouts.query || 15000,
-      metadata: timeouts.metadata || 30000,
-      sample: timeouts.sample || 15000
+      connect: connectTimeout,
+      query: queryTimeout,
+      metadata: Number(timeouts.metadata) || 30000,
+      sample: Number(timeouts.sample) || 15000
     };
 
     this.abortSignal = abortSignal;
@@ -62,6 +97,10 @@ export class ConnectorContext {
    * @returns {Object}
    */
   getCredentials() {
+    return this._credentials;
+  }
+
+  get credentials() {
     return this._credentials;
   }
 

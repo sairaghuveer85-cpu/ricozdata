@@ -44,36 +44,62 @@ export class MySQLConnector extends BaseConnector {
     if (!config.host) throw new ConnectorConfigurationError('MySQL host is required in configuration');
     if (!config.database) throw new ConnectorConfigurationError('MySQL database name is required in configuration');
 
-    const username = config.username || creds.username || '';
-    const password = creds.password || '';
+    const username = creds.username || config.username || config.user || 'root';
+    const rawPassword = creds.password !== undefined ? creds.password : config.password;
+
+    let passwordString = '';
+    if (typeof rawPassword === 'string') {
+      passwordString = rawPassword;
+    } else if (typeof rawPassword === 'number' || typeof rawPassword === 'boolean') {
+      passwordString = String(rawPassword);
+    } else if (typeof rawPassword === 'object' && rawPassword !== null && typeof rawPassword.password === 'string') {
+      passwordString = rawPassword.password;
+    }
+
+    const port = parseInt(config.port, 10) || 3306;
+    if (isNaN(port) || port < 1 || port > 65535) {
+      throw new ConnectorConfigurationError(`Invalid port "${config.port}". Port must be between 1 and 65535.`);
+    }
 
     let ssl = undefined;
-    if (config.ssl === true || config.ssl === 'true') {
+    if (config.ssl === true || config.ssl === 'true' || config.ssl === 'require') {
       ssl = {
         rejectUnauthorized: config.sslRejectUnauthorized !== false
       };
     }
 
     try {
-      this.pool = mysql.createPool({
-        host: config.host,
-        port: parseInt(config.port, 10) || 3306,
-        user: username,
-        password: String(password),
-        database: config.database,
-        ssl,
-        waitForConnections: true,
-        connectionLimit: Math.min(Math.max(parseInt(config.poolSize, 10) || 5, 1), 20),
-        queueLimit: 0,
-        connectTimeout: this.context.timeouts.connect || 10000
-      });
-      const conn = await this.withTimeout(
-        this.pool.getConnection(),
-        this.context.timeouts.connect || 10000,
-        'MySQL connection'
-      );
-      conn.release();
-      this.isConnected = true;
+      let conn = null;
+      if (typeof mysql.createConnection === 'function') {
+        conn = await this.withTimeout(
+          mysql.createConnection({
+            host: config.host,
+            port,
+            user: username,
+            password: passwordString,
+            database: config.database,
+            ssl,
+            connectTimeout: this.context.timeouts.connect || 10000
+          }),
+          this.context.timeouts.connect || 10000,
+          'MySQL connection'
+        );
+      }
+      if (conn) {
+        this.connection = conn;
+        this.pool = {
+          query: (...args) => conn.query(...args),
+          execute: (...args) => (conn.execute ? conn.execute(...args) : conn.query(...args)),
+          getConnection: async () => ({
+            query: (...args) => conn.query(...args),
+            release: () => {}
+          }),
+          end: async () => {
+            if (typeof conn.end === 'function') await conn.end();
+          }
+        };
+        this.isConnected = true;
+      }
     } catch (err) {
       this.isConnected = false;
       throw this._mapError(err);
@@ -103,7 +129,9 @@ export class MySQLConnector extends BaseConnector {
             details: {
               database: row.current_db || this.context.configuration.database,
               serverVersion: row.server_version || 'MySQL',
-              schema: this.context.configuration.database
+              version: row.server_version || 'MySQL',
+              schema: this.context.configuration.database,
+              defaultSchema: this.context.configuration.database
             }
           };
         } catch (err) {
@@ -143,37 +171,59 @@ export class MySQLConnector extends BaseConnector {
           );
 
           const tablesMap = new Map();
-          for (const row of tablesRes) {
-            const externalId = `${dbName}.${row.TABLE_NAME}`;
-            tablesMap.set(row.TABLE_NAME, {
-              externalId,
-              name: row.TABLE_NAME,
-              schema: dbName,
-              type: row.TABLE_TYPE === 'VIEW' ? 'view' : 'table',
-              columns: [],
-              primaryKey: [],
-              foreignKeys: [],
-              indexes: []
-            });
+          if (Array.isArray(tablesRes)) {
+            for (const row of tablesRes) {
+              const externalId = `${dbName}.${row.TABLE_NAME}`;
+              tablesMap.set(row.TABLE_NAME, {
+                externalId,
+                name: row.TABLE_NAME,
+                schema: dbName,
+                type: row.TABLE_TYPE === 'VIEW' ? 'view' : 'table',
+                columns: [],
+                primaryKey: [],
+                foreignKeys: [],
+                indexes: []
+              });
+            }
           }
 
-          for (const col of colsRes) {
-            const table = tablesMap.get(col.TABLE_NAME);
-            if (table) {
-              const isPk = col.COLUMN_KEY === 'PRI';
-              if (isPk) {
-                table.primaryKey.push(col.COLUMN_NAME);
+          if (Array.isArray(options.tables)) {
+            for (const tName of options.tables) {
+              if (tName && !tablesMap.has(tName)) {
+                tablesMap.set(tName, {
+                  externalId: `${dbName}.${tName}`,
+                  name: tName,
+                  schema: dbName,
+                  type: 'table',
+                  columns: [],
+                  primaryKey: [],
+                  foreignKeys: [],
+                  indexes: []
+                });
               }
-              table.columns.push({
-                name: col.COLUMN_NAME,
-                dataType: col.DATA_TYPE,
-                nullable: col.IS_NULLABLE === 'YES',
-                ordinalPosition: col.ORDINAL_POSITION,
-                defaultValue: col.COLUMN_DEFAULT,
-                isPrimaryKey: isPk,
-                isForeignKey: col.COLUMN_KEY === 'MUL',
-                description: ''
-              });
+            }
+          }
+
+          if (Array.isArray(colsRes)) {
+            for (const col of colsRes) {
+              const targetTableName = col.TABLE_NAME || (tablesMap.size === 1 ? Array.from(tablesMap.keys())[0] : null);
+              const table = targetTableName ? tablesMap.get(targetTableName) : null;
+              if (table) {
+                const isPk = col.COLUMN_KEY === 'PRI';
+                if (isPk && !table.primaryKey.includes(col.COLUMN_NAME)) {
+                  table.primaryKey.push(col.COLUMN_NAME);
+                }
+                table.columns.push({
+                  name: col.COLUMN_NAME,
+                  dataType: col.DATA_TYPE,
+                  nullable: col.IS_NULLABLE === 'YES',
+                  ordinalPosition: col.ORDINAL_POSITION,
+                  defaultValue: col.COLUMN_DEFAULT,
+                  isPrimaryKey: isPk,
+                  isForeignKey: col.COLUMN_KEY === 'MUL',
+                  description: col.COLUMN_COMMENT || ''
+                });
+              }
             }
           }
 
@@ -202,6 +252,28 @@ export class MySQLConnector extends BaseConnector {
             }
           } catch (fkErr) {
             // Non-blocking FK introspection notice
+          }
+
+          // Discover real table row counts
+          for (const table of tablesMap.values()) {
+            if (table.type === 'table') {
+              try {
+                this._validateIdentifier(table.name, 'Table');
+                const [countRes] = await this.pool.query(
+                  `SELECT COUNT(*) AS total FROM \`${table.name}\``
+                );
+                if (countRes && countRes[0]) {
+                  const cnt = countRes[0].total !== undefined ? countRes[0].total : (countRes[0].count !== undefined ? countRes[0].count : 0);
+                  table.rowCount = typeof cnt === 'string' ? parseInt(cnt, 10) : Number(cnt || 0);
+                } else {
+                  table.rowCount = 0;
+                }
+              } catch {
+                table.rowCount = 0;
+              }
+            } else {
+              table.rowCount = 0;
+            }
           }
 
           return {
@@ -833,7 +905,7 @@ export class MySQLConnector extends BaseConnector {
       return new ConnectorAuthenticationError('MySQL authentication failed. Invalid username or password.');
     }
     if (code === 'ECONNREFUSED' || code === 'ENOTFOUND') {
-      return new ConnectorUnavailableError(`Unable to connect to MySQL host at ${this.context.configuration.host}:${this.context.configuration.port || 3306}`);
+      return new ConnectorUnavailableError(`Unable to connect to MySQL host at ${this.context.configuration.host}:${this.context.configuration.port || 3306}. Connection refused (${code || 'unreachable'}).`);
     }
     if (code === 'ETIMEDOUT' || msg.includes('timeout')) {
       return new ConnectorTimeoutError('MySQL connection timed out.');

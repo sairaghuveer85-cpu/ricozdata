@@ -46,12 +46,21 @@ export class MongoDBConnector extends BaseConnector {
       if (!config.host) throw new ConnectorConfigurationError('MongoDB host is required');
       if (!config.database) throw new ConnectorConfigurationError('MongoDB database is required');
 
-      const username = config.username || creds.username || '';
-      const password = creds.password || '';
+      const username = creds.username || config.username || '';
+      const rawPassword = creds.password !== undefined ? creds.password : config.password;
 
-      if (username && password) {
+      if (username && (rawPassword === undefined || rawPassword === null || (typeof rawPassword === 'string' && rawPassword === ''))) {
+        throw new ConnectorAuthenticationError('MongoDB authentication requires a password when username is provided.');
+      }
+
+      let passwordString = '';
+      if (typeof rawPassword === 'string') passwordString = rawPassword;
+      else if (typeof rawPassword === 'number' || typeof rawPassword === 'boolean') passwordString = String(rawPassword);
+      else if (typeof rawPassword === 'object' && rawPassword !== null && typeof rawPassword.password === 'string') passwordString = rawPassword.password;
+
+      if (username && passwordString) {
         const encodedUser = encodeURIComponent(username);
-        const encodedPass = encodeURIComponent(password);
+        const encodedPass = encodeURIComponent(passwordString);
         uri = `mongodb://${encodedUser}:${encodedPass}@${config.host}:${config.port || 27017}/${config.database}`;
       } else if (username) {
         const encodedUser = encodeURIComponent(username);

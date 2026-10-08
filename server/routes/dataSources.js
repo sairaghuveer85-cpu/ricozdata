@@ -16,6 +16,8 @@ router.use(protect);
 
 // Specific subresource operations BEFORE /:id
 router.post('/test', testConnection);
+router.post('/discover', discoverAssets);
+router.post('/sync', syncCatalog);
 router.post('/:id/test', testConnection);
 router.post('/:id/discover', discoverAssets);
 router.post('/:id/sync', syncCatalog);
