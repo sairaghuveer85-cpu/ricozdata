@@ -10,26 +10,27 @@ const {
   discoverAssets,
   syncCatalog
 } = require('../controllers/dataSourceController');
-const { protect } = require('../middleware/auth');
+const { protect, requirePermission } = require('../middleware/auth');
+const { PERMISSIONS } = require('../config/rbac');
 
 router.use(protect);
 
 // Specific subresource operations BEFORE /:id
-router.post('/test', testConnection);
-router.post('/discover', discoverAssets);
-router.post('/sync', syncCatalog);
-router.post('/:id/test', testConnection);
-router.post('/:id/discover', discoverAssets);
-router.post('/:id/sync', syncCatalog);
+router.post('/test', requirePermission(PERMISSIONS.DATA_SOURCE_TEST), testConnection);
+router.post('/discover', requirePermission(PERMISSIONS.DATA_SOURCE_UPDATE), discoverAssets);
+router.post('/sync', requirePermission(PERMISSIONS.DATA_SOURCE_UPDATE), syncCatalog);
+router.post('/:id/test', requirePermission(PERMISSIONS.DATA_SOURCE_TEST), testConnection);
+router.post('/:id/discover', requirePermission(PERMISSIONS.DATA_SOURCE_UPDATE), discoverAssets);
+router.post('/:id/sync', requirePermission(PERMISSIONS.DATA_SOURCE_UPDATE), syncCatalog);
 
 // Root collection routes
-router.get('/', getDataSources);
-router.post('/', createDataSource);
+router.get('/', requirePermission(PERMISSIONS.DATA_SOURCE_READ), getDataSources);
+router.post('/', requirePermission(PERMISSIONS.DATA_SOURCE_CREATE), createDataSource);
 
 // Resource routes by id
-router.get('/:id', getDataSource);
-router.put('/:id', updateDataSource);
-router.patch('/:id', updateDataSource);
-router.delete('/:id', deleteDataSource);
+router.get('/:id', requirePermission(PERMISSIONS.DATA_SOURCE_READ), getDataSource);
+router.put('/:id', requirePermission(PERMISSIONS.DATA_SOURCE_UPDATE), updateDataSource);
+router.patch('/:id', requirePermission(PERMISSIONS.DATA_SOURCE_UPDATE), updateDataSource);
+router.delete('/:id', requirePermission(PERMISSIONS.DATA_SOURCE_DELETE), deleteDataSource);
 
 module.exports = router;

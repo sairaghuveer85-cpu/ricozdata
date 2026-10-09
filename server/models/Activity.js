@@ -4,6 +4,7 @@ const activitySchema = new mongoose.Schema({
   title: { type: String, required: true },
   type: { type: String, default: 'dataset', index: true },
   actorId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
+  organizationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization', index: true },
   datasetId: { type: mongoose.Schema.Types.ObjectId, ref: 'Dataset', index: true },
   timestamp: { type: Date, default: Date.now, index: true },
   time: { type: String, default: 'Recently' },

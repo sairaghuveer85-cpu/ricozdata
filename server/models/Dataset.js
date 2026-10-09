@@ -28,6 +28,7 @@ const datasetSchema = new mongoose.Schema({
   steward: { type: String },
   stewardId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', index: true },
   technicalOwner: { type: String },
+  organizationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization', index: true },
 
   // DOMAIN & CLASSIFICATION
   domain: { type: String, required: true, index: true },

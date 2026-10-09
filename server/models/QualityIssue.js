@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 const qualityIssueSchema = new mongoose.Schema({
   datasetId: { type: mongoose.Schema.Types.ObjectId, ref: 'Dataset', required: true, index: true },
+  organizationId: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization', index: true },
   field: { type: String, required: true },
   column: { type: String },
   ruleId: { type: String },

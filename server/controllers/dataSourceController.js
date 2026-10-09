@@ -22,6 +22,9 @@ const getDataSources = asyncHandler(async (req, res) => {
   const status = req.query.status;
 
   const filter = {};
+  if (req.user?.organizationId) {
+    filter.organizationId = req.user.organizationId;
+  }
   if (search) {
     filter.$or = [
       { name: { $regex: search, $options: 'i' } },
@@ -71,6 +74,11 @@ const getDataSource = asyncHandler(async (req, res) => {
     return res.status(404).json({ success: false, message: 'Data source not found' });
   }
 
+  // Workspace isolation check
+  if (req.user?.organizationId && dataSource.organizationId && !dataSource.organizationId.equals(req.user.organizationId) && req.user.role !== 'SUPER_ADMIN') {
+    return res.status(403).json({ success: false, message: 'You do not have permission to view data sources from another workspace.' });
+  }
+
   res.json({
     success: true,
     data: dataSource
@@ -90,11 +98,15 @@ const createDataSource = asyncHandler(async (req, res) => {
     });
   }
 
-  const existing = await DataSource.findOne({ name: name.trim() });
+  const existingQuery = {
+    name: name.trim(),
+    ...(req.user?.organizationId ? { organizationId: req.user.organizationId } : {})
+  };
+  const existing = await DataSource.findOne(existingQuery);
   if (existing) {
     return res.status(409).json({
       success: false,
-      message: `Data source with name "${name}" already exists`
+      message: `Data source with name "${name}" already exists in this workspace`
     });
   }
 
@@ -111,6 +123,7 @@ const createDataSource = asyncHandler(async (req, res) => {
     status: 'CONNECTED',
     healthStatus: 'HEALTHY',
     connectionState: 'CONNECTED',
+    organizationId: req.user?.organizationId,
     createdBy: req.user?._id,
     ownerId: req.user?._id
   });
@@ -126,6 +139,7 @@ const createDataSource = asyncHandler(async (req, res) => {
     if (req.user?._id) {
       await Activity.create({
         actorId: req.user._id,
+        organizationId: req.user.organizationId,
         action: 'DATA_SOURCE_CREATED',
         title: `Created data source ${dataSource.name}`,
         details: `Configured new ${dataSource.type} connection`,
@@ -150,6 +164,11 @@ const updateDataSource = asyncHandler(async (req, res) => {
   let dataSource = await DataSource.findById(req.params.id);
   if (!dataSource) {
     return res.status(404).json({ success: false, message: 'Data source not found' });
+  }
+
+  // Workspace isolation check
+  if (req.user?.organizationId && dataSource.organizationId && !dataSource.organizationId.equals(req.user.organizationId) && req.user.role !== 'SUPER_ADMIN') {
+    return res.status(403).json({ success: false, message: 'You do not have permission to modify data sources from another workspace.' });
   }
 
   const { name, type, description, configuration, connectionConfig, credentials, tags, status } = req.body;
@@ -180,6 +199,11 @@ const deleteDataSource = asyncHandler(async (req, res) => {
   const dataSource = await DataSource.findById(req.params.id);
   if (!dataSource) {
     return res.status(404).json({ success: false, message: 'Data source not found' });
+  }
+
+  // Workspace isolation check
+  if (req.user?.organizationId && dataSource.organizationId && !dataSource.organizationId.equals(req.user.organizationId) && req.user.role !== 'SUPER_ADMIN') {
+    return res.status(403).json({ success: false, message: 'You do not have permission to delete data sources from another workspace.' });
   }
 
   await DataSource.findByIdAndDelete(req.params.id);
