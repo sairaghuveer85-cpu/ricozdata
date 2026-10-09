@@ -8,46 +8,53 @@ import { ROLES, ROLE_LABELS, ROLE_PERMISSIONS, mapLegacyRole } from '../../const
 
 const STANDARDIZED_ROLES = [
   {
+    id: ROLES.MAIN_ADMIN,
+    name: ROLE_LABELS[ROLES.MAIN_ADMIN] || 'Main Admin',
+    roleKey: ROLES.MAIN_ADMIN,
+    description: 'Designated Platform Main Admin with exclusive employee provisioning authority and full governance features.',
+    permissions: ROLE_PERMISSIONS[ROLES.MAIN_ADMIN] || [],
+  },
+  {
+    id: ROLES.EMPLOYEE,
+    name: ROLE_LABELS[ROLES.EMPLOYEE] || 'Employee',
+    roleKey: ROLES.EMPLOYEE,
+    description: 'Full operational access across Data Sources, Catalog, SQL Studio, Lineage, Quality, and Governance.',
+    permissions: ROLE_PERMISSIONS[ROLES.EMPLOYEE] || [],
+  },
+  {
     id: ROLES.SUPER_ADMIN,
     name: ROLE_LABELS[ROLES.SUPER_ADMIN],
     roleKey: ROLES.SUPER_ADMIN,
     description: 'Unrestricted full access across all platform modules, system configuration, and tenant security controls.',
-    permissions: ROLE_PERMISSIONS[ROLES.SUPER_ADMIN],
-  },
-  {
-    id: ROLES.ADMIN,
-    name: ROLE_LABELS[ROLES.ADMIN],
-    roleKey: ROLES.ADMIN,
-    description: 'Enterprise governance administration with full data, policy, and user management capabilities.',
-    permissions: ROLE_PERMISSIONS[ROLES.ADMIN],
+    permissions: ROLE_PERMISSIONS[ROLES.SUPER_ADMIN] || [],
   },
   {
     id: ROLES.DATA_STEWARD,
     name: ROLE_LABELS[ROLES.DATA_STEWARD],
     roleKey: ROLES.DATA_STEWARD,
     description: 'Domain stewardship responsible for metadata certification, business glossary terms, and data quality rules.',
-    permissions: ROLE_PERMISSIONS[ROLES.DATA_STEWARD],
+    permissions: ROLE_PERMISSIONS[ROLES.DATA_STEWARD] || [],
   },
   {
     id: ROLES.DATA_ENGINEER,
     name: ROLE_LABELS[ROLES.DATA_ENGINEER],
     roleKey: ROLES.DATA_ENGINEER,
     description: 'Data platform engineering with schema editing, pipeline lineage management, and quality telemetry access.',
-    permissions: ROLE_PERMISSIONS[ROLES.DATA_ENGINEER],
+    permissions: ROLE_PERMISSIONS[ROLES.DATA_ENGINEER] || [],
   },
   {
     id: ROLES.DATA_ANALYST,
     name: ROLE_LABELS[ROLES.DATA_ANALYST],
     roleKey: ROLES.DATA_ANALYST,
     description: 'Data discovery, catalog search, dataset registration, and read access to governance assets.',
-    permissions: ROLE_PERMISSIONS[ROLES.DATA_ANALYST],
+    permissions: ROLE_PERMISSIONS[ROLES.DATA_ANALYST] || [],
   },
   {
     id: ROLES.VIEWER,
     name: ROLE_LABELS[ROLES.VIEWER],
     roleKey: ROLES.VIEWER,
     description: 'Read-only access across datasets, quality scores, lineage graphs, and enterprise glossary.',
-    permissions: ROLE_PERMISSIONS[ROLES.VIEWER],
+    permissions: ROLE_PERMISSIONS[ROLES.VIEWER] || [],
   },
 ];
 
@@ -153,6 +160,20 @@ export default function UserTable({ users = [], activeTab = 'users', onDeleteUse
             </div>
           </div>
         ))}
+      </div>
+    );
+  }
+
+  if (!users || users.length === 0) {
+    return (
+      <div className="enterprise-panel rounded-xl p-12 text-center space-y-3">
+        <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 mx-auto">
+          <Mail className="w-6 h-6" />
+        </div>
+        <h4 className="text-sm font-bold text-slate-900 dark:text-white">No Employees Found</h4>
+        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+          No employee accounts match the selected filters. Use the &quot;Add Employee&quot; button above to provision new accounts.
+        </p>
       </div>
     );
   }

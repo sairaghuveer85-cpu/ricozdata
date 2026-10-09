@@ -183,6 +183,13 @@ connectDB()
       }
     }
 
+    try {
+      const { ensureDefaultOrganization } = require('./services/organizationService');
+      await ensureDefaultOrganization();
+    } catch (orgErr) {
+      console.warn('Initial default organization bootstrap notice:', orgErr.message);
+    }
+
     server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
       console.log(`Health check available at: http://localhost:${PORT}/api/health`);

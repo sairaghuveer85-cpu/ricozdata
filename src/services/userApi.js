@@ -15,6 +15,9 @@ export const userApi = {
   },
   deleteUser: async (id) => {
     return api.delete(`/users/${id}`);
+  },
+  resetPassword: async (id, newPassword) => {
+    return api.post(`/users/${id}/reset-password`, { newPassword });
   }
 };
 

@@ -112,6 +112,10 @@ const getDatasets = asyncHandler(async (req, res) => {
   if (steward) filter.steward = { $regex: steward, $options: 'i' };
   if (myFavorites) filter.favoriteIds = myFavorites;
 
+  if (req.user?.organizationId) {
+    andConditions.push({ organizationId: req.user.organizationId });
+  }
+
   if (andConditions.length > 0) {
     filter.$and = andConditions;
   }
@@ -236,6 +240,11 @@ const getDataset = asyncHandler(async (req, res) => {
 
   if (!dataset) {
     return res.status(404).json({ success: false, message: 'Dataset not found' });
+  }
+
+  // Workspace isolation check
+  if (req.user?.organizationId && dataset.organizationId && !dataset.organizationId.equals(req.user.organizationId) && req.user.role !== 'SUPER_ADMIN') {
+    return res.status(403).json({ success: false, message: 'You do not have permission to view datasets from another workspace.' });
   }
 
   // Atomically increment views count when viewed
@@ -410,12 +419,14 @@ const createDataset = asyncHandler(async (req, res) => {
     columns: schema || columns || [],
     certificationStatus: 'Not Certified',
     qualityScore: 85,
+    organizationId: req.user?.organizationId,
   });
 
   await Activity.create({
     title: `Dataset "${dataset.name}" registered in catalog`,
     type: 'dataset_created',
     actorId: req.user._id,
+    organizationId: req.user?.organizationId,
     datasetId: dataset._id,
     metadata: { domain: dataset.domain, source: dataset.source },
   });
@@ -432,6 +443,11 @@ const updateDataset = asyncHandler(async (req, res) => {
     return res.status(404).json({ success: false, message: 'Dataset not found' });
   }
 
+  // Workspace isolation check
+  if (req.user?.organizationId && dataset.organizationId && !dataset.organizationId.equals(req.user.organizationId) && req.user.role !== 'SUPER_ADMIN') {
+    return res.status(403).json({ success: false, message: 'You do not have permission to modify datasets from another workspace.' });
+  }
+
   const fieldsToUpdate = { ...req.body, lastUpdatedAt: Date.now() };
   if (req.body.schema) {
     fieldsToUpdate.columns = req.body.schema;
@@ -446,6 +462,7 @@ const updateDataset = asyncHandler(async (req, res) => {
     title: `Dataset "${dataset.name}" metadata updated`,
     type: 'dataset_updated',
     actorId: req.user._id,
+    organizationId: req.user?.organizationId,
     datasetId: dataset._id,
     metadata: { updatedFields: Object.keys(req.body) },
   });
@@ -462,12 +479,18 @@ const deleteDataset = asyncHandler(async (req, res) => {
     return res.status(404).json({ success: false, message: 'Dataset not found' });
   }
 
+  // Workspace isolation check
+  if (req.user?.organizationId && dataset.organizationId && !dataset.organizationId.equals(req.user.organizationId) && req.user.role !== 'SUPER_ADMIN') {
+    return res.status(403).json({ success: false, message: 'You do not have permission to delete datasets from another workspace.' });
+  }
+
   await Dataset.findByIdAndDelete(req.params.id);
 
   await Activity.create({
     title: `Dataset "${dataset.name}" deleted from catalog`,
     type: 'dataset_deleted',
     actorId: req.user._id,
+    organizationId: req.user?.organizationId,
     datasetId: dataset._id,
   });
 

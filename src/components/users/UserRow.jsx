@@ -10,13 +10,14 @@ export default function UserRow({ user, onSelect, onDelete }) {
   const { currentUser, canManage, hasPermission } = useApp();
 
   const isSelf = currentUser?.id === user.id || currentUser?.email === user.email;
-  const canDelete = hasPermission(PERMISSIONS.USER_DELETE) && canManage(user.role) && !isSelf;
+  const isTargetMainAdmin = user.isMainAdmin || user.role === 'MAIN_ADMIN';
+  const canDelete = hasPermission(PERMISSIONS.USER_DELETE) && canManage(user.role) && !isSelf && !isTargetMainAdmin;
 
   const dropdownItems = [
     ...(canDelete
       ? [
           {
-            label: 'Delete User',
+            label: 'Delete Account',
             icon: Trash2,
             danger: true,
             onClick: () => onDelete && onDelete(user.id),

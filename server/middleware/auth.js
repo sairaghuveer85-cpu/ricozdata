@@ -40,6 +40,18 @@ const protect = async (req, res, next) => {
         });
       }
 
+      // Ensure user has valid organizationId (lazy default fallback for legacy data)
+      if (!user.organizationId) {
+        try {
+          const { ensureDefaultOrganization } = require('../services/organizationService');
+          const defOrg = await ensureDefaultOrganization();
+          user.organizationId = defOrg._id;
+          await User.updateOne({ _id: user._id }, { $set: { organizationId: defOrg._id } });
+        } catch (orgErr) {
+          console.warn('Fallback organization resolution warning:', orgErr.message);
+        }
+      }
+
       req.user = user;
       next();
     } catch (error) {

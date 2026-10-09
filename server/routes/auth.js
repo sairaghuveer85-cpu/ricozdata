@@ -5,29 +5,53 @@ const { body } = require('express-validator');
 const {
   register,
   login,
+  activateAccount,
   getMe,
   logout,
 } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 
-// Public routes
+// Public organization & administrator registration route
 router.post(
   '/register',
   [
-    body('name', 'Name is required').not().isEmpty(),
-    body('email', 'Please include a valid email').isEmail(),
-    body('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
+    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('email').trim().isEmail().withMessage('Please include a valid email'),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
   ],
   register
 );
 
+// Public login route
 router.post(
   '/login',
   [
-    body('email', 'Please include a valid email').isEmail(),
-    body('password', 'Password is required').exists(),
+    body('email')
+      .trim()
+      .notEmpty()
+      .withMessage('Email is required')
+      .isEmail()
+      .withMessage('Please include a valid email')
+      .normalizeEmail(),
+    body('password')
+      .notEmpty()
+      .withMessage('Password is required'),
   ],
   login
+);
+
+// Account activation / password setup via one-time secure token
+router.post(
+  '/activate',
+  [
+    body('token').notEmpty().withMessage('Activation token is required'),
+    body('password')
+      .notEmpty()
+      .withMessage('Password is required')
+      .isLength({ min: 8 })
+      .withMessage('Password must be at least 8 characters long'),
+  ],
+  activateAccount
 );
 
 // Protected routes

@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
 import ProtectedRoute from '../components/auth/ProtectedRoute';
 import Login from '../pages/Login';
+import Register from '../pages/Register';
 import Dashboard from '../pages/Dashboard';
 import DataCatalog from '../pages/DataCatalog';
 import DatasetDetails from '../pages/DatasetDetails';
@@ -25,6 +26,7 @@ export default function AppRoutes() {
 
       {/* Public Login Route - No sidebar, no header, no dashboard content */}
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
       {/* Protected Application Routes wrapped by ProtectedRoute + MainLayout */}
       <Route
@@ -45,7 +47,7 @@ export default function AppRoutes() {
         <Route
           path="/datasources"
           element={
-            <ProtectedRoute permission={PERMISSIONS.DATA_SOURCE_MANAGE}>
+            <ProtectedRoute permission={PERMISSIONS.DATA_SOURCE_READ}>
               <Suspense fallback={<div className="flex items-center justify-center min-h-[400px]"><div className="text-center space-y-4"><div className="h-8 w-48 mx-auto animate-pulse"></div><div className="h-4 w-64 mx-auto animate-pulse"></div><div className="h-4 w-32 mx-auto animate-pulse"></div></div></div>}>
                 <DataSourceList />
               </Suspense>

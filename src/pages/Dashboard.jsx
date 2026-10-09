@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChevronDown, Calendar } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ChevronDown, Calendar, Building, Database, Users, ArrowRight } from 'lucide-react';
 import StatCard from '../components/dashboard/StatCard';
 import QualityChart from '../components/dashboard/QualityChart';
 import DataHealthCard from '../components/dashboard/DataHealthCard';
@@ -8,7 +9,8 @@ import PopularDatasets from '../components/dashboard/PopularDatasets';
 import { useApp } from '../context/AppContext';
 
 export default function Dashboard() {
-  const { dashboardMetrics } = useApp();
+  const navigate = useNavigate();
+  const { dashboardMetrics, currentUser, datasets = [] } = useApp();
   const [timeRange, setTimeRange] = useState('Last 30 days');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -39,6 +41,8 @@ export default function Dashboard() {
     { id: 'active-users', title: 'ACTIVE USERS', value: '0', comparison: '0 registered', isPositive: false, trend: 'neutral' }
   ];
 
+  const orgName = currentUser?.organization?.name || 'Enterprise Workspace';
+
   return (
     <div className="space-y-4 sm:space-y-5 pb-8">
       {/* Top Header */}
@@ -47,12 +51,18 @@ export default function Dashboard() {
         style={{ borderBottom: '1px solid var(--color-border)' }}
       >
         <div>
-          <h1
-            className="text-xl sm:text-2xl font-bold tracking-tight leading-tight"
-            style={{ color: 'var(--color-text-primary)' }}
-          >
-            Enterprise Overview
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1
+              className="text-xl sm:text-2xl font-bold tracking-tight leading-tight"
+              style={{ color: 'var(--color-text-primary)' }}
+            >
+              Enterprise Overview
+            </h1>
+            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900/50">
+              <Building className="w-3 h-3" />
+              <span>{orgName}</span>
+            </span>
+          </div>
           <p
             className="text-xs mt-0.5"
             style={{ color: 'var(--color-text-muted)' }}
@@ -156,6 +166,46 @@ export default function Dashboard() {
           </div>
         ))}
       </div>
+
+      {/* Fresh Workspace Welcome Banner (shown when workspace has no datasets yet) */}
+      {datasets.length === 0 && (
+        <div className="p-4 sm:p-5 rounded-xl bg-gradient-to-r from-blue-900/30 via-slate-900/40 to-indigo-900/30 border border-blue-500/20 backdrop-blur-md">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-xs font-semibold text-blue-400 mb-1">
+                <Building className="w-4 h-4" />
+                <span>Fresh Workspace Initialized</span>
+              </div>
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                Welcome to your new {orgName} workspace
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xl leading-relaxed">
+                Your workspace is isolated and ready. Connect your enterprise databases, add authorized employees, and start discovering catalog assets with real-time governance.
+              </p>
+            </div>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <button
+                type="button"
+                onClick={() => navigate('/datasources')}
+                className="px-3.5 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+              >
+                <Database className="w-3.5 h-3.5" />
+                <span>Connect Data Source</span>
+              </button>
+              {(currentUser?.isMainAdmin || currentUser?.role === 'MAIN_ADMIN') && (
+                <button
+                  type="button"
+                  onClick={() => navigate('/users')}
+                  className="px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  <span>Add Employees</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 2. Unified Data Reliability Studio (Quality Trend + Health Index) */}
       <div

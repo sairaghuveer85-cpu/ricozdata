@@ -5,7 +5,8 @@ const asyncHandler = require('../middleware/asyncHandler');
 // @route   GET /api/activities/count
 // @access  Private
 const getActivityCount = asyncHandler(async (req, res) => {
-  const totalCount = await Activity.countDocuments();
+  const filter = req.user?.organizationId ? { organizationId: req.user.organizationId } : {};
+  const totalCount = await Activity.countDocuments(filter);
 
   res.json({
     success: true,
@@ -19,14 +20,15 @@ const getActivityCount = asyncHandler(async (req, res) => {
 // @access  Private
 const getActivities = asyncHandler(async (req, res) => {
   const limit = parseInt(req.query.limit) || 20;
+  const filter = req.user?.organizationId ? { organizationId: req.user.organizationId } : {};
 
   const [activities, totalCount] = await Promise.all([
-    Activity.find()
+    Activity.find(filter)
       .populate('actorId', 'name email avatar avatarBg')
       .populate('datasetId', 'name')
       .sort({ timestamp: -1 })
       .limit(limit),
-    Activity.countDocuments(),
+    Activity.countDocuments(filter),
   ]);
 
   res.json({
@@ -48,6 +50,7 @@ const createActivity = asyncHandler(async (req, res) => {
   const activity = await Activity.create({
     ...req.body,
     actorId: req.user ? req.user._id : req.body.actorId,
+    organizationId: req.user?.organizationId,
     timestamp: new Date()
   });
 

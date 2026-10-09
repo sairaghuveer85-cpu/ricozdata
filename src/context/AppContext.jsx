@@ -398,7 +398,8 @@ export function AppProvider({ children }) {
         id: backendUser.id || backendUser._id || 'user-001',
         name: backendUser.name || 'Enterprise User',
         email: backendUser.email || cleanEmail,
-        role: backendUser.role || 'Data Analyst',
+        role: backendUser.role || 'EMPLOYEE',
+        isMainAdmin: !!backendUser.isMainAdmin || backendUser.role === 'MAIN_ADMIN',
         avatar: backendUser.avatar || 'U',
         avatarBg: backendUser.avatarBg || 'bg-blue-600',
         department: backendUser.department || 'Enterprise Analytics',
@@ -424,6 +425,48 @@ export function AppProvider({ children }) {
     }
   };
 
+  const register = async (userData) => {
+    try {
+      const res = await authApi.register(userData);
+      if (res?.success && res.data?.token) {
+        resetUnauthorizedState();
+        const token = res.data.token;
+        localStorage.setItem('ricoz_jwt', token);
+        apiClient.setToken(token);
+        localStorage.setItem('ricoz-authenticated', 'true');
+        setIsAuthenticated(true);
+
+        const backendUser = res.data.user || {};
+        const org = res.data.organization || backendUser.organization || null;
+        const userToLogin = {
+          id: backendUser.id || backendUser._id || 'user-001',
+          name: backendUser.name || userData.name,
+          email: backendUser.email || userData.email,
+          role: backendUser.role || 'MAIN_ADMIN',
+          isMainAdmin: true,
+          organization: org,
+          organizationId: org?.id || backendUser.organizationId,
+          avatar: backendUser.avatar || 'A',
+          avatarBg: backendUser.avatarBg || 'bg-blue-600',
+          department: backendUser.department || 'Administration',
+          isAuthenticated: true
+        };
+        setCurrentUser(userToLogin);
+        addToast({
+          type: 'success',
+          title: 'Workspace Initialized',
+          message: `Welcome ${userToLogin.name}! Your workspace "${org?.name || 'New Organization'}" is ready.`
+        });
+
+        // Load fresh workspace state
+        await fetchBackendData();
+      }
+      return res;
+    } catch (err) {
+      return { success: false, message: err.message || 'Registration failed' };
+    }
+  };
+
   const logout = async (options = { notifyBackend: true }) => {
     const shouldNotify = options?.notifyBackend !== false;
     const token = localStorage.getItem('ricoz_jwt');
@@ -440,6 +483,7 @@ export function AppProvider({ children }) {
     try {
       localStorage.removeItem('ricoz-authenticated');
       localStorage.removeItem('ricoz_jwt');
+      localStorage.removeItem('ricoz_recent_pages');
       apiClient.setToken(null);
     } catch (e) {
       console.warn('Failed to remove authentication from localStorage', e);
@@ -450,9 +494,24 @@ export function AppProvider({ children }) {
       name: '',
       email: '',
       role: '',
+      isMainAdmin: false,
       avatar: '',
       isAuthenticated: false
     }));
+
+    // Security: Clear all cached user & workspace state on logout/account switch
+    setDatasets([]);
+    setUsers([]);
+    setDataSources([]);
+    setActivities([]);
+    setGlossaryTerms([]);
+    setPolicies([]);
+    setRules([]);
+    setIssues([]);
+    setQualityRules([]);
+    setQualityHistory([]);
+    setRecentPages([]);
+
     if (options?.reason === 'expired') {
       addToast({
         type: 'warning',
@@ -819,57 +878,102 @@ export function AppProvider({ children }) {
     return canManageRole(currentUser.role, targetRole);
   }, [currentUser?.role]);
 
-  // User CRUD
-  const addUser = (userData) => {
-    const colors = ['bg-blue-600', 'bg-emerald-600', 'bg-indigo-600', 'bg-purple-600', 'bg-amber-600', 'bg-teal-600'];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    const newUser = {
-      id: `user-${Date.now()}`,
-      name: userData.name,
-      email: userData.email,
-      role: userData.role || 'DATA_ANALYST',
-      status: userData.status || 'ACTIVE',
-      avatar: (userData.name.trim().charAt(0) || 'U').toUpperCase(),
-      avatarBg: randomColor,
-      department: userData.department || 'Analytics',
-      lastActive: 'Just now'
-    };
-    setUsers(prev => [newUser, ...prev]);
-    userApi.createUser({
-      name: newUser.name,
-      email: newUser.email,
-      password: userData.password || 'Password123!',
-      role: newUser.role,
-      department: newUser.department,
-      status: newUser.status
-    }).catch(() => {});
-
-    addToast({
-      type: 'success',
-      title: 'User created',
-      message: `Account created for ${newUser.name}`
-    });
-    return newUser;
+  // User CRUD (Exclusively Main Admin)
+  const addUser = async (userData) => {
+    try {
+      const res = await userApi.createUser(userData);
+      if (res?.success) {
+        const createdUser = res.data;
+        const formattedUser = {
+          ...createdUser,
+          id: createdUser.id || createdUser._id,
+          lastActive: 'Just now'
+        };
+        setUsers(prev => [formattedUser, ...prev]);
+        addToast({
+          type: 'success',
+          title: 'Employee account created',
+          message: `Account created for ${formattedUser.name}.`
+        });
+        return formattedUser;
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to create employee';
+      addToast({
+        type: 'error',
+        title: 'Failed to create employee',
+        message: msg
+      });
+      throw err;
+    }
   };
 
-  const updateUser = (id, userData) => {
-    setUsers(prev => prev.map(u => u.id === id ? { ...u, ...userData } : u));
-    userApi.updateUser(id, userData).catch(() => {});
-    addToast({
-      type: 'success',
-      title: 'User updated',
-      message: 'User changes saved successfully.'
-    });
+  const updateUser = async (id, userData) => {
+    try {
+      const res = await userApi.updateUser(id, userData);
+      if (res?.success) {
+        const updated = res.data;
+        setUsers(prev => prev.map(u => (u.id === id || u._id === id) ? { ...u, ...updated } : u));
+        addToast({
+          type: 'success',
+          title: 'Account updated',
+          message: 'Changes saved successfully.'
+        });
+        return updated;
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to update employee';
+      addToast({
+        type: 'error',
+        title: 'Failed to update account',
+        message: msg
+      });
+      throw err;
+    }
   };
 
-  const deleteUser = (id) => {
-    setUsers(prev => prev.filter(u => u.id !== id));
-    userApi.deleteUser(id).catch(() => {});
-    addToast({
-      type: 'info',
-      title: 'User removed',
-      message: 'Account access has been revoked.'
-    });
+  const deleteUser = async (id) => {
+    try {
+      const res = await userApi.deleteUser(id);
+      if (res?.success) {
+        setUsers(prev => prev.filter(u => u.id !== id && u._id !== id));
+        addToast({
+          type: 'info',
+          title: 'Employee account removed',
+          message: 'Account access has been revoked.'
+        });
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to remove employee';
+      addToast({
+        type: 'error',
+        title: 'Failed to remove account',
+        message: msg
+      });
+      throw err;
+    }
+  };
+
+  const resetUserPassword = async (id, newPassword) => {
+    try {
+      const res = await userApi.resetPassword(id, newPassword);
+      if (res?.success) {
+        addToast({
+          type: 'success',
+          title: 'Password setup updated',
+          message: res.message || 'Password setup updated successfully.'
+        });
+        return res.data;
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Failed to reset password';
+      addToast({
+        type: 'error',
+        title: 'Password reset failed',
+        message: msg
+      });
+      throw err;
+    }
   };
 
   // Quality issues status update
@@ -1049,6 +1153,7 @@ export function AppProvider({ children }) {
         isAuthenticated,
         setIsAuthenticated,
         login,
+        register,
         logout,
         datasets,
         addDataset,
@@ -1058,6 +1163,7 @@ export function AppProvider({ children }) {
         addUser,
         updateUser,
         deleteUser,
+        resetUserPassword,
         userPermissions,
         hasPermission,
         can,

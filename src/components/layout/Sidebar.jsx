@@ -18,6 +18,7 @@ import {
   X
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { PERMISSIONS } from '../../constants/rbac';
 import ThemeSelector from '../common/ThemeSelector';
 
 export default function Sidebar() {
@@ -29,6 +30,7 @@ export default function Sidebar() {
     sidebarOpen,
     setSidebarOpen,
     currentUser,
+    hasPermission,
     logout
   } = useApp();
 
@@ -73,11 +75,16 @@ export default function Sidebar() {
     {
       group: 'Management',
       items: [
-        { name: 'Users', path: '/users', icon: Users },
+        { name: 'Employees', path: '/users', icon: Users, permission: PERMISSIONS.USER_READ },
         { name: 'Settings', path: '/settings', icon: Settings }
       ]
     }
   ];
+
+  const visibleNavGroups = navGroups.map(grp => ({
+    ...grp,
+    items: grp.items.filter(item => !item.permission || hasPermission(item.permission))
+  })).filter(grp => grp.items.length > 0);
 
   const isActive = (item) => {
     if (item.matchPrefix) {
@@ -138,7 +145,7 @@ export default function Sidebar() {
 
       {/* Navigation Groups */}
       <nav aria-label="Main Navigation" className="flex-1 py-3 px-2 space-y-4 overflow-y-auto overflow-x-hidden">
-        {navGroups.map((grp, gIdx) => (
+        {visibleNavGroups.map((grp, gIdx) => (
           <div key={grp.group} className="space-y-0.5">
             {!sidebarCollapsed ? (
               <div className="text-[10px] font-bold text-[var(--sidebar-text-muted)] tracking-wider uppercase px-2.5 pt-1 pb-1 select-none">
@@ -278,7 +285,7 @@ export default function Sidebar() {
 
               {/* Grouped Mobile Navigation Links */}
               <nav aria-label="Mobile Navigation" className="flex-1 py-3 px-3 space-y-4 overflow-y-auto">
-                {navGroups.map((grp) => (
+                {visibleNavGroups.map((grp) => (
                   <div key={grp.group} className="space-y-0.5">
                     <div className="text-[10px] font-bold text-[var(--sidebar-text-muted)] tracking-wider uppercase px-2.5 pt-1 pb-1 select-none">
                       {grp.group}
