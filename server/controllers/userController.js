@@ -164,7 +164,14 @@ const updateUser = asyncHandler(async (req, res) => {
 
   // Privilege escalation prevention: only SUPER_ADMIN can assign SUPER_ADMIN role
   const targetRole = req.body.role ? mapLegacyRole(req.body.role) : user.role;
-  if ((targetRole === ROLES.SUPER_ADMIN || targetRole === ROLES.MAIN_ADMIN) && req.user.role !== ROLES.SUPER_ADMIN && !req.user.isMainAdmin) {
+  if (targetRole === ROLES.SUPER_ADMIN && req.user.role !== ROLES.SUPER_ADMIN) {
+    return res.status(403).json({
+      success: false,
+      message: 'You do not have permission to assign administrative privileges.'
+    });
+  }
+
+  if (targetRole === ROLES.MAIN_ADMIN && req.user.role !== ROLES.SUPER_ADMIN && !req.user.isMainAdmin) {
     return res.status(403).json({
       success: false,
       message: 'You do not have permission to assign administrative privileges.'
@@ -175,6 +182,7 @@ const updateUser = asyncHandler(async (req, res) => {
   delete updateData._id;
   delete updateData.__v;
   delete updateData.isMainAdmin; // Protect privileged flag from mass assignment
+  delete updateData.tokenVersion;
 
   if (updateData.role) {
     updateData.role = mapLegacyRole(updateData.role);
@@ -185,6 +193,7 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 
   if (updateData.password) {
+    updateData.tokenVersion = (user.tokenVersion || 0) + 1;
     const salt = await bcrypt.genSalt(10);
     updateData.password = await bcrypt.hash(updateData.password, salt);
   }

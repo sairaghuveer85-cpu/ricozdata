@@ -211,6 +211,7 @@ async function startTestSuite() {
   // Test 1.1: Valid registration succeeds
   const regEmail = `test.user.${Date.now()}@enterprise.com`;
   const regRes = await request('POST', '/api/auth/register', {
+    organizationName: `Registration Workspace ${Date.now()}`,
     name: 'John Citizen',
     email: regEmail,
     password: 'Password123!',
@@ -221,6 +222,7 @@ async function startTestSuite() {
 
   // Test 1.2: Missing full name is rejected
   const missingNameRes = await request('POST', '/api/auth/register', {
+    organizationName: `Missing Name Workspace ${Date.now()}`,
     name: '',
     email: `noname.${Date.now()}@enterprise.com`,
     password: 'Password123!'
@@ -229,6 +231,7 @@ async function startTestSuite() {
 
   // Test 1.3: Invalid email format is rejected
   const invalidEmailRes = await request('POST', '/api/auth/register', {
+    organizationName: `Invalid Email Workspace ${Date.now()}`,
     name: 'Invalid Email User',
     email: 'not-an-email-format',
     password: 'Password123!'
@@ -237,6 +240,7 @@ async function startTestSuite() {
 
   // Test 1.4: Missing password is rejected
   const missingPassRes = await request('POST', '/api/auth/register', {
+    organizationName: `Missing Password Workspace ${Date.now()}`,
     name: 'No Password User',
     email: `nopass.${Date.now()}@enterprise.com`,
     password: ''
@@ -245,6 +249,7 @@ async function startTestSuite() {
 
   // Test 1.5: Weak passwords rejected according to policy
   const weakPassRes = await request('POST', '/api/auth/register', {
+    organizationName: `Weak Password Workspace ${Date.now()}`,
     name: 'Weak Pass User',
     email: `weak.${Date.now()}@enterprise.com`,
     password: 'short'
@@ -253,6 +258,7 @@ async function startTestSuite() {
 
   // Test 1.6: Duplicate email rejected
   const duplicateEmailRes = await request('POST', '/api/auth/register', {
+    organizationName: `Duplicate Email Workspace ${Date.now()}`,
     name: 'Duplicate User',
     email: regEmail,
     password: 'Password123!'
@@ -268,29 +274,31 @@ async function startTestSuite() {
   const hashNotReturned = regRes.body?.data?.user?.password === undefined && regRes.body?.data?.password === undefined;
   record('Registration', 'Password hash omitted from registration response', 200, hashNotReturned ? 200 : 500, hashNotReturned);
 
-  // Test 1.9: Privilege escalation: registering with role: ADMIN does NOT grant ADMIN
+  // Test 1.9: Client-supplied roles are ignored and registration assigns MAIN_ADMIN
   const escalateEmail = `attacker.${Date.now()}@enterprise.com`;
   const escalateAdminRes = await request('POST', '/api/auth/register', {
+    organizationName: `Client Admin Role Workspace ${Date.now()}`,
     name: 'Malicious Visitor',
     email: escalateEmail,
     password: 'Password123!',
     role: 'ADMIN' // Malicious client manipulation
   });
   const assignedRoleAdmin = escalateAdminRes.body?.data?.user?.role;
-  const escalationAdminPrevented = escalateAdminRes.status === 201 && assignedRoleAdmin === ROLES.VIEWER;
-  record('Registration', 'Registering with role: ADMIN is neutralized to VIEWER', 201, escalateAdminRes.status, escalationAdminPrevented, `Assigned role: ${assignedRoleAdmin}`);
+  const escalationAdminPrevented = escalateAdminRes.status === 201 && assignedRoleAdmin === ROLES.MAIN_ADMIN;
+  record('Registration', 'Client-supplied ADMIN role is ignored; account receives MAIN_ADMIN', 201, escalateAdminRes.status, escalationAdminPrevented, `Assigned role: ${assignedRoleAdmin}`);
 
-  // Test 1.10: Privilege escalation: registering with role: SUPER_ADMIN does NOT grant SUPER_ADMIN
+  // Test 1.10: Client-supplied roles are ignored and registration assigns MAIN_ADMIN
   const escalateSuperEmail = `attacker.super.${Date.now()}@enterprise.com`;
   const escalateSuperRes = await request('POST', '/api/auth/register', {
+    organizationName: `Client Super Admin Role Workspace ${Date.now()}`,
     name: 'Malicious Super Visitor',
     email: escalateSuperEmail,
     password: 'Password123!',
     role: 'SUPER_ADMIN' // Malicious client manipulation
   });
   const assignedRoleSuper = escalateSuperRes.body?.data?.user?.role;
-  const escalationSuperPrevented = escalateSuperRes.status === 201 && assignedRoleSuper === ROLES.VIEWER;
-  record('Registration', 'Registering with role: SUPER_ADMIN is neutralized to VIEWER', 201, escalateSuperRes.status, escalationSuperPrevented, `Assigned role: ${assignedRoleSuper}`);
+  const escalationSuperPrevented = escalateSuperRes.status === 201 && assignedRoleSuper === ROLES.MAIN_ADMIN;
+  record('Registration', 'Client-supplied SUPER_ADMIN role is ignored; account receives MAIN_ADMIN', 201, escalateSuperRes.status, escalationSuperPrevented, `Assigned role: ${assignedRoleSuper}`);
 
   // Test 1.11: Consistent response structure on validation errors
   const hasConsistentErrorFormat = missingNameRes.body && missingNameRes.body.success === false && typeof missingNameRes.body.message === 'string';
@@ -368,6 +376,11 @@ async function startTestSuite() {
     description: 'Updated by Admin in test'
   }, tokens.ADMIN);
   record('ADMIN Access', 'PUT /api/datasets/:id (DATASET_UPDATE) authorized for ADMIN', 200, adminUpdateDataset.status, adminUpdateDataset.status === 200);
+
+  const operatorDatasetUpdate = await request('PUT', `/api/datasets/${createdDsId || sampleDataset._id}`, {
+    $set: { organizationId: new mongoose.Types.ObjectId().toString() }
+  }, tokens.ADMIN);
+  record('Dataset Security', 'Rejects Mongo operator updates to organizationId', 400, operatorDatasetUpdate.status, operatorDatasetUpdate.status === 400);
 
   // Test 3.5: ADMIN can delete datasets (DATASET_DELETE)
   if (createdDsId) {

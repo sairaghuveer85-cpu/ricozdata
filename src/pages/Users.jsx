@@ -16,7 +16,10 @@ export default function Users() {
   const [statusFilter, setStatusFilter] = useState('ALL');
 
   const handleDeleteUser = (id) => {
-    deleteUser(id);
+    const user = users.find((item) => item.id === id || item._id === id);
+    if (window.confirm(`Delete account for ${user?.name || 'this user'}? This operation is permanent.`)) {
+      deleteUser(id);
+    }
   };
 
   // Metrics

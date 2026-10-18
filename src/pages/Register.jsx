@@ -11,7 +11,6 @@ import {
   Shield,
   ShieldCheck,
   GitFork,
-  CheckCircle2,
   AlertCircle
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
@@ -233,8 +232,7 @@ export default function Register() {
             <div>
               <label
                 htmlFor="register-org-name"
-                className="block text-xs font-semibold mb-1.5"
-                style={{ color: 'var(--color-text-primary)' }}
+                className="ui-field-label"
               >
                 Organization / Company Name
               </label>
@@ -249,12 +247,7 @@ export default function Register() {
                   value={organizationName}
                   onChange={(e) => setOrganizationName(e.target.value)}
                   placeholder="e.g., Acme Global Health, Nexus Data"
-                  className="w-full pl-9 pr-3 py-2 rounded-lg text-xs sm:text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  style={{
-                    backgroundColor: 'var(--color-surface)',
-                    border: '1px solid var(--color-border)',
-                    color: 'var(--color-text-primary)'
-                  }}
+                  className="ui-input w-full pl-9 pr-3 py-2 text-xs sm:text-sm"
                 />
               </div>
             </div>
@@ -263,8 +256,7 @@ export default function Register() {
             <div>
               <label
                 htmlFor="register-admin-name"
-                className="block text-xs font-semibold mb-1.5"
-                style={{ color: 'var(--color-text-primary)' }}
+                className="ui-field-label"
               >
                 Administrator Full Name
               </label>
@@ -279,12 +271,7 @@ export default function Register() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g., Sarah Connor"
-                  className="w-full pl-9 pr-3 py-2 rounded-lg text-xs sm:text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  style={{
-                    backgroundColor: 'var(--color-surface)',
-                    border: '1px solid var(--color-border)',
-                    color: 'var(--color-text-primary)'
-                  }}
+                  className="ui-input w-full pl-9 pr-3 py-2 text-xs sm:text-sm"
                 />
               </div>
             </div>
@@ -293,8 +280,7 @@ export default function Register() {
             <div>
               <label
                 htmlFor="register-email"
-                className="block text-xs font-semibold mb-1.5"
-                style={{ color: 'var(--color-text-primary)' }}
+                className="ui-field-label"
               >
                 Work Email Address
               </label>
@@ -309,12 +295,7 @@ export default function Register() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="e.g., sarah@acme.com"
-                  className="w-full pl-9 pr-3 py-2 rounded-lg text-xs sm:text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  style={{
-                    backgroundColor: 'var(--color-surface)',
-                    border: '1px solid var(--color-border)',
-                    color: 'var(--color-text-primary)'
-                  }}
+                  className="ui-input w-full pl-9 pr-3 py-2 text-xs sm:text-sm"
                 />
               </div>
             </div>
@@ -323,8 +304,7 @@ export default function Register() {
             <div>
               <label
                 htmlFor="register-password"
-                className="block text-xs font-semibold mb-1.5"
-                style={{ color: 'var(--color-text-primary)' }}
+                className="ui-field-label"
               >
                 Master Password
               </label>
@@ -340,16 +320,10 @@ export default function Register() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Minimum 8 characters"
-                  className="w-full pl-9 pr-10 py-2 rounded-lg text-xs sm:text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  style={{
-                    backgroundColor: 'var(--color-surface)',
-                    border: '1px solid var(--color-border)',
-                    color: 'var(--color-text-primary)'
-                  }}
+                  className="ui-input w-full pl-9 pr-10 py-2 text-xs sm:text-sm"
                 />
                 <button
                   type="button"
-                  tabIndex={-1}
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none cursor-pointer"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}

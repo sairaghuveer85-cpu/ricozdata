@@ -50,7 +50,7 @@ export default function FilterDrawer({
         </div>
       }
     >
-      <div className="space-y-6 text-xs">
+      <div className="ui-catalog-filters space-y-6 text-xs">
         {/* Domain Filter */}
         <div>
           <h4 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] mb-2.5">

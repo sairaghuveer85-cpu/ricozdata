@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 const { seedData } = require('./seed/seed');
@@ -14,6 +15,9 @@ const path = require('path');
 // Load environment variables from server root and cwd
 dotenv.config({ path: path.join(__dirname, '.env') });
 dotenv.config();
+
+const { assertJwtSecretConfigured } = require('./config/jwt');
+assertJwtSecretConfigured();
 
 const app = express();
 
@@ -28,6 +32,7 @@ app.use(
 // Body parser with safe limits
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
 
 // Parse allowed CORS origins
 const rawClientUrls = process.env.CLIENT_URL || 'http://localhost:5173';
@@ -185,7 +190,31 @@ connectDB()
 
     try {
       const { ensureDefaultOrganization } = require('./services/organizationService');
-      await ensureDefaultOrganization();
+      const defaultOrg = await ensureDefaultOrganization();
+
+      const runtimeEnv = process.env.NODE_ENV;
+      const allowDemoAdminBootstrap =
+        runtimeEnv === 'development' || runtimeEnv === 'test';
+      if (allowDemoAdminBootstrap) {
+        const User = require('./models/User');
+        const { ROLES } = require('./config/rbac');
+        const userCount = await User.countDocuments();
+        if (userCount === 0) {
+          await User.create({
+            name: 'Demo Administrator',
+            email: 'test@example.com',
+            password: 'password', // securely hashed by User model pre-save hook
+            role: ROLES.MAIN_ADMIN,
+            isMainAdmin: true,
+            organizationId: defaultOrg._id,
+            department: 'Enterprise Analytics',
+            avatar: 'DA',
+            avatarBg: 'bg-blue-600',
+            status: 'ACTIVE'
+          });
+          console.log('Default demo administrator initialized: test@example.com');
+        }
+      }
     } catch (orgErr) {
       console.warn('Initial default organization bootstrap notice:', orgErr.message);
     }

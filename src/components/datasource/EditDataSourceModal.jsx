@@ -185,7 +185,7 @@ export default function EditDataSourceModal({
         </div>
       }
     >
-      <div className="space-y-4 text-xs">
+      <div className="ui-data-source-form space-y-4 text-xs">
         {error && (
           <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-lg text-rose-800 dark:text-rose-200 flex items-start gap-2">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-600" />
@@ -207,7 +207,8 @@ export default function EditDataSourceModal({
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full rounded-md border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] text-xs text-slate-900 dark:text-white py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+              className="ui-data-source-filter min-h-10 w-full rounded-lg border px-3 py-2 text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+              style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
             >
               <option value="ACTIVE">ACTIVE</option>
               <option value="INACTIVE">INACTIVE</option>
@@ -230,7 +231,7 @@ export default function EditDataSourceModal({
         />
 
         {/* Configuration Parameters */}
-        <div className="p-3.5 bg-slate-50 dark:bg-[#111C2E] rounded-lg border border-slate-200 dark:border-[#1D3047] space-y-3">
+        <div className="ui-data-source-section space-y-3 rounded-xl border p-4">
           <div className="font-semibold text-slate-900 dark:text-white text-xs">
             {type.toUpperCase()} Parameters
           </div>

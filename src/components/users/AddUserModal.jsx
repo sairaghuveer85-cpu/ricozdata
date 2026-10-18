@@ -5,15 +5,22 @@ import Input from '../common/Input';
 import { RefreshCw, Key } from 'lucide-react';
 import { ROLES, ROLE_LABELS } from '../../constants/rbac';
 
+const generateSecurePassword = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+  const randomValues = new Uint8Array(12);
+  window.crypto.getRandomValues(randomValues);
+  return `Emp_${Array.from(randomValues, (value) => chars.charAt(value % chars.length)).join('')}!`;
+};
+
 export default function AddUserModal({ isOpen, onClose, onAdd }) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => ({
     name: '',
     email: '',
-    password: 'EmpPassword123!',
+    password: generateSecurePassword(),
     role: ROLES.EMPLOYEE,
     department: 'Data Platform',
     status: 'ACTIVE',
-  });
+  }));
 
   const [errors, setErrors] = useState({});
 
@@ -27,13 +34,7 @@ export default function AddUserModal({ isOpen, onClose, onAdd }) {
   ];
 
   const generateRandomPassword = () => {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-    let pass = 'Emp_';
-    for (let i = 0; i < 8; i++) {
-      pass += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    pass += '!';
-    setFormData((prev) => ({ ...prev, password: pass }));
+    setFormData((prev) => ({ ...prev, password: generateSecurePassword() }));
   };
 
   const handleChange = (field, value) => {
@@ -61,7 +62,7 @@ export default function AddUserModal({ isOpen, onClose, onAdd }) {
     setFormData({
       name: '',
       email: '',
-      password: 'EmpPassword123!',
+      password: generateSecurePassword(),
       role: ROLES.EMPLOYEE,
       department: 'Data Platform',
       status: 'ACTIVE',

@@ -33,12 +33,7 @@ export default function SearchBar({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         aria-label={ariaLabel || placeholder}
-        className={`w-full rounded-md transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${sizeClasses[size]}`}
-        style={{
-          backgroundColor: 'var(--input-bg)',
-          border: '1px solid var(--border)',
-          color: 'var(--text-primary)'
-        }}
+        className={`ui-input w-full ${sizeClasses[size]}`}
       />
       {value && (
         <button

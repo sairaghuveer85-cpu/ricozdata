@@ -66,6 +66,7 @@ const userSchema = new mongoose.Schema({
     type: Date,
     select: false
   },
+  tokenVersion: { type: Number, default: 0 },
   department: { type: String, required: true, trim: true, default: 'General' },
   avatar: {
     type: String,
@@ -100,6 +101,9 @@ userSchema.pre('save', async function() {
   }
   if (!this.isModified('password')) {
     return;
+  }
+  if (!this.isNew) {
+    this.tokenVersion = (this.tokenVersion || 0) + 1;
   }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);

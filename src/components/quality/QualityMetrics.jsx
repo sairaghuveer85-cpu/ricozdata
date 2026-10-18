@@ -9,7 +9,7 @@ export default function QualityMetrics({ dimensions = [] }) {
   };
 
   return (
-    <div className="enterprise-panel rounded-lg p-5 flex flex-col justify-center h-full">
+    <div className="enterprise-panel flex h-full min-w-0 flex-col justify-center rounded-xl p-4 sm:p-5">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
@@ -39,7 +39,7 @@ export default function QualityMetrics({ dimensions = [] }) {
             return (
               <div
                 key={dimKey}
-                className="rounded-lg border border-slate-200/70 dark:border-slate-800 bg-white dark:bg-[#0D1828]/60 transition-colors"
+                className="rounded-xl border border-slate-200/70 bg-white transition-colors dark:border-slate-800 dark:bg-[#0D1828]/60"
               >
                 {/* Header row */}
                 <div
@@ -52,7 +52,8 @@ export default function QualityMetrics({ dimensions = [] }) {
                       toggleExpand(dimKey);
                     }
                   }}
-                  className="p-3 flex items-center justify-between cursor-pointer hover:bg-slate-50/80 dark:hover:bg-slate-800/40 select-none rounded-lg"
+                  aria-expanded={isExpanded}
+                  className="flex min-h-11 cursor-pointer select-none items-center justify-between gap-3 rounded-lg p-3 hover:bg-slate-50/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:hover:bg-slate-800/40"
                 >
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">

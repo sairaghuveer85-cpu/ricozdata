@@ -26,7 +26,7 @@ export default function PolicyTable({ policies = [], onToggleStatus }) {
   return (
     <>
       {/* Mobile Policy Cards (< md) */}
-      <div className="md:hidden space-y-3">
+      <div className="space-y-3 md:hidden">
         {policies.map((policy) => (
           <div
             key={policy.id}
@@ -40,7 +40,7 @@ export default function PolicyTable({ policies = [], onToggleStatus }) {
                 handleRowClick(policy);
               }
             }}
-            className="p-3.5 rounded-lg border border-slate-200/80 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] space-y-2.5 cursor-pointer hover:border-blue-500/40 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+            className="space-y-2.5 rounded-xl border border-slate-200/80 bg-white p-4 transition-colors hover:border-blue-500/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-[#1D3047] dark:bg-[#0D1828] cursor-pointer"
           >
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-start gap-2 min-w-0">
@@ -88,7 +88,7 @@ export default function PolicyTable({ policies = [], onToggleStatus }) {
       </div>
 
       {/* Desktop Table (>= md) */}
-      <div className="hidden md:block enterprise-workbench overflow-hidden">
+      <div className="hidden overflow-hidden rounded-xl enterprise-workbench md:block">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse" aria-label="Governance Policies">
             <thead>

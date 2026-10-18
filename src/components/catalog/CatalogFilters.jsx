@@ -62,7 +62,7 @@ export default function CatalogFilters({
 
   return (
     <div
-      className="rounded-lg p-4 space-y-5"
+      className="ui-catalog-filters rounded-xl p-4 space-y-5 shadow-sm"
       style={{
         backgroundColor: 'var(--color-surface)',
         border: '1px solid var(--color-border)'

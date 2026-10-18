@@ -203,32 +203,6 @@ export default function Login() {
             </p>
           </div>
 
-          {/* Quick Demo Helper for convenience */}
-          <div 
-            className="flex items-center justify-between p-2.5 rounded-md text-xs"
-            style={{
-              backgroundColor: 'var(--color-surface)',
-              border: '1px solid var(--color-border)'
-            }}
-          >
-            <div style={{ color: 'var(--color-text-secondary)' }}>
-              <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>Demo Login:</span> test@example.com
-            </div>
-            <button
-              type="button"
-              id="autofill-demo-btn"
-              onClick={() => {
-                setEmail('test@example.com');
-                setPassword('password');
-                setError('');
-              }}
-              className="text-[11px] font-semibold hover:underline cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-blue-500 rounded"
-              style={{ color: 'var(--color-brand)' }}
-            >
-              Fill Demo
-            </button>
-          </div>
-
           {error && (
             <div
               id="login-error-message"
@@ -252,7 +226,7 @@ export default function Login() {
           {/* Form */}
           <form onSubmit={handleSignIn} className="space-y-4">
             <div>
-              <label htmlFor="login-email" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label htmlFor="login-email" className="ui-field-label">
                 Email
               </label>
               <input
@@ -260,14 +234,14 @@ export default function Login() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="test@example.com"
-                className="w-full h-11 sm:h-10 rounded-md border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                placeholder="name@company.com"
+                className="ui-input w-full h-11 sm:h-10 text-xs sm:text-sm px-3 py-2"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="login-password" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label htmlFor="login-password" className="ui-field-label">
                 Password
               </label>
               <div className="relative">
@@ -277,7 +251,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="w-full h-11 sm:h-10 rounded-md border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                  className="ui-input w-full h-11 sm:h-10 text-xs sm:text-sm px-3 py-2 pr-10"
                   required
                 />
                 <button

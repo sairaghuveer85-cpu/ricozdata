@@ -49,7 +49,7 @@ export default function DatasetRow({
           openDrawer('dataset', dataset);
         }
       }}
-      className={`hover:bg-slate-50/70 dark:hover:bg-[#111E30]/60 transition-colors cursor-pointer border-b border-slate-100 dark:border-[#1D3047] last:border-b-0 focus:outline-none focus-visible:bg-slate-50 dark:focus-visible:bg-[#111E30] ${
+      className={`ui-data-table__row transition-colors cursor-pointer border-b last:border-b-0 focus:outline-none ${
         isSelected ? 'bg-blue-50/30 dark:bg-blue-950/20' : ''
       }`}
     >
@@ -69,13 +69,14 @@ export default function DatasetRow({
                 e.stopPropagation();
                 onToggleFavorite(dataset.id);
               }}
-              className={`p-0.5 rounded transition-colors ${
+              className={`rounded p-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                 isFavorited
                   ? 'text-amber-500 dark:text-amber-400 hover:text-amber-600'
                   : 'text-slate-300 dark:text-slate-600 hover:text-slate-400'
               }`}
               title={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
               aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+              aria-pressed={isFavorited}
             >
               <Star className={`w-3.5 h-3.5 ${isFavorited ? 'fill-amber-400 text-amber-500' : ''}`} />
             </button>

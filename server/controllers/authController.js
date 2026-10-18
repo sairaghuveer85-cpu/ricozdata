@@ -5,6 +5,12 @@ const { validationResult } = require('express-validator');
 const User = require('../models/User');
 const asyncHandler = require('../middleware/asyncHandler');
 const { ROLES, mapLegacyRole } = require('../config/rbac');
+const { JWT_SECRET } = require('../config/jwt');
+const {
+  createAccessToken,
+  createRefreshToken,
+  getRefreshCookieOptions
+} = require('../services/jwtTokens');
 
 const Organization = require('../models/Organization');
 const { registerOrganizationWorkspace, ensureDefaultOrganization } = require('../services/organizationService');
@@ -13,16 +19,25 @@ const { registerOrganizationWorkspace, ensureDefaultOrganization } = require('..
 // @route   POST /api/auth/register
 // @access  Public
 const register = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: errors.array()[0].msg,
+      errors: errors.array()
+    });
+  }
+
   const { organizationName, organization, name, email, password } = req.body;
   const orgName = organizationName || organization;
 
-  if (!orgName || !orgName.trim()) {
+  if (typeof orgName !== 'string' || !orgName.trim()) {
     return res.status(400).json({
       success: false,
       message: 'Organization name is required to initialize your workspace.'
     });
   }
-  if (!name || !name.trim()) {
+  if (typeof name !== 'string' || !name.trim()) {
     return res.status(400).json({
       success: false,
       message: 'Administrator full name is required.'
@@ -48,11 +63,15 @@ const register = asyncHandler(async (req, res) => {
       email,
       password
     });
+    const { refreshToken: refreshCookie, ...responseData } = result;
+    if (refreshCookie) {
+      res.cookie('ricoz_refresh_token', refreshCookie, getRefreshCookieOptions());
+    }
 
     return res.status(201).json({
       success: true,
       message: 'Organization workspace and administrator account created successfully.',
-      data: result
+      data: responseData
     });
   } catch (err) {
     const statusCode = err.statusCode || 400;
@@ -121,17 +140,8 @@ const login = asyncHandler(async (req, res) => {
   const normalizedRole = mapLegacyRole(user.role);
   const isMainAdmin = !!user.isMainAdmin || normalizedRole === ROLES.MAIN_ADMIN;
 
-  const token = jwt.sign(
-    {
-      id: user._id,
-      role: normalizedRole,
-      email: user.email,
-      isMainAdmin,
-      organizationId: user.organizationId
-    },
-    process.env.JWT_SECRET || 'super-secret-jwt-key-1234567890',
-    { expiresIn: '30d' }
-  );
+  const token = createAccessToken(user, { role: normalizedRole, isMainAdmin });
+  res.cookie('ricoz_refresh_token', createRefreshToken(user), getRefreshCookieOptions());
 
   res.json({
     success: true,
@@ -168,6 +178,15 @@ const login = asyncHandler(async (req, res) => {
 // @route   POST /api/auth/activate
 // @access  Public (Validated by cryptographically hashed token)
 const activateAccount = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      message: errors.array()[0].msg,
+      errors: errors.array()
+    });
+  }
+
   const { token, password } = req.body;
 
   if (!token || typeof token !== 'string') {
@@ -209,16 +228,8 @@ const activateAccount = asyncHandler(async (req, res) => {
   const normalizedRole = mapLegacyRole(user.role);
   const isMainAdmin = !!user.isMainAdmin || normalizedRole === ROLES.MAIN_ADMIN;
 
-  const jwtToken = jwt.sign(
-    {
-      id: user._id,
-      role: normalizedRole,
-      email: user.email,
-      isMainAdmin
-    },
-    process.env.JWT_SECRET || 'super-secret-jwt-key-1234567890',
-    { expiresIn: '30d' }
-  );
+  const jwtToken = createAccessToken(user, { role: normalizedRole, isMainAdmin });
+  res.cookie('ricoz_refresh_token', createRefreshToken(user), getRefreshCookieOptions());
 
   res.json({
     success: true,
@@ -279,9 +290,94 @@ const getMe = asyncHandler(async (req, res) => {
 // @desc    Logout user / clear cookie
 // @route   POST /api/auth/logout
 // @access  Private
-const logout = (req, res) => {
-  res.json({ success: true, message: 'User logged out' });
-};
+const logout = asyncHandler(async (req, res) => {
+  await User.updateOne({ _id: req.user._id }, { $inc: { tokenVersion: 1 } });
+  res.clearCookie('ricoz_refresh_token', getRefreshCookieOptions());
+  return res.json({ success: true, message: 'User logged out' });
+});
+
+// @desc    Refresh session token
+// @route   POST /api/auth/refresh
+// @access  Public (accepts refreshToken in an HttpOnly cookie)
+const refreshToken = asyncHandler(async (req, res) => {
+  const token = req.cookies?.ricoz_refresh_token;
+
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: 'No refresh cookie provided'
+    });
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
+  } catch {
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid or expired token for refresh'
+    });
+  }
+
+  if (decoded.tokenType !== 'refresh' || !decoded.id) {
+    return res.status(401).json({ success: false, message: 'Invalid refresh token' });
+  }
+
+  const user = await User.findById(decoded.id).select('-password');
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: 'User belonging to this token no longer exists'
+    });
+  }
+  if (decoded.tokenVersion !== (user.tokenVersion || 0)) {
+    return res.status(401).json({ success: false, message: 'Refresh token has been revoked' });
+  }
+
+  const statusUpper = (user.status || 'ACTIVE').toUpperCase();
+  if (statusUpper === 'INACTIVE') {
+    return res.status(403).json({
+      success: false,
+      message: 'Your account is inactive. Please contact the designated Main Admin.'
+    });
+  }
+  if (statusUpper === 'SUSPENDED') {
+    return res.status(403).json({
+      success: false,
+      message: 'Your account has been suspended for security review.'
+    });
+  }
+
+  const normalizedRole = mapLegacyRole(user.role);
+  const isMainAdmin = !!user.isMainAdmin || normalizedRole === ROLES.MAIN_ADMIN;
+  const organization = user.organizationId ? await Organization.findById(user.organizationId).lean() : null;
+  const newToken = createAccessToken(user, { role: normalizedRole, isMainAdmin });
+
+  return res.json({
+    success: true,
+    message: 'Token refreshed successfully',
+    data: {
+      token: newToken,
+      accessToken: newToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: normalizedRole,
+        isMainAdmin,
+        organizationId: user.organizationId,
+        organization: organization ? {
+          id: organization._id,
+          name: organization.name,
+          slug: organization.slug
+        } : null,
+        department: user.department,
+        avatar: user.avatar,
+        status: user.status
+      }
+    }
+  });
+});
 
 module.exports = {
   register,
@@ -289,4 +385,5 @@ module.exports = {
   activateAccount,
   getMe,
   logout,
+  refreshToken,
 };

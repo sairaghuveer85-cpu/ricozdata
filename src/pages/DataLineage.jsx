@@ -87,9 +87,9 @@ FROM "${dataset?.schemaName || 'public'}"."${(dataset?.tableName || dataset?.nam
   }
 
   return (
-    <div className="space-y-4 pb-8">
+    <div className="ui-lineage-page space-y-5 pb-8">
       {/* Breadcrumbs matching Screen 5 */}
-      <nav className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+      <nav aria-label="Breadcrumb" className="flex min-w-0 flex-wrap items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
         <NavLink to="/catalog" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
           Data Catalog
         </NavLink>
@@ -102,19 +102,20 @@ FROM "${dataset?.schemaName || 'public'}"."${(dataset?.tableName || dataset?.nam
       </nav>
 
       {/* Header Row with Legend and Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="ui-page-header__title">
               Data Lineage
             </h1>
             {datasets.length > 0 && (
-              <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">
-                <Database className="w-3.5 h-3.5 text-blue-500" />
+              <div className="flex min-w-0 max-w-full items-center gap-1.5 rounded-lg border px-2 py-1.5" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+                <Database className="h-3.5 w-3.5 shrink-0 text-blue-500" aria-hidden="true" />
                 <select
                   value={dataset._id || dataset.id || ''}
                   onChange={(e) => navigate(`/lineage/${e.target.value}`)}
-                  className="bg-transparent text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+                  aria-label="Select dataset for lineage"
+                  className="min-w-0 bg-transparent text-xs font-semibold text-slate-900 dark:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 cursor-pointer"
                 >
                   {datasets.map(d => (
                     <option key={d._id || d.id} value={d._id || d.id} className="bg-white dark:bg-[#0D1828]">
@@ -125,14 +126,15 @@ FROM "${dataset?.schemaName || 'public'}"."${(dataset?.tableName || dataset?.nam
               </div>
             )}
           </div>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          <p className="ui-page-header__subtitle">
             Trace end-to-end data provenance, pipeline transformations, and downstream dependencies.
           </p>
         </div>
 
         {/* Legend matching Screen 5 specification */}
         <div 
-          className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5 sm:gap-4 text-xs p-2.5 rounded-lg"
+          aria-label="Lineage node types"
+          className="grid grid-cols-2 items-center gap-2.5 rounded-xl border p-3 text-xs sm:flex sm:flex-wrap sm:gap-4"
           style={{
             backgroundColor: 'var(--color-surface)',
             border: '1px solid var(--color-border)',
@@ -158,10 +160,11 @@ FROM "${dataset?.schemaName || 'public'}"."${(dataset?.tableName || dataset?.nam
         </div>
 
         {/* Lineage Toolbar Right Actions */}
-        <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+        <div className="flex w-full flex-wrap items-center gap-2 self-start xl:w-auto xl:shrink-0 xl:self-auto">
           <button
             type="button"
             onClick={handleRefresh}
+            aria-label={isRefreshing ? 'Refreshing lineage graph' : 'Refresh lineage graph'}
             className={`p-2 rounded-md transition-colors cursor-pointer ${
               isRefreshing ? 'animate-spin' : ''
             }`}
@@ -172,7 +175,7 @@ FROM "${dataset?.schemaName || 'public'}"."${(dataset?.tableName || dataset?.nam
             }}
             title="Refresh Lineage Graph"
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className="w-4 h-4" aria-hidden="true" />
           </button>
 
           <Button
@@ -222,7 +225,7 @@ FROM "${dataset?.schemaName || 'public'}"."${(dataset?.tableName || dataset?.nam
       </div>
 
       {/* Main Interactive Flow Graph */}
-      <div className="theme-card rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs p-1">
+      <div data-tour="lineage-canvas" className="theme-card min-w-0 rounded-xl border border-slate-200 p-1 shadow-sm dark:border-slate-800">
         <LineageGraph onSelectNode={handleSelectNode} datasetId={dataset.id} />
       </div>
 
@@ -247,7 +250,7 @@ FROM "${dataset?.schemaName || 'public'}"."${(dataset?.tableName || dataset?.nam
           </Button>
         }
       >
-        <div className="bg-slate-900 dark:bg-[#07111F] rounded-md p-4 text-emerald-400 font-mono text-xs overflow-x-auto shadow-inner border border-slate-800">
+        <div className="max-h-[60vh] overflow-auto rounded-lg border border-slate-800 bg-slate-900 p-4 font-mono text-xs text-emerald-400 shadow-inner dark:bg-[#07111F]">
           <pre>{lineageSql}</pre>
         </div>
       </Modal>

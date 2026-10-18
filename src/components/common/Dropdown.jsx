@@ -14,9 +14,6 @@ export default function Dropdown({
   const triggerRef = useRef(null);
   const menuItemsRef = useRef([]);
 
-  // Filter out dividers for keyboard navigation indexing
-  const actionItems = items.filter(item => !item.divider && !item.disabled);
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -73,7 +70,7 @@ export default function Dropdown({
   };
 
   return (
-    <div className={`relative inline-block text-left ${className}`} ref={dropdownRef}>
+    <div className={`ui-dropdown relative inline-block text-left ${className}`} ref={dropdownRef}>
       <div
         ref={triggerRef}
         role="button"
@@ -85,7 +82,7 @@ export default function Dropdown({
           if (!isOpen) setFocusedIndex(0);
         }}
         onKeyDown={handleTriggerKeyDown}
-        className="cursor-pointer select-none inline-flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md"
+        className="inline-flex cursor-pointer select-none items-center rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
       >
         {trigger}
       </div>
@@ -101,7 +98,7 @@ export default function Dropdown({
             exit={{ opacity: 0, scale: 0.95, y: -4 }}
             transition={{ duration: 0.12 }}
             className={`
-              absolute z-50 mt-1.5 ${width} max-w-[calc(100vw-1.5rem)] rounded-md shadow-lg py-1 focus:outline-none
+              ui-dropdown-menu absolute z-50 mt-1.5 ${width} max-w-[calc(100vw-1.5rem)] rounded-xl py-1 shadow-lg focus:outline-none
               ${align === 'right' ? 'right-0 origin-top-right' : 'left-0 origin-top-left'}
             `}
             style={{
@@ -137,13 +134,8 @@ export default function Dropdown({
                   }}
                   disabled={item.disabled}
                   className={`
-                    w-full text-left px-3 py-2 text-xs flex items-center gap-2.5 transition-colors cursor-pointer focus:outline-none focus:bg-slate-100 dark:focus:bg-[#111E30]
-                    ${item.danger 
-                      ? 'text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40' 
-                      : item.active
-                      ? 'text-blue-600 dark:text-blue-400 font-semibold'
-                      : 'text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#111E30]'
-                    }
+                    ui-dropdown-item min-h-10 w-full px-3 py-2 text-left text-xs flex items-center gap-2.5 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500
+                    ${item.danger ? 'ui-dropdown-item--danger' : item.active ? 'ui-dropdown-item--active' : ''}
                     ${item.disabled ? 'opacity-50 cursor-not-allowed pointer-events-none' : ''}
                   `}
                 >

@@ -23,7 +23,7 @@ export default function ToastContainer() {
     <div
       aria-live="polite"
       aria-relevant="additions text"
-      className="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none max-w-sm w-full"
+      className="ui-toast-stack fixed bottom-3 left-3 right-3 z-50 flex w-auto max-w-sm flex-col gap-2 pointer-events-none sm:bottom-5 sm:left-auto sm:right-5 sm:w-full"
     >
       <AnimatePresence>
         {toasts.map((toast) => (
@@ -34,7 +34,7 @@ export default function ToastContainer() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ duration: 0.18, ease: 'easeOut' }}
-            className="pointer-events-auto flex items-start gap-3 p-3.5 rounded-md shadow-lg"
+            className="ui-toast pointer-events-auto flex w-full items-start gap-3 rounded-xl p-3.5 shadow-lg"
             style={{
               backgroundColor: 'var(--surface)',
               border: '1px solid var(--border)',

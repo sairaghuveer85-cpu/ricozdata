@@ -71,14 +71,14 @@ export default function Drawer({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-hidden">
+        <div className="ui-drawer fixed inset-0 z-50 overflow-hidden">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
-            className="fixed inset-0 backdrop-blur-xs transition-opacity"
+            className="ui-drawer-backdrop fixed inset-0 backdrop-blur-xs transition-opacity"
             style={{ backgroundColor: 'var(--overlay)' }}
             onClick={onClose}
             aria-hidden="true"
@@ -97,7 +97,7 @@ export default function Drawer({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-              className={`w-full sm:w-screen ${width} max-w-full shadow-2xl flex flex-col h-full focus:outline-none`}
+              className={`ui-drawer-panel flex h-full w-full max-w-full flex-col shadow-2xl focus:outline-none sm:w-screen ${width}`}
               style={{
                 backgroundColor: 'var(--surface)',
                 borderLeft: '1px solid var(--border)',
@@ -107,7 +107,7 @@ export default function Drawer({
             >
               {/* Header */}
               <div
-                className="px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0"
+                className="ui-overlay-header flex shrink-0 items-center justify-between px-4 py-3.5 sm:px-6 sm:py-4"
                 style={{ borderBottom: '1px solid var(--border)' }}
               >
                 <div className="min-w-0 pr-2">
@@ -124,21 +124,21 @@ export default function Drawer({
                   type="button"
                   onClick={onClose}
                   aria-label="Close drawer"
-                  className="rounded-md p-1.5 transition-colors cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shrink-0"
+                  className="min-h-9 min-w-9 shrink-0 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:hover:bg-slate-800 dark:hover:text-slate-200 cursor-pointer"
                 >
                   <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
 
               {/* Body */}
-              <div data-drawer-body className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
+              <div data-drawer-body className="ui-overlay-body min-h-0 flex-1 space-y-4 overflow-y-auto p-4 sm:space-y-6 sm:p-6">
                 {children}
               </div>
 
               {/* Footer */}
               {footer && (
                 <div
-                  className="p-3 sm:p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 shrink-0"
+                  className="ui-overlay-footer flex shrink-0 flex-col items-stretch justify-end gap-2 p-3 sm:flex-row sm:items-center sm:p-4"
                   style={{
                     backgroundColor: 'var(--bg-tertiary)',
                     borderTop: '1px solid var(--border)'

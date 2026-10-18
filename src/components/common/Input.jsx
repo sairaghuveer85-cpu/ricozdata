@@ -23,12 +23,12 @@ export default function Input({
   return (
     <div className="w-full">
       {label && (
-        <label htmlFor={inputId} className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+        <label htmlFor={inputId} className="ui-field-label">
           {label}
-          {required && <span className="text-rose-500 ml-0.5" aria-hidden="true">*</span>}
+          {required && <span className="ui-field-required ml-0.5" aria-hidden="true">*</span>}
         </label>
       )}
-      <div className="relative rounded-md shadow-2xs">
+      <div className="relative rounded-md">
         {Icon && (
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500" aria-hidden="true">
             <Icon className="w-4 h-4" />
@@ -43,12 +43,8 @@ export default function Input({
           aria-invalid={!!error}
           aria-describedby={error ? errorId : helperText ? helperId : undefined}
           className={`
-            block w-full rounded-md border text-xs sm:text-sm transition-all duration-150
+            ui-input block w-full rounded-md border text-xs sm:text-sm transition-all duration-150
             ${Icon ? 'pl-9' : 'pl-3'} ${onClear && value ? 'pr-8' : 'pr-3'} py-2
-            ${error 
-              ? 'border-rose-400 dark:border-rose-800 text-rose-900 dark:text-rose-200 placeholder-rose-400 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-rose-500 bg-white dark:bg-[#0D1828]' 
-              : 'border-slate-200 dark:border-[#1D3047] text-slate-900 dark:text-[#F8FAFC] placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-[#0D1828]'
-            }
             ${className}
           `}
           {...props}
@@ -65,12 +61,12 @@ export default function Input({
         )}
       </div>
       {error && (
-        <p id={errorId} role="alert" className="mt-1 text-xs text-rose-600 dark:text-rose-400 font-medium">
+        <p id={errorId} role="alert" className="ui-field-error">
           {error}
         </p>
       )}
       {helperText && !error && (
-        <p id={helperId} className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+        <p id={helperId} className="ui-field-helper">
           {helperText}
         </p>
       )}

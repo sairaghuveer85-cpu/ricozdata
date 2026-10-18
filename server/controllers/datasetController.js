@@ -113,7 +113,22 @@ const getDatasets = asyncHandler(async (req, res) => {
   if (myFavorites) filter.favoriteIds = myFavorites;
 
   if (req.user?.organizationId) {
-    andConditions.push({ organizationId: req.user.organizationId });
+    // Multi-tenant isolation: find all DataSource IDs owned by this authorized organization
+    const userDsIds = await DataSource.find({ organizationId: req.user.organizationId }).distinct('_id');
+    andConditions.push({
+      $or: [
+        { organizationId: req.user.organizationId },
+        { dataSourceId: { $in: userDsIds } }
+      ]
+    });
+
+    // Safely backfill missing organizationId ONLY for datasets unambiguously owned by this workspace's verified data sources
+    if (userDsIds.length > 0) {
+      Dataset.updateMany(
+        { dataSourceId: { $in: userDsIds }, $or: [{ organizationId: { $exists: false } }, { organizationId: null }] },
+        { $set: { organizationId: req.user.organizationId } }
+      ).catch(() => {});
+    }
   }
 
   if (andConditions.length > 0) {
@@ -231,7 +246,7 @@ const getDataset = asyncHandler(async (req, res) => {
   const shouldTrackView = req.query.trackView !== 'false';
 
   let dataset = await Dataset.findById(req.params.id)
-    .populate('dataSourceId', 'name type database schema environment status')
+    .populate('dataSourceId', 'name type database schema environment status organizationId')
     .populate('ownerId', 'name email avatar avatarBg')
     .populate('stewardId', 'name email avatar avatarBg')
     .populate('domainId', 'name')
@@ -243,8 +258,23 @@ const getDataset = asyncHandler(async (req, res) => {
   }
 
   // Workspace isolation check
-  if (req.user?.organizationId && dataset.organizationId && !dataset.organizationId.equals(req.user.organizationId) && req.user.role !== 'SUPER_ADMIN') {
-    return res.status(403).json({ success: false, message: 'You do not have permission to view datasets from another workspace.' });
+  if (req.user?.organizationId && req.user.role !== 'SUPER_ADMIN') {
+    if (dataset.organizationId) {
+      if (!dataset.organizationId.equals(req.user.organizationId)) {
+        return res.status(403).json({ success: false, message: 'You do not have permission to view datasets from another workspace.' });
+      }
+    } else if (dataset.dataSourceId && dataset.dataSourceId.organizationId) {
+      if (dataset.dataSourceId.organizationId.equals(req.user.organizationId)) {
+        // Unambiguously owned by this organization: backfill missing organizationId
+        dataset.organizationId = req.user.organizationId;
+        await Dataset.updateOne({ _id: dataset._id }, { $set: { organizationId: req.user.organizationId } });
+      } else {
+        return res.status(403).json({ success: false, message: 'You do not have permission to view datasets from another workspace.' });
+      }
+    } else {
+      // Ownership cannot be determined safely: leave inaccessible
+      return res.status(403).json({ success: false, message: 'Dataset ownership cannot be verified for this workspace.' });
+    }
   }
 
   // Atomically increment views count when viewed
@@ -448,7 +478,12 @@ const updateDataset = asyncHandler(async (req, res) => {
     return res.status(403).json({ success: false, message: 'You do not have permission to modify datasets from another workspace.' });
   }
 
+  if (Object.keys(req.body || {}).some((field) => field.startsWith('$') || field.includes('.'))) {
+    return res.status(400).json({ success: false, message: 'Update operators and dotted paths are not allowed.' });
+  }
+
   const fieldsToUpdate = { ...req.body, lastUpdatedAt: Date.now() };
+  delete fieldsToUpdate.organizationId;
   if (req.body.schema) {
     fieldsToUpdate.columns = req.body.schema;
   }
@@ -501,29 +536,44 @@ const deleteDataset = asyncHandler(async (req, res) => {
 // @route   GET /api/datasets/stats/summary
 // @access  Private
 const getDatasetStats = asyncHandler(async (req, res) => {
-  const total = await Dataset.countDocuments();
-  const active = await Dataset.countDocuments({ status: 'active' });
-  const certified = await Dataset.countDocuments({ certificationStatus: 'Certified' });
-  const inReview = await Dataset.countDocuments({ certificationStatus: { $in: ['In Review', 'Under Review', 'in_review'] } });
-  const deprecated = await Dataset.countDocuments({ certificationStatus: 'Deprecated' });
-  const domains = await Dataset.distinct('domain');
+  const orgFilter = {};
+  if (req.user?.organizationId) {
+    const userDsIds = await DataSource.find({ organizationId: req.user.organizationId }).distinct('_id');
+    orgFilter.$or = [
+      { organizationId: req.user.organizationId },
+      { dataSourceId: { $in: userDsIds } }
+    ];
+  }
 
-  const qualityData = await Quality.find();
+  const total = await Dataset.countDocuments(orgFilter);
+  const active = await Dataset.countDocuments({ ...orgFilter, status: 'active' });
+  const certified = await Dataset.countDocuments({ ...orgFilter, certificationStatus: 'Certified' });
+  const inReview = await Dataset.countDocuments({ ...orgFilter, certificationStatus: { $in: ['In Review', 'Under Review', 'in_review'] } });
+  const deprecated = await Dataset.countDocuments({ ...orgFilter, certificationStatus: 'Deprecated' });
+  const domains = await Dataset.distinct('domain', orgFilter);
+
+  const datasetIds = await Dataset.distinct('_id', orgFilter);
+  const qualityData = await Quality.find({ datasetId: { $in: datasetIds } });
   const avgQuality = qualityData.length > 0
     ? Math.round(qualityData.reduce((sum, q) => sum + q.score, 0) / qualityData.length)
     : 85;
 
+  const matchStage = Object.keys(orgFilter).length > 0 ? [{ $match: orgFilter }] : [];
+
   const domainStats = await Dataset.aggregate([
+    ...matchStage,
     { $group: { _id: '$domain', count: { $sum: 1 } } },
     { $sort: { count: -1 } }
   ]);
 
   const qualityDistribution = await Dataset.aggregate([
+    ...matchStage,
     { $group: { _id: '$qualityStatus', count: { $sum: 1 } } },
     { $sort: { count: -1 } }
   ]);
 
   const certificationDistribution = await Dataset.aggregate([
+    ...matchStage,
     { $group: { _id: '$certificationStatus', count: { $sum: 1 } } },
     { $sort: { count: -1 } }
   ]);
@@ -810,7 +860,15 @@ const getRelatedDatasets = asyncHandler(async (req, res) => {
 // @route   GET /api/datasets/tags
 // @access  Private
 const getTags = asyncHandler(async (req, res) => {
-  const tags = (await Dataset.distinct('tags')) || [];
+  const orgFilter = {};
+  if (req.user?.organizationId) {
+    const userDsIds = await DataSource.find({ organizationId: req.user.organizationId }).distinct('_id');
+    orgFilter.$or = [
+      { organizationId: req.user.organizationId },
+      { dataSourceId: { $in: userDsIds } }
+    ];
+  }
+  const tags = (await Dataset.distinct('tags', orgFilter)) || [];
   const validTags = tags.filter(Boolean).sort();
   res.json({ success: true, data: validTags });
 });
@@ -819,12 +877,25 @@ const getTags = asyncHandler(async (req, res) => {
 // @route   GET /api/datasets/sources
 // @access  Private
 const getSources = asyncHandler(async (req, res) => {
-  const sourceSystems = (await Dataset.distinct('sourceSystem')) || [];
-  const sources = (await Dataset.distinct('source')) || [];
+  const orgFilter = {};
+  if (req.user?.organizationId) {
+    const userDsIds = await DataSource.find({ organizationId: req.user.organizationId }).distinct('_id');
+    orgFilter.$or = [
+      { organizationId: req.user.organizationId },
+      { dataSourceId: { $in: userDsIds } }
+    ];
+  }
+
+  const sourceSystems = (await Dataset.distinct('sourceSystem', orgFilter)) || [];
+  const sources = (await Dataset.distinct('source', orgFilter)) || [];
   const combined = Array.from(new Set([...sourceSystems, ...sources].filter(Boolean))).sort();
   const sourceStats = [];
   for (const s of combined) {
-    const count = await Dataset.countDocuments({ $or: [{ sourceSystem: s }, { source: s }] });
+    const sourceCondition = { $or: [{ sourceSystem: s }, { source: s }] };
+    const query = Object.keys(orgFilter).length
+      ? { $and: [orgFilter, sourceCondition] }
+      : sourceCondition;
+    const count = await Dataset.countDocuments(query);
     sourceStats.push({ label: s, name: s, count });
   }
   res.json({ success: true, data: sourceStats });
@@ -1130,6 +1201,24 @@ const getDatasetPreview = asyncHandler(async (req, res) => {
       success: false,
       message: 'Data source not found.'
     });
+  }
+
+  // Workspace isolation check
+  if (req.user?.organizationId && req.user.role !== 'SUPER_ADMIN') {
+    if (dataset.organizationId) {
+      if (!dataset.organizationId.equals(req.user.organizationId)) {
+        return res.status(403).json({ success: false, message: 'You do not have permission to preview datasets from another workspace.' });
+      }
+    } else if (dataSource.organizationId) {
+      if (dataSource.organizationId.equals(req.user.organizationId)) {
+        dataset.organizationId = req.user.organizationId;
+        await Dataset.updateOne({ _id: dataset._id }, { $set: { organizationId: req.user.organizationId } });
+      } else {
+        return res.status(403).json({ success: false, message: 'You do not have permission to preview datasets from another workspace.' });
+      }
+    } else {
+      return res.status(403).json({ success: false, message: 'Dataset ownership cannot be verified for this workspace.' });
+    }
   }
 
   const { ConnectorFactory } = await import('../src/connectors/index.js');

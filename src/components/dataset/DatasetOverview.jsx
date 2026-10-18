@@ -53,11 +53,11 @@ export default function DatasetOverview({ dataset = {}, onUpdateTags }) {
   return (
     <div className="space-y-6">
       {/* 8-Property Technical Metadata Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {metadataItems.map((item, idx) => (
           <div
             key={idx}
-            className="theme-card p-3 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs"
+            className="theme-card min-w-0 rounded-xl border border-slate-200 p-3 shadow-sm dark:border-slate-800"
           >
             <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block mb-1">
               {item.label}
@@ -83,7 +83,7 @@ export default function DatasetOverview({ dataset = {}, onUpdateTags }) {
         {/* LEFT COLUMN: Description & Tags (7 cols) */}
         <div className="lg:col-span-7 space-y-6">
           {/* Description Section */}
-          <div className="theme-card p-5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs">
+          <div className="theme-card rounded-xl border border-slate-200 p-5 shadow-sm dark:border-slate-800">
             <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
               Description
             </h3>
@@ -97,7 +97,7 @@ export default function DatasetOverview({ dataset = {}, onUpdateTags }) {
           </div>
 
           {/* Tags Section */}
-          <div className="theme-card p-5 rounded-lg border border-slate-200 dark:border-slate-800 shadow-2xs">
+          <div className="theme-card rounded-xl border border-slate-200 p-5 shadow-sm dark:border-slate-800">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                 Tags

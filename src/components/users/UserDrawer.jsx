@@ -69,9 +69,9 @@ export default function UserDrawer({ user, isOpen, onClose }) {
     if (!newPass) return;
 
     const res = await resetUserPassword(user.id, newPass);
-    if (res?.activationToken) {
+    if (res?.success) {
       setResetTokenInfo({
-        token: res.activationToken,
+        token: res.data?.activationToken || null,
         password: newPass
       });
     }

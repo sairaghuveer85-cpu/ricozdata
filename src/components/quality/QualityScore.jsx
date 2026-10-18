@@ -9,14 +9,14 @@ export default function QualityScore({ score = null, grade = 'Unrated', trend = 
 
   return (
     <div
-      className="enterprise-panel rounded-lg p-6 flex flex-col items-center justify-center text-center h-full"
+      className="enterprise-panel flex h-full flex-col items-center justify-center rounded-xl p-5 text-center sm:p-6"
     >
       <h3 className="text-xs font-bold uppercase tracking-wider mb-4 text-slate-900 dark:text-white">
         Overall Quality Score
       </h3>
 
       <div className="relative flex items-center justify-center mb-3">
-        <svg className="w-36 h-36 transform -rotate-90" viewBox="0 0 128 128">
+        <svg className="h-32 w-32 -rotate-90 sm:h-36 sm:w-36" viewBox="0 0 128 128" role="img" aria-label={hasScore ? `Quality score ${score} percent, ${grade}` : 'No quality score available'}>
           <circle
             cx="64"
             cy="64"

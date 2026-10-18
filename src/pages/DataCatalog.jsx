@@ -174,7 +174,7 @@ export default function DataCatalog() {
     (myFavorites ? 1 : 0);
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="ui-catalog-page space-y-5 pb-8 sm:space-y-6">
       {/* Page Header matching Screen 3 */}
       <PageHeader
         title="Data Catalog"
@@ -194,8 +194,8 @@ export default function DataCatalog() {
       />
 
       {/* Top Search & Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-        <div className="flex-1">
+      <div data-tour="catalog-search" className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center">
+        <div className="min-w-0 flex-1">
           <SearchBar
             value={searchTerm}
             onChange={setSearchTerm}
@@ -206,7 +206,7 @@ export default function DataCatalog() {
         <button
           type="button"
           onClick={() => setIsFilterDrawerOpen(true)}
-          className="flex lg:hidden items-center justify-center gap-2 px-3.5 py-2 rounded-md text-xs font-semibold cursor-pointer"
+          className="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 lg:hidden"
           style={{
             backgroundColor: 'var(--color-surface)',
             border: '1px solid var(--color-border)',
@@ -231,7 +231,7 @@ export default function DataCatalog() {
 
       {/* Active Filter Chips Bar */}
       {(activeFilterCount > 0 || searchTerm.trim()) && (
-        <div className="flex items-center flex-wrap gap-1.5 py-1 text-xs">
+        <div className="flex flex-wrap items-center gap-1.5 rounded-xl border p-3 text-xs" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
           <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mr-1">
             Active Filters:
           </span>
@@ -421,9 +421,9 @@ export default function DataCatalog() {
       )}
 
       {/* Main 2-Column Catalog Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-4 lg:gap-6">
         {/* Left Filter Sidebar */}
-        <div className="hidden lg:block lg:col-span-1">
+        <div className="ui-catalog-filter-column hidden lg:col-span-1 lg:block">
           <CatalogFilters
             selectedSources={selectedSources}
             setSelectedSources={setSelectedSources}
@@ -447,7 +447,7 @@ export default function DataCatalog() {
         </div>
 
         {/* Right Main Table & Pagination */}
-        <div className="lg:col-span-3 space-y-4">
+        <div className="min-w-0 space-y-4 lg:col-span-3">
           <div
             className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs px-1"
             style={{ color: 'var(--color-text-secondary)' }}
@@ -461,27 +461,28 @@ export default function DataCatalog() {
           </div>
 
           {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 dark:border-blue-400 mx-auto"></div>
-              <p className="mt-2 text-slate-500 dark:text-slate-400">Loading datasets...</p>
+            <div className="flex min-h-52 flex-col items-center justify-center rounded-xl border text-center" role="status" aria-live="polite" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+              <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500 dark:border-blue-400"></div>
+              <p className="mt-3 text-sm" style={{ color: 'var(--color-text-muted)' }}>Loading datasets...</p>
             </div>
           ) : fetchError ? (
-            <div className="text-center py-12 rounded-lg" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}>
+            <div className="rounded-xl border px-5 py-10 text-center sm:py-12" role="alert" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
               <AlertTriangle className="w-8 h-8 mx-auto mb-3" style={{ color: 'var(--color-text-muted)' }} />
               <p className="text-sm font-medium" style={{ color: 'var(--color-text-primary)' }}>Unable to load datasets</p>
               <p className="text-xs mt-1 max-w-md mx-auto" style={{ color: 'var(--color-text-muted)' }}>{fetchError}</p>
               <button
                 type="button"
                 onClick={() => { setFetchError(null); setCurrentPage(1); }}
-                className="mt-3 px-4 py-1.5 text-xs font-semibold rounded-md cursor-pointer"
+                className="mt-3 min-h-10 rounded-lg px-4 py-2 text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
                 style={{ backgroundColor: 'var(--color-brand)', color: 'white' }}
               >
                 Retry
               </button>
             </div>
           ) : (
-            <DatasetTable
-              datasets={displayedDatasets}
+            <div data-tour="catalog-table">
+              <DatasetTable
+                datasets={displayedDatasets}
               selectedIds={selectedIds}
               setSelectedIds={setSelectedIds}
               onResetFilters={handleResetFilters}
@@ -513,10 +514,11 @@ export default function DataCatalog() {
                 });
               }}
             />
+            </div>
           )}
 
           {/* Pagination */}
-          <div className="pt-2">
+          <div className="overflow-x-auto pt-2">
             <Pagination
               currentPage={currentPage}
               totalPages={Math.ceil(total / pageLimit)}

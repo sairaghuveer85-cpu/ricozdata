@@ -34,7 +34,7 @@ export default function Pagination({
         aria-label="Previous page"
         onClick={() => onPageChange && onPageChange(Math.max(1, currentPage - 1))}
         disabled={currentPage === 1}
-        className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#111E30] disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none transition-colors cursor-pointer text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        className="ui-pagination-control w-8 h-8 flex items-center justify-center rounded-md text-xs"
       >
         <ChevronLeft className="w-4 h-4" aria-hidden="true" />
       </button>
@@ -44,7 +44,7 @@ export default function Pagination({
           return (
             <span
               key={`ellipsis-${idx}`}
-              className="w-8 h-8 flex items-center justify-center text-xs text-slate-400"
+              className="ui-pagination-ellipsis w-8 h-8 flex items-center justify-center text-xs"
               aria-hidden="true"
             >
               ...
@@ -60,11 +60,7 @@ export default function Pagination({
             aria-label={`Page ${item}`}
             aria-current={isActive ? 'page' : undefined}
             onClick={() => onPageChange && onPageChange(item)}
-            className={`w-8 h-8 flex items-center justify-center rounded-md text-xs font-semibold transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-              isActive
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-[#111E30]'
-            }`}
+            className={`ui-pagination-control w-8 h-8 flex items-center justify-center rounded-md text-xs font-semibold ${isActive ? 'ui-pagination-control--active' : ''}`}
           >
             {item}
           </button>
@@ -76,7 +72,7 @@ export default function Pagination({
         aria-label="Next page"
         onClick={() => onPageChange && onPageChange(Math.min(totalPages, currentPage + 1))}
         disabled={currentPage === totalPages}
-        className="w-8 h-8 flex items-center justify-center rounded-md border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#111E30] disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none transition-colors cursor-pointer text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
+        className="ui-pagination-control w-8 h-8 flex items-center justify-center rounded-md text-xs"
       >
         <ChevronRight className="w-4 h-4" aria-hidden="true" />
       </button>

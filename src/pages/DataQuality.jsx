@@ -40,7 +40,7 @@ export default function DataQuality() {
 
   if (!dataset) {
     return (
-      <div className="py-20 text-center">
+      <div className="ui-quality-empty rounded-xl border px-5 py-16 text-center" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">No Datasets Available for Quality Analysis</h2>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
           No datasets are registered in the Data Catalog yet. Connect a data source and synchronize datasets to track data quality.
@@ -53,10 +53,11 @@ export default function DataQuality() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="ui-quality-page space-y-5 pb-8 sm:space-y-6">
       {/* Breadcrumbs */}
       <nav 
-        className="flex items-center gap-1.5 text-xs"
+        aria-label="Breadcrumb"
+        className="flex min-w-0 flex-wrap items-center gap-1.5 text-xs"
         style={{ color: 'var(--color-text-muted)' }}
       >
         <NavLink to="/catalog" className="hover:underline transition-colors" style={{ color: 'var(--color-text-secondary)' }}>
@@ -71,22 +72,20 @@ export default function DataQuality() {
       </nav>
 
       {/* Header Row with Timeframe Dropdown & Evaluate Button */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="flex items-center gap-3">
-            <h1 
-              className="text-xl sm:text-2xl font-bold tracking-tight"
-              style={{ color: 'var(--color-text-primary)' }}
-            >
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="ui-page-header__title">
               Data Quality
             </h1>
             {datasets.length > 0 && (
-              <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 px-2 py-1 rounded-md border border-slate-200 dark:border-slate-700">
-                <Database className="w-3.5 h-3.5 text-blue-500" />
+              <div className="flex min-w-0 max-w-full items-center gap-1.5 rounded-lg border px-2 py-1.5" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+                <Database className="h-3.5 w-3.5 shrink-0 text-blue-500" aria-hidden="true" />
                 <select
                   value={dataset.id || dataset._id || ''}
                   onChange={(e) => navigate(`/quality/${e.target.value}`)}
-                  className="bg-transparent text-xs font-semibold text-slate-900 dark:text-white focus:outline-none cursor-pointer"
+                  aria-label="Select dataset for quality analysis"
+                  className="min-w-0 bg-transparent text-xs font-semibold text-slate-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-white cursor-pointer"
                 >
                   {datasets.map(d => (
                     <option key={d.id || d._id} value={d.id || d._id} className="bg-white dark:bg-[#0D1828]">
@@ -102,16 +101,13 @@ export default function DataQuality() {
               </span>
             )}
           </div>
-          <p 
-            className="mt-1 text-xs sm:text-sm"
-            style={{ color: 'var(--color-text-secondary)' }}
-          >
+          <p className="ui-page-header__subtitle">
             Real-time quality validation, schema constraints, and SLA compliance for {dataset.name} on {dataset.source || dataset.sourceSystem || quality?.sourceType || 'Data Source'}.
           </p>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center gap-2 self-start sm:self-auto">
+        <div className="flex w-full flex-wrap items-center gap-2 self-start sm:w-auto sm:self-auto">
           <Button
             size="sm"
             onClick={handleEvaluate}
@@ -127,7 +123,8 @@ export default function DataQuality() {
             <select
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer focus:outline-none"
+              aria-label="Quality trends timeframe"
+              className="min-h-10 flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"
               style={{
                 backgroundColor: 'var(--color-surface)',
                 border: '1px solid var(--color-border)',
@@ -145,22 +142,22 @@ export default function DataQuality() {
 
       {/* Top Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
+        <div data-tour="quality-score" className="min-w-0 lg:col-span-1">
           <QualityScore
             score={dataset?.qualityScore ?? dataset?.quality ?? quality?.score ?? null}
             grade={quality?.grade || (dataset?.qualityScore != null ? (dataset.qualityScore >= 95 ? 'Excellent' : dataset.qualityScore >= 90 ? 'Good' : dataset.qualityScore >= 75 ? 'Fair' : 'At Risk') : 'Unrated')}
             trend={quality?.trendText || (dataset?.qualityScore != null ? 'Verified live PostgreSQL evaluation' : 'Run evaluation to calculate score')}
           />
         </div>
-        <div className="lg:col-span-2">
+        <div className="min-w-0 lg:col-span-2">
           <QualityMetrics dimensions={dataset?.dimensions || quality?.dimensions || []} />
         </div>
       </div>
 
       {/* Bottom Tabs */}
       <div className="space-y-4">
-        <div className="border-b border-slate-200 dark:border-slate-800 -mx-3.5 px-3.5 sm:mx-0 sm:px-0">
-          <nav className="flex space-x-6 overflow-x-auto no-scrollbar py-0.5">
+        <div className="ui-quality-tabs -mx-3.5 border-b border-slate-200 px-3.5 dark:border-slate-800 sm:mx-0 sm:px-0">
+          <nav aria-label="Quality sections" className="flex space-x-6 overflow-x-auto no-scrollbar py-0.5">
             {[
               { id: 'issues', label: 'Issues' },
               { id: 'rules', label: 'Quality Rules' },
@@ -170,8 +167,9 @@ export default function DataQuality() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
+                aria-current={activeTab === tab.id ? 'page' : undefined}
                 className={`
-                  py-3 px-1 border-b-2 text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap shrink-0
+                  min-h-11 shrink-0 whitespace-nowrap border-b-2 px-1 py-3 text-xs font-semibold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
                   ${activeTab === tab.id
                     ? 'border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400'
                     : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:border-slate-300 dark:hover:border-slate-700'
