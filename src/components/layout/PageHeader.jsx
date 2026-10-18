@@ -8,18 +8,18 @@ export default function PageHeader({
   className = ''
 }) {
   return (
-    <div className={`mb-6 ${className}`}>
+    <div className={`ui-page-header mb-6 ${className}`}>
       {breadcrumbs && (
-        <nav className="flex items-center gap-1.5 text-xs text-slate-500 mb-2">
+        <nav aria-label="Breadcrumb" className="ui-page-header__breadcrumbs flex items-center gap-1.5 text-xs mb-2">
           {breadcrumbs.map((crumb, idx) => (
             <React.Fragment key={idx}>
-              {idx > 0 && <span className="text-slate-300">/</span>}
+              {idx > 0 && <span aria-hidden="true">/</span>}
               {crumb.link ? (
-                <a href={crumb.link} className="hover:text-blue-600 transition-colors">
+                <a href={crumb.link} className="ui-page-header__breadcrumb-link">
                   {crumb.label}
                 </a>
               ) : (
-                <span className={idx === breadcrumbs.length - 1 ? 'text-slate-800 font-medium' : ''}>
+                <span aria-current={idx === breadcrumbs.length - 1 ? 'page' : undefined}>
                   {crumb.label}
                 </span>
               )}
@@ -29,15 +29,15 @@ export default function PageHeader({
       )}
 
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-        <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">{title}</h1>
+        <div className="min-w-0">
+          <h1 className="ui-page-header__title">{title}</h1>
           {subtitle && (
-            <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>
+            <p className="ui-page-header__subtitle">{subtitle}</p>
           )}
         </div>
 
         {actions && (
-          <div className="flex items-center gap-2.5 shrink-0 self-start sm:self-auto">
+          <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
             {actions}
           </div>
         )}

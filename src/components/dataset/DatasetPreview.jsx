@@ -40,9 +40,9 @@ export default function DatasetPreview({ dataset }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-lg bg-white dark:bg-[#0D1828] border border-slate-200 dark:border-[#1D3047] shadow-2xs">
+      <div className="flex flex-col justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-[#1D3047] dark:bg-[#0D1828] sm:flex-row sm:items-center">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Eye className="w-4 h-4 text-blue-500" />
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white">
               Live Source Data Preview
@@ -79,14 +79,14 @@ export default function DatasetPreview({ dataset }) {
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center p-16 space-y-3 rounded-lg border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828]">
+        <div className="flex min-h-48 flex-col items-center justify-center space-y-3 rounded-xl border border-slate-200 bg-white p-8 text-center dark:border-[#1D3047] dark:bg-[#0D1828] sm:p-12" role="status" aria-live="polite">
           <RefreshCw className="w-6 h-6 animate-spin text-blue-600" />
           <span className="text-xs text-slate-500 dark:text-slate-400">
             Querying bounded preview sample from {dataset?.source || 'data source'}...
           </span>
         </div>
       ) : error ? (
-        <div className="p-6 bg-rose-50/30 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/50 rounded-lg text-center space-y-3">
+        <div className="space-y-3 rounded-xl border border-rose-200 bg-rose-50/30 p-6 text-center dark:border-rose-900/50 dark:bg-rose-950/20" role="alert">
           <AlertCircle className="w-8 h-8 text-rose-500 mx-auto" />
           <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
             Source Preview Unavailable
@@ -101,7 +101,7 @@ export default function DatasetPreview({ dataset }) {
           </div>
         </div>
       ) : rows.length === 0 ? (
-        <div className="p-12 text-center rounded-lg border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] space-y-2">
+        <div className="space-y-2 rounded-xl border border-slate-200 bg-white p-8 text-center dark:border-[#1D3047] dark:bg-[#0D1828] sm:p-12">
           <Database className="w-8 h-8 text-slate-400 mx-auto" />
           <p className="text-xs font-medium text-slate-700 dark:text-slate-300">
             No sample records found in source asset.

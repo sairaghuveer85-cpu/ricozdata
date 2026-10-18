@@ -76,7 +76,7 @@ function FlowComponent({ onSelectNode, datasetId }) {
 
   if (loading) {
     return (
-      <div className="w-full h-[380px] sm:h-[460px] md:h-[520px] bg-white dark:bg-[#07111F] rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-800 shadow-2xs">
+      <div role="status" aria-live="polite" className="flex h-[360px] w-full items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-[#07111F] sm:h-[460px] md:h-[520px]">
         <div className="flex flex-col items-center gap-2 text-slate-500 dark:text-slate-400">
           <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
           <span className="text-xs">Loading verified lineage graph...</span>
@@ -87,7 +87,7 @@ function FlowComponent({ onSelectNode, datasetId }) {
 
   if (nodes.length === 0) {
     return (
-      <div className="w-full h-[380px] sm:h-[460px] md:h-[520px] bg-white dark:bg-[#07111F] rounded-xl flex items-center justify-center border border-slate-200 dark:border-slate-800 shadow-2xs p-6">
+      <div className="flex h-[360px] w-full items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-[#07111F] sm:h-[460px] md:h-[520px]">
         <div className="text-center max-w-sm">
           <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 flex items-center justify-center mx-auto mb-3">
             <GitFork className="w-6 h-6" />
@@ -102,7 +102,7 @@ function FlowComponent({ onSelectNode, datasetId }) {
   }
 
   return (
-    <div className="w-full h-[380px] sm:h-[460px] md:h-[520px] bg-white dark:bg-[#07111F] rounded-xl relative border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors shadow-2xs">
+    <div className="h-[360px] w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-colors dark:border-slate-800 dark:bg-[#07111F] sm:h-[460px] md:h-[520px]">
       <ReactFlow
         nodes={nodes}
         edges={themedEdges}

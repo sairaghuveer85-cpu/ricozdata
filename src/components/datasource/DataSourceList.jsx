@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../common/Button';
-import Badge from '../common/Badge';
+import SearchBar from '../common/SearchBar';
+import { TableSkeleton } from '../common/Skeleton';
 import Modal from '../common/Modal';
 import {
   Database,
@@ -10,7 +11,6 @@ import {
   HardDrive,
   Play,
   RefreshCw,
-  Search,
   CheckCircle2,
   AlertCircle,
   XCircle,
@@ -239,20 +239,20 @@ export default function DataSourceList() {
   const healthyCount = dataSources.filter(s => s.healthStatus === 'HEALTHY' || s.connectionState === 'CONNECTED').length;
 
   return (
-    <div className="space-y-6">
+    <div className="ui-data-source-page space-y-5 sm:space-y-6">
       {/* Top Banner / Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-[#0D1828] p-5 rounded-xl border border-slate-200 dark:border-[#1D3047] shadow-2xs">
-        <div>
-          <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Database className="w-5 h-5 text-blue-600" />
+      <div className="ui-data-source-heading flex flex-col gap-4 rounded-xl border p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
+        <div className="min-w-0">
+          <h2 className="ui-page-header__title flex items-center gap-2">
+            <Database className="h-5 w-5 shrink-0" style={{ color: 'var(--color-brand)' }} aria-hidden="true" />
             Connected Data Sources
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+          <p className="ui-page-header__subtitle">
             Configure RDBMS, data warehouses, and cloud storage connectors with AES-256-GCM envelope encryption.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
           <Button
             variant="secondary"
             size="sm"
@@ -266,6 +266,7 @@ export default function DataSourceList() {
             variant="primary"
             size="sm"
             icon={Plus}
+            data-tour="add-datasource"
             onClick={() => setIsAddModalOpen(true)}
           >
             Add Data Source
@@ -274,52 +275,51 @@ export default function DataSourceList() {
       </div>
 
       {/* KPI Stats Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-3.5 bg-white dark:bg-[#0D1828] rounded-lg border border-slate-200 dark:border-[#1D3047]">
-          <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Total Configured Sources</div>
-          <div className="text-xl font-bold text-slate-900 dark:text-white mt-1 font-mono">{dataSources.length}</div>
+      <div data-tour="datasource-stats" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="ui-data-source-stat rounded-xl border p-4">
+          <div className="text-[11px] font-medium" style={{ color: 'var(--color-text-muted)' }}>Total Configured Sources</div>
+          <div className="mt-1 font-mono text-xl font-semibold tabular-nums" style={{ color: 'var(--color-text-primary)' }}>{dataSources.length}</div>
         </div>
-        <div className="p-3.5 bg-white dark:bg-[#0D1828] rounded-lg border border-slate-200 dark:border-[#1D3047]">
-          <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Healthy Connections</div>
-          <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1 font-mono flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4" />
+        <div className="ui-data-source-stat rounded-xl border p-4">
+          <div className="text-[11px] font-medium" style={{ color: 'var(--color-text-muted)' }}>Healthy Connections</div>
+          <div className="mt-1 flex items-center gap-1.5 font-mono text-xl font-semibold tabular-nums" style={{ color: 'var(--color-success)' }}>
+            <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
             {healthyCount} / {dataSources.length}
           </div>
         </div>
-        <div className="p-3.5 bg-white dark:bg-[#0D1828] rounded-lg border border-slate-200 dark:border-[#1D3047]">
-          <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Security Boundary</div>
-          <div className="text-xs font-semibold text-slate-900 dark:text-white mt-1.5 flex items-center gap-1.5">
-            <Lock className="w-3.5 h-3.5 text-blue-500" />
+        <div className="ui-data-source-stat rounded-xl border p-4">
+          <div className="text-[11px] font-medium" style={{ color: 'var(--color-text-muted)' }}>Security Boundary</div>
+          <div className="mt-1.5 flex items-center gap-1.5 text-xs font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+            <Lock className="h-3.5 w-3.5" style={{ color: 'var(--color-brand)' }} aria-hidden="true" />
             AES-256-GCM Vault
           </div>
         </div>
-        <div className="p-3.5 bg-white dark:bg-[#0D1828] rounded-lg border border-slate-200 dark:border-[#1D3047]">
-          <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Live Engine Drivers</div>
-          <div className="text-xs font-semibold text-slate-900 dark:text-white mt-1.5 flex items-center gap-1">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+        <div className="ui-data-source-stat rounded-xl border p-4">
+          <div className="text-[11px] font-medium" style={{ color: 'var(--color-text-muted)' }}>Live Engine Drivers</div>
+          <div className="mt-1.5 flex items-center gap-1 text-xs font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+            <Sparkles className="h-3.5 w-3.5" style={{ color: 'var(--color-warning)' }} aria-hidden="true" />
             6 Supported Engines
           </div>
         </div>
       </div>
 
       {/* Filters & Search */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
-          <input
-            type="text"
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full sm:max-w-sm sm:flex-1">
+          <SearchBar
             placeholder="Search data sources..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 rounded-lg border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+            onChange={setSearchQuery}
+            size="sm"
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex w-full items-center gap-2 sm:w-auto">
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="rounded-lg border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] text-xs text-slate-900 dark:text-white py-1.5 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="ui-data-source-filter min-h-10 min-w-0 flex-1 rounded-lg border px-3 py-2 text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 sm:flex-none"
+            style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
           >
             <option value="ALL">All Engine Types</option>
             <option value="postgresql">PostgreSQL</option>
@@ -333,7 +333,8 @@ export default function DataSourceList() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="rounded-lg border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] text-xs text-slate-900 dark:text-white py-1.5 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="ui-data-source-filter min-h-10 min-w-0 flex-1 rounded-lg border px-3 py-2 text-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 sm:flex-none"
+            style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-primary)', borderColor: 'var(--color-border)' }}
           >
             <option value="ALL">All Statuses</option>
             <option value="HEALTHY">Healthy</option>
@@ -345,16 +346,16 @@ export default function DataSourceList() {
 
       {/* Loading State */}
       {loading && (
-        <div className="py-16 text-center space-y-3">
-          <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mx-auto" />
-          <p className="text-xs text-slate-500 dark:text-slate-400">Loading data sources & connection statuses...</p>
+        <div className="space-y-3" role="status" aria-live="polite">
+          <TableSkeleton rows={3} cols={4} />
+          <p className="text-center text-xs" style={{ color: 'var(--color-text-muted)' }}>Loading data sources & connection statuses...</p>
         </div>
       )}
 
       {/* Empty State */}
       {!loading && filteredDataSources.length === 0 && (
-        <div className="p-12 text-center bg-white dark:bg-[#0D1828] rounded-xl border border-dashed border-slate-200 dark:border-[#1D3047] space-y-3">
-          <Database className="w-10 h-10 text-slate-400 mx-auto opacity-60" />
+        <div className="ui-data-source-empty space-y-3 rounded-xl border border-dashed p-8 text-center sm:p-12">
+          <Database className="mx-auto h-10 w-10 opacity-60" style={{ color: 'var(--color-text-muted)' }} aria-hidden="true" />
           <h3 className="text-sm font-bold text-slate-900 dark:text-white">No Data Sources Found</h3>
           <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
             {searchQuery || typeFilter !== 'ALL'
@@ -376,7 +377,7 @@ export default function DataSourceList() {
 
       {/* Card Grid */}
       {!loading && filteredDataSources.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="ui-data-source-grid grid grid-cols-1 gap-4 lg:grid-cols-2">
           {filteredDataSources.map((source) => {
             const id = source._id || source.id;
             const typeKey = (source.type || 'postgresql').toLowerCase();
@@ -392,18 +393,18 @@ export default function DataSourceList() {
             return (
               <div
                 key={id}
-                className="bg-white dark:bg-[#0D1828] rounded-xl border border-slate-200 dark:border-[#1D3047] p-4 flex flex-col justify-between hover:shadow-xs transition-shadow space-y-4"
+                className="ui-data-source-card flex min-w-0 flex-col justify-between space-y-4 rounded-xl border p-4 sm:p-5"
               >
                 <div>
                   {/* Card Header */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className={`p-2.5 rounded-lg border ${engine.bg}`}>
-                        <EngineIcon className={`w-5 h-5 ${engine.color}`} />
+                      <div className={`shrink-0 rounded-lg border p-2.5 ${engine.bg}`}>
+                        <EngineIcon className={`h-5 w-5 ${engine.color}`} aria-hidden="true" />
                       </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-xs font-bold text-slate-900 dark:text-white">{source.name}</h3>
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="truncate text-sm font-semibold text-slate-900 dark:text-white">{source.name}</h3>
                           <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${engine.bg} ${engine.color}`}>
                             {engine.label}
                           </span>
@@ -435,7 +436,7 @@ export default function DataSourceList() {
                   </div>
 
                   {/* Details Grid */}
-                  <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-[#1D3047] grid grid-cols-2 gap-2 text-[11px]">
+                  <div className="mt-3.5 grid grid-cols-1 gap-3 border-t border-slate-100 pt-3 text-[11px] dark:border-[#1D3047] sm:grid-cols-2 sm:gap-2">
                     <div>
                       <span className="text-slate-400">Host / Target:</span>
                       <div className="font-mono text-slate-700 dark:text-slate-300 truncate font-medium">
@@ -486,8 +487,8 @@ export default function DataSourceList() {
                 </div>
 
                 {/* Action Toolbar */}
-                <div className="pt-3 border-t border-slate-100 dark:border-[#1D3047] flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-1.5">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 dark:border-[#1D3047]">
+                <div className="flex flex-wrap items-center gap-1.5">
                     <Button
                       size="xs"
                       variant="secondary"
@@ -525,18 +526,20 @@ export default function DataSourceList() {
                     <button
                       type="button"
                       onClick={() => setSelectedSourceForEdit(source)}
-                      className="p-1.5 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                      className="min-h-9 min-w-9 rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-blue-400"
                       title="Edit Configuration"
+                      aria-label={`Edit ${source.name} configuration`}
                     >
-                      <Edit2 className="w-3.5 h-3.5" />
+                      <Edit2 className="h-4 w-4" aria-hidden="true" />
                     </button>
                     <button
                       type="button"
                       onClick={() => setSourceToDelete(source)}
-                      className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                      className="min-h-9 min-w-9 rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-rose-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-rose-400"
                       title="Delete Data Source"
+                      aria-label={`Delete ${source.name}`}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="h-4 w-4" aria-hidden="true" />
                     </button>
                   </div>
                 </div>

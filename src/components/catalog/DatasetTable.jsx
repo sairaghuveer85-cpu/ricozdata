@@ -1,5 +1,5 @@
 import React from 'react';
-import { Database, CheckCircle2, ChevronRight, Star } from 'lucide-react';
+import { CheckCircle2, ChevronRight, Star } from 'lucide-react';
 import DatasetRow from './DatasetRow';
 import EmptyState from '../common/EmptyState';
 import Badge from '../common/Badge';
@@ -46,9 +46,9 @@ export default function DatasetTable({
   return (
     <>
       {/* Mobile Responsive Cards (< md) */}
-      <div className="md:hidden space-y-3">
+      <div className="ui-catalog-results md:hidden space-y-3">
         {/* Select All Controls */}
-        <div className="flex items-center justify-between px-3 py-2 bg-slate-50 dark:bg-[#0D1828] rounded-md border border-slate-200 dark:border-[#1D3047] text-xs">
+        <div className="ui-dataset-select-bar flex items-center justify-between px-3 py-2 rounded-md border text-xs">
           <label className="flex items-center gap-2 cursor-pointer font-medium text-slate-700 dark:text-slate-300">
             <input
               type="checkbox"
@@ -59,7 +59,7 @@ export default function DatasetTable({
             />
             <span>Select All ({datasets.length})</span>
           </label>
-          <span className="text-[11px] text-slate-400">{selectedIds.length} selected</span>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400" aria-live="polite">{selectedIds.length} selected</span>
         </div>
 
         {/* Card Items */}
@@ -88,7 +88,7 @@ export default function DatasetTable({
                   openDrawer('dataset', dataset);
                 }
               }}
-              className={`p-3.5 rounded-lg border transition-all cursor-pointer bg-white dark:bg-[#0D1828] space-y-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+              className={`ui-dataset-card p-3.5 rounded-xl border transition-all cursor-pointer space-y-3 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                 isSelected
                   ? 'border-blue-500/50 bg-blue-50/20 dark:bg-blue-950/20'
                   : 'border-slate-200/80 dark:border-[#1D3047] hover:border-slate-300 dark:hover:border-slate-700'
@@ -120,6 +120,7 @@ export default function DatasetTable({
                       }`}
                       title={favoriteIds.includes(dataset.id) ? 'Remove from favorites' : 'Add to favorites'}
                       aria-label={favoriteIds.includes(dataset.id) ? 'Remove from favorites' : 'Add to favorites'}
+                      aria-pressed={favoriteIds.includes(dataset.id)}
                     >
                       <Star className={`w-3.5 h-3.5 ${favoriteIds.includes(dataset.id) ? 'fill-amber-400 text-amber-500' : ''}`} />
                     </button>
@@ -147,7 +148,7 @@ export default function DatasetTable({
               </div>
 
               {/* Card Details: Domain, Source, Owner, Quality, Updated */}
-              <div className="pt-2.5 border-t border-slate-100 dark:border-[#1D3047] grid grid-cols-2 gap-2 text-xs">
+              <div className="ui-dataset-card__details pt-2.5 border-t grid grid-cols-2 gap-2 text-xs">
                 <div>
                   <span className="text-[10px] font-medium text-slate-400 uppercase tracking-wider block">Domain</span>
                   <span className="font-medium text-slate-700 dark:text-slate-300 text-xs truncate block">{dataset.domain}</span>
@@ -195,9 +196,9 @@ export default function DatasetTable({
       </div>
 
       {/* Desktop Table (>= md) */}
-      <div className="hidden md:block enterprise-workbench overflow-hidden">
+      <div className="ui-catalog-results hidden md:block enterprise-workbench overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse" aria-label="Data Catalog Datasets">
+          <table className="ui-data-table w-full text-left border-collapse" aria-label="Data Catalog Datasets">
             <thead>
               <tr className="bg-slate-50/80 dark:bg-[#0B1524] border-b border-slate-200/80 dark:border-[#1D3047] text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider sticky top-0 z-10">
                 <th className="py-2.5 px-3 w-10">

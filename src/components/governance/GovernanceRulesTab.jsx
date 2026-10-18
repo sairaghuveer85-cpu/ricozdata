@@ -185,7 +185,7 @@ export default function GovernanceRulesTab() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="ui-governance-panel space-y-5">
       {/* Sub-navigation & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-1">

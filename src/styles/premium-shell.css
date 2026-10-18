@@ -1,0 +1,450 @@
+/* RicozData — premium enterprise shell */
+
+.app-shell {
+  isolation: isolate;
+  background:
+    radial-gradient(
+      ellipse at 80% 0%,
+      color-mix(in srgb, var(--color-brand) 4%, transparent),
+      transparent 42%
+    ),
+    var(--color-background);
+}
+
+.app-main-viewport {
+  min-width: 0;
+  background: transparent;
+}
+
+.app-main-content {
+  width: 100%;
+  min-width: 0;
+  padding-bottom: 40px;
+}
+
+.app-content-frame {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+}
+
+.app-sidebar {
+  position: relative;
+  box-shadow: 1px 0 0 var(--color-border);
+}
+
+.app-topbar {
+  position: relative;
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 1px 0 var(--color-border);
+}
+
+@media (min-width: 1024px) {
+  .app-main-content {
+    padding: 28px 32px 40px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .app-main-content {
+    padding-inline: 40px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell *,
+  .app-shell *::before,
+  .app-shell *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Dashboard — premium enterprise workspace */
+
+.dashboard-page {
+  color: var(--color-text-primary);
+}
+
+.dashboard-heading {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dashboard-heading h1 {
+  letter-spacing: -0.035em;
+}
+
+.dashboard-metrics,
+.dashboard-reliability,
+.dashboard-operations {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.dashboard-metrics {
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.dashboard-metrics > div {
+  min-width: 0;
+}
+
+.dashboard-reliability,
+.dashboard-operations {
+  overflow: hidden;
+}
+
+.dashboard-reliability > div,
+.dashboard-operations > div {
+  min-width: 0;
+}
+
+.dashboard-reliability > div,
+.dashboard-operations > div {
+  padding: 24px;
+}
+
+@media (max-width: 639px) {
+  .dashboard-reliability > div,
+  .dashboard-operations > div {
+    padding: 18px;
+  }
+}
+
+.dashboard-page button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dashboard-page button:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-metrics {
+    transition: none;
+  }
+}
+
+.premium-stat-card {
+  position: relative;
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.dashboard-metrics .premium-stat-card {
+  min-height: 142px;
+}
+
+@media (hover: hover) {
+  .dashboard-metrics .premium-stat-card:hover {
+    background-color: var(--color-surface-secondary) !important;
+  }
+}
+
+@media (max-width: 639px) {
+  .dashboard-metrics .premium-stat-card {
+    min-height: 132px;
+    padding: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .premium-stat-card {
+    transition: none;
+  }
+}
+
+/* Dashboard visual refresh — v2 */
+
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-bottom: 32px;
+}
+
+.dashboard-heading {
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dashboard-heading h1 {
+  font-size: clamp(1.5rem, 2vw, 1.875rem);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+}
+
+.dashboard-heading p {
+  margin-top: 7px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.dashboard-metrics {
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.dashboard-metrics .premium-stat-card {
+  min-height: 158px;
+  padding: 24px;
+}
+
+.dashboard-metrics > div {
+  position: relative;
+  transition: background-color 180ms ease;
+}
+
+.dashboard-metrics > div:not(:first-child) {
+  border-left: 1px solid var(--color-border);
+}
+
+.dashboard-metrics > div:nth-child(3),
+.dashboard-metrics > div:nth-child(4) {
+  border-top: none;
+}
+
+@media (hover: hover) {
+  .dashboard-metrics > div:hover {
+    background-color: var(--color-surface-secondary);
+  }
+}
+
+.dashboard-reliability,
+.dashboard-operations {
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.dashboard-reliability > div,
+.dashboard-operations > div {
+  padding: 26px;
+}
+
+.dashboard-reliability > div:nth-child(2) {
+  background-color: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+}
+
+.dashboard-page .dashboard-reliability h2,
+.dashboard-page .dashboard-operations h2 {
+  letter-spacing: -0.025em;
+}
+
+.dashboard-page button {
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.dashboard-page button:active {
+  transform: translateY(1px);
+}
+
+@media (max-width: 1023px) {
+  .dashboard-metrics > div:nth-child(3) {
+    border-left: none;
+  }
+
+  .dashboard-metrics > div:nth-child(3),
+  .dashboard-metrics > div:nth-child(4) {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .dashboard-reliability > div:nth-child(2) {
+    border-left: none;
+  }
+}
+
+@media (max-width: 639px) {
+  .dashboard-page {
+    gap: 18px;
+  }
+
+  .dashboard-heading {
+    padding-bottom: 16px;
+  }
+
+  .dashboard-metrics .premium-stat-card {
+    min-height: 138px;
+    padding: 16px;
+  }
+
+  .dashboard-reliability > div,
+  .dashboard-operations > div {
+    padding: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-page button,
+  .dashboard-metrics > div {
+    transition: none;
+  }
+
+  .dashboard-page button:active {
+    transform: none;
+  }
+}
+
+/* =========================================
+   RICOZDATA — Dashboard visual redesign
+   ========================================= */
+
+.dashboard-page {
+  gap: 24px !important;
+  padding-bottom: 36px;
+}
+
+/* Page heading */
+.dashboard-page .dashboard-heading {
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dashboard-page .dashboard-heading h1 {
+  font-size: clamp(25px, 2vw, 30px);
+  line-height: 1.2;
+  font-weight: 750;
+  letter-spacing: -1.1px;
+}
+
+/* KPI workbench */
+.dashboard-page .dashboard-metrics {
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 5%);
+}
+
+.dashboard-page .dashboard-metrics > div {
+  min-width: 0;
+  transition: background-color 180ms ease;
+}
+
+.dashboard-page .dashboard-metrics .premium-stat-card {
+  min-height: 154px;
+  padding: 24px;
+}
+
+.dashboard-page .dashboard-metrics .premium-stat-card > div:nth-child(2) {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+@media (hover: hover) {
+  .dashboard-page .dashboard-metrics > div:hover {
+    background-color: var(--color-surface-secondary);
+  }
+}
+
+/* Fresh workspace onboarding */
+.dashboard-page .dashboard-welcome-banner {
+  background: var(--color-surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-brand);
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgb(15 23 42 / 4%);
+}
+
+.dashboard-page .dashboard-welcome-banner h2 {
+  color: var(--color-text-primary) !important;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  line-height: 1.4;
+}
+
+.dashboard-page .dashboard-welcome-banner p {
+  color: var(--color-text-secondary) !important;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.dashboard-page .dashboard-welcome-banner > div > div:first-child > div {
+  color: var(--color-brand) !important;
+}
+
+/* Analytics and reliability panels */
+.dashboard-page .dashboard-reliability,
+.dashboard-page .dashboard-operations {
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgb(15 23 42 / 4%);
+}
+
+.dashboard-page .dashboard-reliability > div,
+.dashboard-page .dashboard-operations > div {
+  min-width: 0;
+  padding: 20px;
+}
+
+/* Remove the tinted health-panel background */
+.dashboard-page .dashboard-reliability > div:nth-child(2) {
+  background-color: var(--color-surface) !important;
+  border-left: 1px solid var(--color-border);
+}
+
+.dashboard-page button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dashboard-page button:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1023px) {
+  .dashboard-page .dashboard-reliability > div:nth-child(2) {
+    border-left: 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .dashboard-page .dashboard-metrics > div:nth-child(3) {
+    border-left: 0;
+  }
+
+  .dashboard-page .dashboard-metrics > div:nth-child(3),
+  .dashboard-page .dashboard-metrics > div:nth-child(4) {
+    border-top: 1px solid var(--color-border);
+  }
+}
+
+@media (max-width: 639px) {
+  .dashboard-page {
+    gap: 18px !important;
+  }
+
+  .dashboard-page .dashboard-metrics .premium-stat-card {
+    min-height: 136px;
+    padding: 15px;
+  }
+
+  .dashboard-page .dashboard-reliability > div,
+  .dashboard-page .dashboard-operations > div {
+    padding: 18px;
+  }
+
+  .dashboard-page .dashboard-welcome-banner {
+    padding: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-page .dashboard-metrics > div {
+    transition: none;
+  }
+}

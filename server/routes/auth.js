@@ -8,6 +8,7 @@ const {
   activateAccount,
   getMe,
   logout,
+  refreshToken,
 } = require('../controllers/authController');
 const { protect } = require('../middleware/auth');
 
@@ -15,7 +16,17 @@ const { protect } = require('../middleware/auth');
 router.post(
   '/register',
   [
-    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('organizationName').custom((value, { req }) => {
+      const orgName = value || req.body.organization;
+      if (typeof orgName !== 'string') {
+        throw new Error('Organization name must be a string');
+      }
+      if (!orgName.trim()) {
+        throw new Error('Organization name is required');
+      }
+      return true;
+    }),
+    body('name').isString().withMessage('Name must be a string').bail().trim().notEmpty().withMessage('Name is required'),
     body('email').trim().isEmail().withMessage('Please include a valid email'),
     body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
   ],
@@ -31,8 +42,7 @@ router.post(
       .notEmpty()
       .withMessage('Email is required')
       .isEmail()
-      .withMessage('Please include a valid email')
-      .normalizeEmail(),
+      .withMessage('Please include a valid email'),
     body('password')
       .notEmpty()
       .withMessage('Password is required'),
@@ -53,6 +63,9 @@ router.post(
   ],
   activateAccount
 );
+
+// Session lifecycle routes
+router.post('/refresh', refreshToken);
 
 // Protected routes
 router.get('/me', protect, getMe);

@@ -400,6 +400,14 @@ export function AppProvider({ children }) {
         email: backendUser.email || cleanEmail,
         role: backendUser.role || 'EMPLOYEE',
         isMainAdmin: !!backendUser.isMainAdmin || backendUser.role === 'MAIN_ADMIN',
+        organization: authRes.data.organization ?? backendUser.organization ?? null,
+        organizationId: authRes.data.organization?.id
+          ?? authRes.data.organization?._id
+          ?? authRes.data.organizationId
+          ?? backendUser.organizationId
+          ?? backendUser.organization?.id
+          ?? backendUser.organization?._id
+          ?? null,
         avatar: backendUser.avatar || 'U',
         avatarBg: backendUser.avatarBg || 'bg-blue-600',
         department: backendUser.department || 'Enterprise Analytics',
@@ -963,7 +971,7 @@ export function AppProvider({ children }) {
           title: 'Password setup updated',
           message: res.message || 'Password setup updated successfully.'
         });
-        return res.data;
+        return res;
       }
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Failed to reset password';

@@ -13,12 +13,15 @@ import {
   Moon,
   Laptop,
   RefreshCw,
-  CheckCircle2
+  CheckCircle2,
+  Compass
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
+import { useTour } from '../context/TourContext';
 
 export default function Settings() {
   const { currentUser, setCurrentUser, theme, setTheme, addToast } = useApp();
+  const { restartTour } = useTour();
 
   const [activeSection, setActiveSection] = useState('profile');
   const [profileName, setProfileName] = useState(currentUser?.name || 'Raghuveer C.');
@@ -69,18 +72,18 @@ export default function Settings() {
   ];
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="ui-settings-page space-y-5 pb-8 sm:space-y-6">
       <PageHeader
         title="Settings"
         subtitle="Manage personal preferences, workspace governance rules, and integrations."
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 items-start">
+      <div className="ui-settings-layout grid grid-cols-1 items-start gap-4 sm:gap-6 md:grid-cols-4">
         {/* Navigation Sidebar */}
         <div
           role="tablist"
           aria-label="Settings categories"
-          className="bg-white dark:bg-[#0D1828] rounded-lg border border-slate-200 dark:border-[#1D3047] p-1.5 shadow-2xs flex md:flex-col overflow-x-auto no-scrollbar gap-1 md:space-y-0.5 shrink-0"
+          className="ui-settings-nav flex shrink-0 gap-1 overflow-x-auto rounded-xl border p-1.5 shadow-sm no-scrollbar md:flex-col md:space-y-0.5"
         >
           {navSections.map(sec => {
             const Icon = sec.icon;
@@ -90,9 +93,11 @@ export default function Settings() {
                 key={sec.id}
                 role="tab"
                 aria-selected={isActive}
+                aria-controls="settings-panel"
+                id={`settings-tab-${sec.id}`}
                 type="button"
                 onClick={() => setActiveSection(sec.id)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-md text-xs font-medium transition-colors cursor-pointer text-left whitespace-nowrap shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
+                className={`ui-settings-tab flex min-h-10 shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                   isActive
                     ? 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 font-semibold border border-blue-200 dark:border-blue-900/50'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-[#111E30] hover:text-slate-900 dark:text-white'
@@ -106,10 +111,10 @@ export default function Settings() {
         </div>
 
         {/* Content Pane */}
-        <div role="tabpanel" className="md:col-span-3 min-w-0">
+        <div id="settings-panel" role="tabpanel" aria-labelledby={`settings-tab-${activeSection}`} className="ui-settings-panel min-w-0 md:col-span-3">
           {/* 1. PROFILE */}
           {activeSection === 'profile' && (
-            <div className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs space-y-5">
+            <div className="ui-settings-card space-y-5 rounded-xl border p-4 shadow-sm sm:p-6">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Personal Profile</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage your credentials, role, and avatar</p>
@@ -154,7 +159,7 @@ export default function Settings() {
 
           {/* 2. WORKSPACE */}
           {activeSection === 'workspace' && (
-            <div className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs space-y-5">
+            <div className="ui-settings-card space-y-5 rounded-xl border p-4 shadow-sm sm:p-6">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Workspace Configuration</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage enterprise domain boundaries and governance limits</p>
@@ -175,7 +180,7 @@ export default function Settings() {
                     id="retention-days-select"
                     value={retentionDays}
                     onChange={(e) => setRetentionDays(e.target.value)}
-                    className="w-full rounded-md border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] p-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="ui-settings-select min-h-10 w-full rounded-lg border p-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="30">30 Days</option>
                     <option value="90">90 Days (Enterprise Standard)</option>
@@ -190,7 +195,7 @@ export default function Settings() {
                   </label>
                   <select
                     id="cloud-region-select"
-                    className="w-full rounded-md border border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] p-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="ui-settings-select min-h-10 w-full rounded-lg border p-2 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option>US-East (AWS N. Virginia)</option>
                     <option>EU-Central (Frankfurt)</option>
@@ -209,7 +214,7 @@ export default function Settings() {
 
           {/* 3. NOTIFICATIONS */}
           {activeSection === 'notifications' && (
-            <div className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs space-y-5">
+            <div className="ui-settings-card space-y-5 rounded-xl border p-4 shadow-sm sm:p-6">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Alert Notifications</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Control how and when RicozData dispatches incident notifications</p>
@@ -269,7 +274,7 @@ export default function Settings() {
 
           {/* 4. APPEARANCE */}
           {activeSection === 'appearance' && (
-            <div className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs space-y-5">
+            <div className="ui-settings-card space-y-5 rounded-xl border p-4 shadow-sm sm:p-6">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Theme & Appearance</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Customize UI contrast, dark mode, and layout density</p>
@@ -284,6 +289,7 @@ export default function Settings() {
                   <button
                     type="button"
                     onClick={() => setTheme('light')}
+                    aria-pressed={theme === 'light'}
                     className={`p-3 rounded-md border flex flex-col items-center gap-2 cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                       theme === 'light'
                         ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/30 text-blue-900 dark:text-blue-300 font-semibold'
@@ -297,6 +303,7 @@ export default function Settings() {
                   <button
                     type="button"
                     onClick={() => setTheme('system')}
+                    aria-pressed={theme === 'system'}
                     className={`p-3 rounded-md border flex flex-col items-center gap-2 cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                       theme === 'system'
                         ? 'border-blue-600 bg-blue-50/50 dark:bg-[#111E30] text-blue-900 dark:text-blue-300 font-semibold'
@@ -310,6 +317,7 @@ export default function Settings() {
                   <button
                     type="button"
                     onClick={() => setTheme('dark')}
+                    aria-pressed={theme === 'dark'}
                     className={`p-3 rounded-md border flex flex-col items-center gap-2 cursor-pointer transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                       theme === 'dark'
                         ? 'border-blue-500 bg-[#111E30] text-white font-semibold'
@@ -331,6 +339,7 @@ export default function Settings() {
                   <button
                     type="button"
                     onClick={() => setDensity('compact')}
+                    aria-pressed={density === 'compact'}
                     className={`p-2.5 rounded-md border text-left cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                       density === 'compact'
                         ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-300 font-semibold'
@@ -342,6 +351,7 @@ export default function Settings() {
                   <button
                     type="button"
                     onClick={() => setDensity('spacious')}
+                    aria-pressed={density === 'spacious'}
                     className={`p-2.5 rounded-md border text-left cursor-pointer transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                       density === 'spacious'
                         ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-300 font-semibold'
@@ -352,19 +362,42 @@ export default function Settings() {
                   </button>
                 </div>
               </div>
+
+              {/* Product Tour Reset */}
+              <div className="pt-4 border-t border-slate-200 dark:border-[#1D3047]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <h4 className="font-semibold text-slate-900 dark:text-white text-xs">
+                      Interactive Product Tour
+                    </h4>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                      Explore RicozData&apos;s features with a guided walkthrough of key sections.
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="xs"
+                    icon={Compass}
+                    onClick={restartTour}
+                  >
+                    Restart Tour
+                  </Button>
+                </div>
+              </div>
             </div>
           )}
 
           {/* 5. SECURITY */}
           {activeSection === 'security' && (
-            <div className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs space-y-5">
+            <div className="ui-settings-card space-y-5 rounded-xl border p-4 shadow-sm sm:p-6">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Security & API Keys</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage two-factor authentication, personal access tokens, and sessions</p>
               </div>
 
               <div className="space-y-3 text-xs">
-                <div className="p-3.5 rounded-md bg-slate-50 dark:bg-[#111E30] border border-slate-200 dark:border-[#1D3047] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="ui-settings-detail flex flex-col justify-between gap-3 rounded-xl border p-4 sm:flex-row sm:items-center">
                   <div>
                     <div className="font-semibold text-slate-900 dark:text-white">Two-Factor Authentication (2FA / WebAuthn)</div>
                     <div className="text-slate-500 dark:text-slate-400 text-[11px]">Enforce hardware security key or TOTP authenticator</div>
@@ -374,7 +407,7 @@ export default function Settings() {
                   </span>
                 </div>
 
-                <div className="p-3.5 rounded-md bg-slate-50 dark:bg-[#111E30] border border-slate-200 dark:border-[#1D3047] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="ui-settings-detail flex flex-col justify-between gap-3 rounded-xl border p-4 sm:flex-row sm:items-center">
                   <div className="min-w-0">
                     <div className="font-semibold text-slate-900 dark:text-white">Production API Access Token</div>
                     <div className="text-slate-500 dark:text-slate-400 font-mono text-[11px] mt-0.5 truncate">
@@ -403,7 +436,7 @@ export default function Settings() {
 
           {/* 6. INTEGRATIONS */}
           {activeSection === 'integrations' && (
-            <div className="bg-white dark:bg-[#0D1828] rounded-lg p-4 sm:p-5 border border-slate-200 dark:border-[#1D3047] shadow-2xs space-y-5">
+            <div className="ui-settings-card space-y-5 rounded-xl border p-4 shadow-sm sm:p-6">
               <div>
                 <h3 className="text-sm font-semibold text-slate-900 dark:text-white">Connected Platforms & Connectors</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Manage bidirectional syncs across cloud data warehouses and catalogs</p>
@@ -420,7 +453,7 @@ export default function Settings() {
                 ].map((integ, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-md border border-slate-200 dark:border-[#1D3047] bg-slate-50/50 dark:bg-[#111E30] flex items-center justify-between text-xs gap-2"
+                    className="ui-settings-integration flex items-center justify-between gap-3 rounded-xl border p-3 text-xs"
                   >
                     <div className="min-w-0">
                       <div className="font-semibold text-slate-900 dark:text-white truncate">{integ.name}</div>

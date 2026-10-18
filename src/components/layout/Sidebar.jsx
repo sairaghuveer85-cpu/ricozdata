@@ -229,7 +229,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar (Persistent) */}
-      <aside aria-label="Desktop Sidebar" className="hidden lg:flex lg:flex-col h-full shrink-0 z-30">
+      <aside aria-label="Desktop Sidebar" className="app-sidebar hidden lg:flex lg:flex-col h-full shrink-0 z-30">
         {desktopSidebarContent}
       </aside>
 

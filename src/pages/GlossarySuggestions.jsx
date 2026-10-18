@@ -280,7 +280,7 @@ export default function GlossarySuggestions() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="ui-glossary-page space-y-5 pb-8">
       {/* 1. REFINED HEADER WITH SUBTLE INTEGRATED SUMMARY */}
       <div className="space-y-3">
         <PageHeader
@@ -334,18 +334,19 @@ export default function GlossarySuggestions() {
       </div>
 
       {/* 2. TAB NAVIGATION SWITCHER */}
-      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 text-xs">
-        <div className="flex items-center">
+      <div className="overflow-x-auto border-b border-slate-200 dark:border-slate-800 text-xs">
+        <div className="flex min-w-max items-center">
           <button
             type="button"
             onClick={() => navigate('/glossary')}
-            className="pb-3 px-3.5 font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors flex items-center gap-1.5 border-b-2 border-transparent cursor-pointer"
+            className="min-h-11 whitespace-nowrap border-b-2 border-transparent px-3.5 pb-3 font-medium text-slate-500 transition-colors hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-slate-400 dark:hover:text-slate-200 flex items-center gap-1.5 cursor-pointer"
           >
             <BookOpen className="w-3.5 h-3.5 text-slate-400" />
             <span>Authoritative Glossary</span>
           </button>
           <button
             type="button"
+            aria-current="page"
             className="pb-3 px-3.5 font-semibold text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 flex items-center gap-1.5 cursor-default"
           >
             <Sparkles className="w-3.5 h-3.5 text-blue-500" />
@@ -360,7 +361,7 @@ export default function GlossarySuggestions() {
       </div>
 
       {/* 2.1 CONCEPT GROUPING FILTER BAR */}
-      <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100/70 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800 text-xs">
+      <div role="group" aria-label="Filter suggestions by concept group" className="flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-100/70 p-1 text-xs dark:border-slate-800 dark:bg-slate-900/60">
         {[
           { id: 'recommended', label: 'Recommended', count: metrics.recommendedCount },
           { id: 'business_entities', label: 'Business Entities', count: metrics.entitiesCount },
@@ -376,6 +377,7 @@ export default function GlossarySuggestions() {
             key={tab.id}
             type="button"
             onClick={() => { setSelectedGroup(tab.id); setPage(1); }}
+            aria-pressed={selectedGroup === tab.id}
             className={`px-3 py-1.5 rounded-lg font-medium transition-all flex items-center gap-1.5 cursor-pointer ${
               selectedGroup === tab.id
                 ? 'bg-white dark:bg-[#111C2E] text-blue-600 dark:text-blue-400 shadow-2xs font-semibold'
@@ -398,7 +400,7 @@ export default function GlossarySuggestions() {
 
       {/* Success Notification Alert */}
       {actionSuccessMsg && (
-        <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 text-emerald-800 dark:text-emerald-200 text-xs flex items-center justify-between">
+        <div role="status" className="flex items-center justify-between gap-3 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{actionSuccessMsg}</span>
@@ -414,7 +416,7 @@ export default function GlossarySuggestions() {
 
       {/* Error State */}
       {error && (
-        <div className="p-4 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-300 flex items-center justify-between">
+        <div role="alert" className="flex items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
           <div className="flex items-center gap-2.5 text-xs">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>

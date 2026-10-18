@@ -64,7 +64,7 @@ export default function LineageNode({ data, selected }) {
       tabIndex={0}
       aria-label={`Data node ${data.label}, type ${data.category}`}
       className={`
-        bg-white dark:bg-[#0D1828] rounded-lg p-3 min-w-[200px] border shadow-2xs transition-all hover:shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
+        bg-white dark:bg-[#0D1828] rounded-xl p-3 min-w-[200px] border shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500
         ${getBorderColor()}
       `}
     >

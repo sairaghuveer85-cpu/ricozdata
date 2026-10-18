@@ -954,10 +954,30 @@ const syncCatalog = asyncHandler(async (req, res) => {
   // If not found by ID, look up by name in req.body
   if (!dataSource) {
     const candidateName = req.body?.name || req.body?.dataSourceName;
-    if (candidateName && typeof candidateName === 'string') {
-      dataSource = await DataSource.findOne({ name: candidateName.trim() }).select('+credentials');
+    if (candidateName && typeof candidateName === 'string' && req.user?.organizationId) {
+      dataSource = await DataSource.findOne({
+        name: candidateName.trim(),
+        organizationId: req.user.organizationId
+      }).select('+credentials');
     }
   }
+
+  // Multi-tenant validation: verify that the data source belongs to the expected workspace
+  if (dataSource && req.user?.organizationId) {
+    if (dataSource.organizationId && !dataSource.organizationId.equals(req.user.organizationId) && req.user.role !== 'SUPER_ADMIN') {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to sync data sources from another workspace.'
+      });
+    }
+    // If data source was missing organizationId, associate it with the authorized user's organization
+    if (!dataSource.organizationId) {
+      dataSource.organizationId = req.user.organizationId;
+      await dataSource.save();
+    }
+  }
+
+  const targetOrgId = dataSource?.organizationId || req.user?.organizationId || null;
 
   const rawTables = req.body?.filterTables || req.body?.tables;
   let tables = Array.isArray(rawTables) && rawTables.length > 0 ? [...rawTables] : [];
@@ -992,6 +1012,7 @@ const syncCatalog = asyncHandler(async (req, res) => {
       status: 'CONNECTED',
       healthStatus: 'HEALTHY',
       connectionState: 'CONNECTED',
+      organizationId: targetOrgId,
       createdBy: defaultUser._id,
       ownerId: defaultUser._id
     });
@@ -1000,6 +1021,19 @@ const syncCatalog = asyncHandler(async (req, res) => {
       dataSource.setCredentials(creds);
     }
     await dataSource.save();
+  }
+
+  // Backfill missing organizationId for existing datasets unambiguously owned by this data source
+  if (targetOrgId && dataSource && dataSource._id) {
+    await Dataset.updateMany(
+      {
+        dataSourceId: dataSource._id,
+        $or: [{ organizationId: { $exists: false } }, { organizationId: null }]
+      },
+      {
+        $set: { organizationId: targetOrgId }
+      }
+    );
   }
 
   const dsConfig = { ...(dataSource.configuration || {}), ...(dataSource.connectionConfig || {}), ...(req.body?.configuration || {}) };
@@ -1127,6 +1161,7 @@ const syncCatalog = asyncHandler(async (req, res) => {
         displayName: formattedName,
         type: assetType,
         dataSourceId: dataSource._id,
+        organizationId: targetOrgId,
         tableName: tableName,
         schemaName: targetSchema,
         description: `Synchronized ${dataSource.type === 'mongodb' ? 'collection' : 'table'} from ${dataSource.name}`,
@@ -1157,6 +1192,7 @@ const syncCatalog = asyncHandler(async (req, res) => {
       try {
         await Lineage.create({
           datasetId: existingDs._id,
+          organizationId: targetOrgId,
           nodes: [
             {
               id: `source-${existingDs._id}`,
@@ -1213,6 +1249,7 @@ const syncCatalog = asyncHandler(async (req, res) => {
           name: `${existingDs.name} Primary Identifier Not Null`,
           datasetId: existingDs._id,
           targetDatasetId: existingDs._id,
+          organizationId: targetOrgId,
           field: schemaCols[0]?.name || 'id',
           targetColumn: schemaCols[0]?.name || 'id',
           expression: `not_null(${schemaCols[0]?.name || 'id'})`,
@@ -1234,6 +1271,7 @@ const syncCatalog = asyncHandler(async (req, res) => {
           title: `Synchronized dataset "${formattedName}" from ${dataSource.name}`,
           type: 'dataset_sync',
           actorId: defaultUser._id,
+          organizationId: targetOrgId,
           user: defaultUser.name || 'System',
           entityType: 'dataset',
           entityId: existingDs._id,
@@ -1246,6 +1284,9 @@ const syncCatalog = asyncHandler(async (req, res) => {
         });
       } catch (e) {}
     } else {
+      if (!existingDs.organizationId && targetOrgId) {
+        existingDs.organizationId = targetOrgId;
+      }
       existingDs.schemaName = existingDs.schemaName || targetSchema;
       existingDs.source = dataSource.name;
       existingDs.sourceSystem = dataSource.name;

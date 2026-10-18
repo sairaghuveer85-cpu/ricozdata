@@ -67,6 +67,7 @@ class ApiClient {
   async refreshToken() {
     try {
       const refreshUrl = buildApiUrl('/auth/refresh');
+
       const response = await fetch(refreshUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -77,8 +78,8 @@ class ApiClient {
         return null;
       }
 
-      const data = await response.json();
-      return data.data?.accessToken || null;
+      const data = await response.json().catch(() => null);
+      return data?.data?.accessToken || data?.data?.token || null;
     } catch (err) {
       console.warn('[ApiClient] Silent token refresh network error:', err);
       return null;

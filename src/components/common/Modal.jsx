@@ -73,14 +73,14 @@ export default function Modal({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="ui-modal fixed inset-0 z-50 overflow-y-auto">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 backdrop-blur-xs"
+            className="ui-modal-backdrop fixed inset-0 backdrop-blur-xs"
             style={{ backgroundColor: 'var(--overlay)' }}
             onClick={onClose}
             aria-hidden="true"
@@ -99,7 +99,7 @@ export default function Modal({
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 8 }}
               transition={{ duration: 0.16, ease: 'easeOut' }}
-              className={`relative transform overflow-hidden rounded-enterprise-modal text-left shadow-2xl transition-all sm:my-8 w-[calc(100%-0.5rem)] sm:w-full ${maxWidth} max-h-[calc(100dvh-2rem)] flex flex-col z-10 focus:outline-none`}
+              className={`ui-modal-panel relative z-10 flex max-h-[calc(100dvh-2rem)] w-[calc(100%-0.5rem)] transform flex-col overflow-hidden rounded-enterprise-modal text-left shadow-2xl transition-all focus:outline-none sm:my-8 sm:w-full ${maxWidth}`}
               style={{
                 backgroundColor: 'var(--surface)',
                 border: '1px solid var(--border)',
@@ -109,7 +109,7 @@ export default function Modal({
             >
               {/* Header */}
               <div
-                className="flex items-center justify-between px-4 sm:px-6 py-3.5 sm:py-4 shrink-0"
+                className="ui-overlay-header flex shrink-0 items-center justify-between px-4 py-3.5 sm:px-6 sm:py-4"
                 style={{ borderBottom: '1px solid var(--border)' }}
               >
                 <div className="min-w-0 pr-2">
@@ -126,21 +126,21 @@ export default function Modal({
                   type="button"
                   onClick={onClose}
                   aria-label="Close modal"
-                  className="rounded-md p-1.5 transition-colors cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 shrink-0"
+                  className="min-h-9 min-w-9 shrink-0 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:hover:bg-slate-800 dark:hover:text-slate-200 cursor-pointer"
                 >
                   <X className="w-4 h-4" aria-hidden="true" />
                 </button>
               </div>
 
               {/* Body */}
-              <div data-modal-body className="flex-1 overflow-y-auto px-4 sm:px-6 py-4 sm:py-5">
+              <div data-modal-body className="ui-overlay-body min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6 sm:py-5">
                 {children}
               </div>
 
               {/* Optional Footer */}
               {footer && (
                 <div
-                  className="px-4 sm:px-6 py-3 sm:py-3.5 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-2.5 shrink-0"
+                  className="ui-overlay-footer flex shrink-0 flex-col-reverse items-stretch justify-end gap-2 px-4 py-3 sm:flex-row sm:items-center sm:gap-2.5 sm:px-6 sm:py-3.5"
                   style={{
                     backgroundColor: 'var(--bg-tertiary)',
                     borderTop: '1px solid var(--border)'

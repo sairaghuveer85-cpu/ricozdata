@@ -164,14 +164,14 @@ export default function BusinessGlossary() {
   const deprecatedCount = terms.filter((t) => (t.status || '').toLowerCase() === 'deprecated').length;
 
   return (
-    <div className="space-y-5">
+    <div className="ui-glossary-page space-y-5 pb-8">
       {/* 1. REFINED PAGE HEADER WITH INTEGRATED COMPACT METRICS */}
       <div className="space-y-3">
         <PageHeader
           title="Business Glossary"
           subtitle="Define and discover the meaning behind your enterprise data."
           actions={
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Button
                 variant="secondary"
                 size="md"
@@ -191,6 +191,8 @@ export default function BusinessGlossary() {
                 onClick={fetchTerms}
                 disabled={loading}
                 title="Refresh glossary"
+                aria-label={loading ? 'Refreshing glossary' : 'Refresh glossary'}
+                aria-busy={loading}
                 className="p-2 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 bg-white dark:bg-[#111C2E] transition-colors disabled:opacity-50 cursor-pointer"
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -239,9 +241,10 @@ export default function BusinessGlossary() {
       </div>
 
       {/* 2. TAB NAVIGATION (Authoritative vs Suggestions) */}
-      <div className="flex items-center border-b border-slate-200 dark:border-slate-800 text-xs">
+      <div className="overflow-x-auto border-b border-slate-200 dark:border-slate-800 text-xs">
         <button
           type="button"
+          aria-current="page"
           className="pb-3 px-3.5 font-semibold text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400 flex items-center gap-1.5 cursor-default"
         >
           <BookOpen className="w-3.5 h-3.5 text-blue-500" />
@@ -255,7 +258,7 @@ export default function BusinessGlossary() {
         <button
           type="button"
           onClick={() => navigate('/glossary/suggestions')}
-          className="pb-3 px-3.5 font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition-colors flex items-center gap-1.5 border-b-2 border-transparent cursor-pointer"
+          className="min-h-11 whitespace-nowrap border-b-2 border-transparent px-3.5 pb-3 font-medium text-slate-500 transition-colors hover:text-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-slate-400 dark:hover:text-slate-200 flex items-center gap-1.5 cursor-pointer"
         >
           <Sparkles className="w-3.5 h-3.5 text-slate-400" />
           <span>Semantic Suggestions</span>
@@ -268,26 +271,28 @@ export default function BusinessGlossary() {
       </div>
 
       {/* 3. VISUALLY DOMINANT SEARCH & FILTER CONTROLS */}
-      <GlossaryFilters
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        selectedDomain={selectedDomain}
-        setSelectedDomain={(dom) => {
-          setSelectedDomain(dom);
-          setPage(1);
-        }}
-        selectedStatus={selectedStatus}
-        setSelectedStatus={(st) => {
-          setSelectedStatus(st);
-          setPage(1);
-        }}
-        onReset={handleReset}
-        totalCount={!loading && !error ? pagination.total : undefined}
-      />
+      <div data-tour="glossary-filters">
+        <GlossaryFilters
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedDomain={selectedDomain}
+          setSelectedDomain={(dom) => {
+            setSelectedDomain(dom);
+            setPage(1);
+          }}
+          selectedStatus={selectedStatus}
+          setSelectedStatus={(st) => {
+            setSelectedStatus(st);
+            setPage(1);
+          }}
+          onReset={handleReset}
+          totalCount={!loading && !error ? pagination.total : undefined}
+        />
+      </div>
 
       {/* 4. ERROR STATE (Mutually exclusive from empty state) */}
       {error && (
-        <div className="p-6 rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50/50 dark:bg-red-950/20 text-center space-y-3">
+        <div role="alert" className="space-y-3 rounded-xl border border-red-200 bg-red-50/50 p-5 text-center dark:border-red-900/60 dark:bg-red-950/20">
           <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">
             <AlertCircle className="w-5 h-5" />
           </div>
@@ -308,7 +313,7 @@ export default function BusinessGlossary() {
 
       {/* 6. GENUINE EMPTY STATE: NO TERMS CREATED YET */}
       {!loading && !error && terms.length === 0 && !hasActiveFilters && (
-        <div className="p-12 text-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111C2E] shadow-2xs space-y-3">
+        <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-8 text-center shadow-sm dark:border-slate-800 dark:bg-[#111C2E] sm:p-12">
           <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center mx-auto">
             <BookOpen className="w-6 h-6" />
           </div>
@@ -330,7 +335,7 @@ export default function BusinessGlossary() {
 
       {/* 7. FILTERED EMPTY STATE: NO MATCHES FOR SEARCH / CRITERIA */}
       {!loading && !error && terms.length === 0 && hasActiveFilters && (
-        <div className="p-10 text-center rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#111C2E] shadow-2xs space-y-3">
+        <div className="space-y-3 rounded-xl border border-slate-200 bg-white p-7 text-center shadow-sm dark:border-slate-800 dark:bg-[#111C2E] sm:p-10">
           <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto">
             <Search className="w-5 h-5" />
           </div>

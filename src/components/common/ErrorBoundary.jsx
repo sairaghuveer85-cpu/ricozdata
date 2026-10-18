@@ -29,14 +29,14 @@ export class ErrorBoundary extends React.Component {
         return this.props.fallback;
       }
       return (
-        <div className="flex flex-col items-center justify-center p-8 text-center my-6 rounded-lg border border-rose-200 dark:border-rose-900/50 bg-rose-50/20 dark:bg-rose-950/10">
+        <div role="alert" className="ui-error-state my-6 flex flex-col items-center justify-center rounded-xl border p-8 text-center">
           <div className="w-12 h-12 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-600 dark:text-rose-400 flex items-center justify-center mb-4">
-            <AlertTriangle className="w-6 h-6" />
+            <AlertTriangle className="w-6 h-6" aria-hidden="true" />
           </div>
           <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-1">
             {this.props.title || 'Something went wrong in this section'}
           </h3>
-          <p className="text-xs text-rose-600 dark:text-rose-400 max-w-md mb-4 font-mono">
+          <p className="mb-4 max-w-md break-words text-xs leading-relaxed text-rose-600 dark:text-rose-400">
             {this.state.error?.message || 'An unexpected runtime error occurred.'}
           </p>
           <Button size="sm" variant="secondary" icon={RotateCcw} onClick={this.handleRetry}>

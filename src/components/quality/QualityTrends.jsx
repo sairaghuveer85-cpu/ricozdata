@@ -57,7 +57,7 @@ export default function QualityTrends({ datasetId, timeRange = 'Last 30 days' })
 
   return (
     <div
-      className="rounded-xl p-5 shadow-xs space-y-4"
+      className="ui-quality-trends space-y-4 rounded-xl p-4 shadow-sm sm:p-5"
       style={{
         backgroundColor: 'var(--color-surface)',
         border: '1px solid var(--color-border)',
@@ -72,12 +72,12 @@ export default function QualityTrends({ datasetId, timeRange = 'Last 30 days' })
       </div>
 
       {trends.length === 0 ? (
-        <div className="py-16 text-center text-xs text-slate-500 dark:text-slate-400">
+        <div className="rounded-xl border border-dashed px-4 py-12 text-center text-xs text-slate-500 dark:text-slate-400 sm:py-16" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface-secondary)' }}>
           <p className="font-semibold text-slate-800 dark:text-slate-200">No Quality Scan History</p>
           <p className="mt-1">Historical quality breakdown will appear after automated quality scans are executed on this dataset.</p>
         </div>
       ) : (
-        <div className="w-full h-72">
+        <div className="h-64 w-full sm:h-72">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={trends} margin={{ top: 15, right: 15, left: -15, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />

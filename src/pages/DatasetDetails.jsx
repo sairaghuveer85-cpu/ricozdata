@@ -4,6 +4,7 @@ import DatasetHeader from '../components/dataset/DatasetHeader';
 import DatasetTabs from '../components/dataset/DatasetTabs';
 import DatasetOverview from '../components/dataset/DatasetOverview';
 import DatasetSchema from '../components/dataset/DatasetSchema';
+import DatasetPreview from '../components/dataset/DatasetPreview';
 import DatasetQuality from '../components/dataset/DatasetQuality';
 import DatasetLineage from '../components/dataset/DatasetLineage';
 import DatasetActivity from '../components/dataset/DatasetActivity';
@@ -57,16 +58,16 @@ export default function DatasetDetails() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        <span className="ml-3 text-sm text-slate-500 dark:text-slate-400">Loading dataset details...</span>
+      <div className="flex min-h-64 flex-col items-center justify-center rounded-xl border text-center" role="status" aria-live="polite" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-blue-500"></div>
+        <span className="mt-3 text-sm text-slate-500 dark:text-slate-400">Loading dataset details...</span>
       </div>
     );
   }
 
   if (!dataset) {
     return (
-      <div className="text-center py-20">
+      <div className="rounded-xl border px-5 py-16 text-center" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
         <h2 className="text-base font-semibold text-slate-900 dark:text-white">Dataset Not Found</h2>
         <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">The requested dataset could not be retrieved from the catalog.</p>
         <Button size="sm" className="mt-4" onClick={() => navigate('/catalog')}>
@@ -77,7 +78,7 @@ export default function DatasetDetails() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="ui-dataset-details space-y-5 sm:space-y-6">
       {/* Header */}
       <DatasetHeader
         dataset={dataset}
@@ -101,7 +102,7 @@ export default function DatasetDetails() {
 
           {/* Related Datasets Section */}
           {relatedDatasets.length > 0 && (
-            <div className="theme-card rounded-lg border border-slate-200 dark:border-[#1D3047] p-4 space-y-3">
+            <div className="theme-card space-y-3 rounded-xl border border-slate-200 p-4 shadow-sm dark:border-[#1D3047] sm:p-5">
               <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                 Related Datasets ({relatedDatasets.length})
               </h3>
@@ -109,8 +110,13 @@ export default function DatasetDetails() {
                 {relatedDatasets.map((rel) => (
                   <div
                     key={rel._id}
+                    role="link"
+                    tabIndex={0}
                     onClick={() => navigate(`/catalog/${rel._id}`)}
-                    className="p-3 rounded border border-slate-100 dark:border-slate-800 hover:border-blue-400 dark:hover:border-blue-600 cursor-pointer bg-slate-50/50 dark:bg-[#0E1B2E]/50 transition-colors"
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter') navigate(`/catalog/${rel._id}`);
+                    }}
+                    className="w-full rounded-lg border border-slate-100 bg-slate-50/50 p-3 text-left transition-colors hover:border-blue-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:border-slate-800 dark:bg-[#0E1B2E]/50 dark:hover:border-blue-600"
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-slate-900 dark:text-white truncate">
@@ -148,6 +154,10 @@ export default function DatasetDetails() {
           datasetId={dataset._id || dataset.id}
           onUpdateSuccess={fetchDatasetDetails}
         />
+      )}
+
+      {activeTab === 'preview' && (
+        <DatasetPreview dataset={dataset} />
       )}
 
       {activeTab === 'quality' && (

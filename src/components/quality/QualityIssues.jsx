@@ -66,9 +66,9 @@ export default function QualityIssues({ datasetId }) {
   };
 
   return (
-    <div className="enterprise-workbench overflow-hidden">
+    <div className="enterprise-workbench min-w-0 overflow-hidden rounded-xl">
       {/* Table Toolbar */}
-      <div className="p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 dark:border-[#1D3047]">
+      <div className="flex flex-col justify-between gap-3 border-b border-slate-200/80 p-3.5 dark:border-[#1D3047] sm:flex-row sm:items-center sm:p-4">
         <div>
           <span className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white block">
             Active Data Anomalies (<span className="tabular-nums font-mono text-blue-600 dark:text-blue-400">{filteredIssues.length}</span>)
@@ -78,7 +78,7 @@ export default function QualityIssues({ datasetId }) {
           </span>
         </div>
 
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+        <div role="group" aria-label="Filter anomalies by severity" className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
           <span className="text-xs text-slate-500 dark:text-slate-400 font-medium shrink-0 mr-1">Severity:</span>
           {['All', 'Critical', 'High', 'Medium', 'Low'].map((sev) => (
             <button
@@ -124,7 +124,7 @@ export default function QualityIssues({ datasetId }) {
                     handleRowClick(item);
                   }
                 }}
-                className="p-4 hover:bg-slate-50/70 dark:hover:bg-[#111E30]/40 active:bg-slate-100 transition-colors cursor-pointer space-y-2.5 focus:outline-none focus-visible:bg-slate-50 dark:focus-visible:bg-[#111E30]"
+                className="space-y-2.5 p-4 transition-colors hover:bg-slate-50/70 focus:outline-none focus-visible:bg-slate-50 dark:hover:bg-[#111E30]/40 dark:focus-visible:bg-[#111E30] cursor-pointer"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-start gap-2 min-w-0">
@@ -186,7 +186,7 @@ export default function QualityIssues({ datasetId }) {
                         handleRowClick(item);
                       }
                     }}
-                    className="hover:bg-slate-50/70 dark:hover:bg-[#111E30]/40 transition-colors cursor-pointer focus:outline-none focus-visible:bg-slate-50 dark:focus-visible:bg-[#111E30]"
+                    className="transition-colors hover:bg-slate-50/70 focus:outline-none focus-visible:bg-slate-50 dark:hover:bg-[#111E30]/40 dark:focus-visible:bg-[#111E30] cursor-pointer"
                   >
                     <td className="py-2.5 px-4 font-medium text-slate-900 dark:text-white max-w-sm">
                       <div className="flex items-center gap-2">

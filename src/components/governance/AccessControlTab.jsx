@@ -127,7 +127,7 @@ export default function AccessControlTab() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="ui-governance-panel space-y-5 sm:space-y-6">
       {/* External Security Boundary Banner */}
       <div className="p-4 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/70 dark:bg-blue-950/20 text-xs text-blue-900 dark:text-blue-200 flex items-start gap-3">
         <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />

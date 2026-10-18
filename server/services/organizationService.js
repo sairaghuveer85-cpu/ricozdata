@@ -1,5 +1,4 @@
 const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
 const Organization = require('../models/Organization');
 const User = require('../models/User');
 const Dataset = require('../models/Dataset');
@@ -7,6 +6,7 @@ const DataSource = require('../models/DataSource');
 const QualityIssue = require('../models/QualityIssue');
 const Activity = require('../models/Activity');
 const { ROLES } = require('../config/rbac');
+const { createAccessToken, createRefreshToken } = require('./jwtTokens');
 
 let defaultOrgCached = null;
 
@@ -143,17 +143,8 @@ async function registerOrganizationWorkspace({ organizationName, name, email, pa
   }
 
   // 3. Issue JWT Token
-  const token = jwt.sign(
-    {
-      id: user._id,
-      role: ROLES.MAIN_ADMIN,
-      email: user.email,
-      isMainAdmin: true,
-      organizationId: organization._id
-    },
-    process.env.JWT_SECRET || 'super-secret-jwt-key-1234567890',
-    { expiresIn: '30d' }
-  );
+  const token = createAccessToken(user, { role: ROLES.MAIN_ADMIN, isMainAdmin: true });
+  const refreshToken = createRefreshToken(user);
 
   return {
     organization: {
@@ -174,7 +165,8 @@ async function registerOrganizationWorkspace({ organizationName, name, email, pa
       avatarBg: user.avatarBg,
       status: user.status
     },
-    token
+    token,
+    refreshToken
   };
 }
 

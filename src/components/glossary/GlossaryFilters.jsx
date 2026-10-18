@@ -26,7 +26,7 @@ export default function GlossaryFilters({
     (selectedStatus && selectedStatus !== 'All Statuses');
 
   return (
-    <div className="space-y-2.5">
+    <div className="ui-glossary-filters space-y-3">
       {/* Primary Dominant Search Bar */}
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -34,6 +34,7 @@ export default function GlossaryFilters({
         </div>
         <input
           type="text"
+          aria-label="Search glossary terms"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search terms, definitions, synonyms, or tags..."
@@ -43,6 +44,7 @@ export default function GlossaryFilters({
           <button
             type="button"
             onClick={() => setSearchTerm('')}
+            aria-label="Clear glossary search"
             className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
             title="Clear search"
           >
@@ -59,7 +61,8 @@ export default function GlossaryFilters({
             <select
               value={selectedDomain}
               onChange={(e) => setSelectedDomain(e.target.value)}
-              className="w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1421] text-slate-700 dark:text-slate-300 py-1.5 px-2.5 pr-7 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer shadow-2xs appearance-none"
+              aria-label="Filter glossary by domain"
+              className="min-h-10 w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1421] text-slate-700 dark:text-slate-300 py-1.5 px-2.5 pr-7 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-2xs appearance-none"
             >
               {DOMAINS.map((d) => (
                 <option key={d} value={d} className="bg-white dark:bg-[#0c1421] text-slate-900 dark:text-white">
@@ -80,7 +83,8 @@ export default function GlossaryFilters({
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1421] text-slate-700 dark:text-slate-300 py-1.5 px-2.5 pr-7 focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer shadow-2xs appearance-none"
+                aria-label="Filter glossary by status"
+                className="min-h-10 w-full text-xs rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0c1421] text-slate-700 dark:text-slate-300 py-1.5 px-2.5 pr-7 focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer shadow-2xs appearance-none"
               >
                 {STATUS_FILTERS.map((s) => (
                   <option key={s.value} value={s.value} className="bg-white dark:bg-[#0c1421] text-slate-900 dark:text-white">
@@ -101,7 +105,7 @@ export default function GlossaryFilters({
             <button
               type="button"
               onClick={onReset}
-              className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 px-2 py-1 font-medium transition-colors flex items-center gap-1 cursor-pointer"
+              className="min-h-10 rounded-lg px-2 py-1 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-50 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-blue-400 dark:hover:bg-blue-950/30 dark:hover:text-blue-300 flex items-center gap-1 cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
               <span>Clear filters</span>

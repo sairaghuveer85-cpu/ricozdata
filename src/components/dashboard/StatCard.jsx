@@ -1,73 +1,90 @@
-import React from 'react';
-import { TrendingUp, TrendingDown, AlertTriangle } from 'lucide-react';
+import React from "react";
+import { TrendingUp, TrendingDown, AlertTriangle } from "lucide-react";
 
 export default function StatCard({
   title,
   value,
   comparisonText,
   isPositive = true,
-  trendType = 'positive'
+  trendType = "positive",
 }) {
   const getTrendStyle = () => {
-    if (trendType === 'warning') {
+    if (trendType === "warning") {
       return {
-        text: 'text-amber-700 dark:text-amber-400',
-        bg: 'bg-amber-50 dark:bg-amber-950/40',
-        border: 'border-amber-200 dark:border-amber-900/50',
-        icon: AlertTriangle
+        text: "var(--color-warning)",
+        background: "color-mix(in srgb, var(--color-warning) 10%, transparent)",
+        border: "color-mix(in srgb, var(--color-warning) 24%, transparent)",
+        icon: AlertTriangle,
       };
     }
+
     if (isPositive) {
       return {
-        text: 'text-emerald-700 dark:text-emerald-400',
-        bg: 'bg-emerald-50 dark:bg-emerald-950/40',
-        border: 'border-emerald-200 dark:border-emerald-900/50',
-        icon: TrendingUp
+        text: "var(--color-success)",
+        background: "color-mix(in srgb, var(--color-success) 10%, transparent)",
+        border: "color-mix(in srgb, var(--color-success) 24%, transparent)",
+        icon: TrendingUp,
       };
     }
+
     return {
-      text: 'text-rose-700 dark:text-rose-400',
-      bg: 'bg-rose-50 dark:bg-rose-950/40',
-      border: 'border-rose-200 dark:border-rose-900/50',
-      icon: TrendingDown
+      text: "var(--color-danger)",
+      background: "color-mix(in srgb, var(--color-danger) 10%, transparent)",
+      border: "color-mix(in srgb, var(--color-danger) 24%, transparent)",
+      icon: TrendingDown,
     };
   };
 
   const trend = getTrendStyle();
   const TrendIcon = trend.icon;
+  const comparison = String(comparisonText ?? "");
 
   return (
-    <div
-      className="p-3.5 sm:p-4 flex flex-col justify-between min-w-0 transition-colors"
-      style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-primary)' }}
+    <article
+      className="premium-stat-card flex h-full min-w-0 flex-col justify-between p-4 sm:p-5"
+      style={{
+        backgroundColor: "var(--color-surface)",
+        color: "var(--color-text-primary)",
+      }}
     >
-      <div
-        className="text-[10px] font-bold uppercase tracking-wider truncate select-none"
-        style={{ color: 'var(--color-text-muted)' }}
+      <p
+        className="truncate text-[11px] font-semibold uppercase tracking-[0.09em]"
+        style={{ color: "var(--color-text-muted)" }}
+        title={title}
       >
         {title}
-      </div>
+      </p>
 
-      <div className="my-1.5 flex items-baseline gap-2">
+      <div className="my-4 flex min-w-0 items-baseline gap-2">
         <span
-          className="text-xl sm:text-2xl font-bold tracking-tight truncate tabular-nums"
-          style={{ color: 'var(--color-text-primary)' }}
+          className="truncate text-2xl font-semibold tracking-tight tabular-nums sm:text-3xl"
+          style={{ color: "var(--color-text-primary)" }}
         >
           {value}
         </span>
       </div>
 
-      <div className="flex items-center gap-1.5 text-[11px] truncate">
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
         <span
-          className={`inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-xs font-semibold border ${trend.bg} ${trend.text} ${trend.border} shrink-0`}
+          className="inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-1 text-[10px] font-semibold"
+          style={{
+            color: trend.text,
+            backgroundColor: trend.background,
+            borderColor: trend.border,
+          }}
         >
-          <TrendIcon className="w-2.5 h-2.5 shrink-0" aria-hidden="true" />
-          <span>{comparisonText.split(' ')[0]}</span>
+          <TrendIcon size={12} aria-hidden="true" />
+          {comparison.split(" ")[0] || "—"}
         </span>
-        <span className="truncate" style={{ color: 'var(--color-text-muted)' }}>
-          {comparisonText.split(' ').slice(1).join(' ')}
+
+        <span
+          className="min-w-0 truncate text-[11px]"
+          style={{ color: "var(--color-text-muted)" }}
+          title={comparison}
+        >
+          {comparison.split(" ").slice(1).join(" ")}
         </span>
       </div>
-    </div>
+    </article>
   );
 }

@@ -4,7 +4,7 @@ export function Skeleton({ className = '' }) {
   return (
     <div
       aria-hidden="true"
-      className={`skeleton-shimmer bg-slate-200/80 dark:bg-slate-800 rounded ${className}`}
+      className={`skeleton-shimmer rounded ${className}`}
     />
   );
 }
@@ -13,7 +13,7 @@ export function MetricSkeleton() {
   return (
     <div
       aria-hidden="true"
-      className="bg-white dark:bg-[#0D1828] rounded-lg p-5 border border-slate-200 dark:border-[#1D3047] space-y-3"
+      className="ui-skeleton-surface rounded-lg p-5 border space-y-3"
     >
       <div className="flex justify-between items-center">
         <Skeleton className="w-10 h-10 rounded-md" />
@@ -29,9 +29,9 @@ export function TableSkeleton({ rows = 5, cols = 5 }) {
   return (
     <div
       aria-hidden="true"
-      className="bg-white dark:bg-[#0D1828] rounded-lg border border-slate-200 dark:border-[#1D3047] p-4 space-y-3"
+      className="ui-skeleton-surface rounded-lg border p-4 space-y-3"
     >
-      <div className="flex justify-between items-center pb-2 border-b border-slate-100 dark:border-[#1D3047]">
+      <div className="flex justify-between items-center pb-2 border-b ui-skeleton-divider">
         <Skeleton className="w-48 h-5" />
         <Skeleton className="w-24 h-8 rounded-md" />
       </div>
@@ -50,7 +50,7 @@ export function CardSkeleton() {
   return (
     <div
       aria-hidden="true"
-      className="bg-white dark:bg-[#0D1828] rounded-lg p-5 border border-slate-200 dark:border-[#1D3047] space-y-4"
+      className="ui-skeleton-surface rounded-lg p-5 border space-y-4"
     >
       <Skeleton className="w-36 h-5" />
       <Skeleton className="w-full h-32 rounded-md" />

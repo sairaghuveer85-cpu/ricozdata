@@ -133,9 +133,9 @@ export default function DatasetDrawer({ dataset, isOpen, onClose }) {
         </>
       }
     >
-      <div className="space-y-6 text-xs text-slate-600 dark:text-slate-300">
+      <div className="ui-dataset-drawer space-y-6 text-xs text-slate-600 dark:text-slate-300">
         {/* Status and Health Banner */}
-        <div className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-800">
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-[#111C2E]">
           <div className="flex items-center gap-2">
             <Badge status={currentData.status} dot size="sm" />
             <span className="text-slate-400">•</span>
@@ -170,7 +170,7 @@ export default function DatasetDrawer({ dataset, isOpen, onClose }) {
             Dataset Metrics
           </h4>
           <div className="grid grid-cols-2 gap-3">
-            <div className="p-3 rounded-lg bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-800">
+            <div className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-[#111C2E]">
               <div className="flex items-center gap-2 text-slate-400 mb-1">
                 <Layers className="w-3.5 h-3.5" />
                 <span>Rows</span>
@@ -180,7 +180,7 @@ export default function DatasetDrawer({ dataset, isOpen, onClose }) {
               </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-800">
+            <div className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-[#111C2E]">
               <div className="flex items-center gap-2 text-slate-400 mb-1">
                 <Columns className="w-3.5 h-3.5" />
                 <span>Columns</span>
@@ -190,7 +190,7 @@ export default function DatasetDrawer({ dataset, isOpen, onClose }) {
               </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-800">
+            <div className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-[#111C2E]">
               <div className="flex items-center gap-2 text-slate-400 mb-1">
                 <Eye className="w-3.5 h-3.5" />
                 <span>Usage</span>
@@ -200,7 +200,7 @@ export default function DatasetDrawer({ dataset, isOpen, onClose }) {
               </div>
             </div>
 
-            <div className="p-3 rounded-lg bg-slate-50 dark:bg-[#111C2E] border border-slate-200 dark:border-slate-800">
+            <div className="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-800 dark:bg-[#111C2E]">
               <div className="flex items-center gap-2 text-slate-400 mb-1">
                 <Clock className="w-3.5 h-3.5" />
                 <span>Updated</span>
@@ -217,11 +217,11 @@ export default function DatasetDrawer({ dataset, isOpen, onClose }) {
           <h4 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] mb-2">
             Owner & Stewardship
           </h4>
-          <div className="flex items-center gap-3 p-3 rounded-lg border border-slate-200 dark:border-slate-800">
+          <div className="flex min-w-0 items-center gap-3 rounded-xl border border-slate-200 p-3 dark:border-slate-800">
             <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs">
               {currentData.owner && currentData.owner !== 'Unassigned' ? currentData.owner.charAt(0).toUpperCase() : '?'}
             </div>
-            <div>
+            <div className="min-w-0">
               <div className="font-semibold text-slate-900 dark:text-white">
                 {currentData.owner || 'Unassigned'}
               </div>

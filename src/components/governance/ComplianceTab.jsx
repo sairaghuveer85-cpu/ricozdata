@@ -159,7 +159,7 @@ export default function ComplianceTab() {
   const metrics = summary?.metrics;
 
   return (
-    <div className="space-y-6">
+    <div className="ui-governance-panel space-y-5 sm:space-y-6">
       {/* Deterministic Compliance Summary Card */}
       {metrics && (
         <div className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0B1628] shadow-2xs space-y-4">

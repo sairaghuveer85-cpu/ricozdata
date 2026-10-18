@@ -17,19 +17,19 @@ export default function GovernancePolicies() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="ui-governance-page space-y-5 pb-8 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="ui-page-header__title">
             Governance & Compliance Architecture
           </h1>
-          <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          <p className="ui-page-header__subtitle">
             Define organizational data protection requirements, declarative evaluation rules, resource authorization, and regulatory compliance.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 self-start sm:self-auto shrink-0 w-full sm:w-auto">
+        <div className="flex w-full shrink-0 items-center gap-3 self-start sm:w-auto sm:self-auto">
           <PermissionGate permission={PERMISSIONS.POLICY_CREATE}>
             <Button
               size="md"

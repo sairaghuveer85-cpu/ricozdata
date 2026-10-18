@@ -9,9 +9,11 @@ import {
   LogOut,
   Shield,
   AlertTriangle,
-  ChevronRight
+  ChevronRight,
+  Compass
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import { useTour } from '../../context/TourContext';
 import Dropdown from '../common/Dropdown';
 import ThemeSelector from '../common/ThemeSelector';
 
@@ -27,6 +29,7 @@ export default function Header() {
     setUnreadNotifications,
     activities
   } = useApp();
+  const { restartTour } = useTour();
 
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const notificationsRef = useRef(null);
@@ -90,7 +93,7 @@ export default function Header() {
 
   return (
     <header
-      className="h-16 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20 transition-colors"
+      className="app-topbar h-16 px-4 sm:px-6 flex items-center justify-between shrink-0 z-20 transition-colors"
       style={{ backgroundColor: 'var(--color-surface)', borderBottom: '1px solid var(--color-border)', color: 'var(--color-text-primary)' }}
     >
       {/* Left: Mobile Toggle & Breadcrumbs / Page Context */}
@@ -276,6 +279,11 @@ export default function Header() {
             </div>
           }
           items={[
+            {
+              label: 'Interactive Product Tour',
+              icon: Compass,
+              onClick: restartTour
+            },
             {
               label: 'User Settings',
               icon: Settings,

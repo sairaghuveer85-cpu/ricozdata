@@ -48,6 +48,18 @@ function resolveEnvironmentUrls() {
     }
   }
 
+  // If running in a browser on a deployed host (e.g. Vercel), do not attempt to reach localhost
+  if (typeof window !== 'undefined' && window.location.hostname && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    if (backend && (backend.includes('localhost') || backend.includes('127.0.0.1'))) {
+      console.warn('[RicozData API] Localhost backend detected on remote deployment; falling back to relative /api.');
+      backend = '';
+      api = '/api';
+    }
+    if (api && (api.includes('localhost') || api.includes('127.0.0.1'))) {
+      api = '/api';
+    }
+  }
+
   return { backendUrl: backend, apiUrl: api };
 }
 

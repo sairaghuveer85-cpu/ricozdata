@@ -154,12 +154,12 @@ export default function DiscoverAssetsModal({
       }
       maxWidth="max-w-4xl"
       footer={
-        <div className="flex items-center justify-between w-full">
+        <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-xs text-slate-500 dark:text-slate-400">
             {selectedAssetNames.size} of {discoveredAssets.length} {isMongo ? 'collection(s)' : 'asset(s)'} selected
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               type="button"
               variant="secondary"
@@ -183,7 +183,7 @@ export default function DiscoverAssetsModal({
         </div>
       }
     >
-      <div className="space-y-4 text-xs">
+      <div className="ui-data-source-form space-y-4 text-xs">
         {/* Sync Success / Error Banner */}
         {syncResult && (
           <div
@@ -226,7 +226,7 @@ export default function DiscoverAssetsModal({
             <button
               type="button"
               onClick={handleSelectAll}
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer"
+              className="inline-flex min-h-9 items-center gap-1.5 rounded-md text-xs font-medium text-slate-600 transition-colors hover:text-blue-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 dark:text-slate-300 dark:hover:text-blue-400"
             >
               {selectedAssetNames.size === filteredAssets.length && filteredAssets.length > 0 ? (
                 <>
@@ -305,7 +305,7 @@ export default function DiscoverAssetsModal({
         )}
 
         {!loading && !error && filteredAssets.length > 0 && (
-          <div className="max-h-[380px] overflow-y-auto border border-slate-200 dark:border-[#1D3047] rounded-lg divide-y divide-slate-100 dark:divide-[#1D3047]">
+          <div className="max-h-[min(380px,50vh)] overflow-y-auto rounded-xl border border-slate-200 dark:border-[#1D3047] divide-y divide-slate-100 dark:divide-[#1D3047]">
             {filteredAssets.map((asset, idx) => {
               const assetKey = asset.name || asset.tableName || asset.id || `asset-${idx}`;
               const isSelected = selectedAssetNames.has(assetKey);

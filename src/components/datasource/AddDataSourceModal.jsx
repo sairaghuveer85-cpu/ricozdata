@@ -484,13 +484,13 @@ export default function AddDataSourceModal({
         </div>
       }
     >
-      <div className="space-y-5 text-xs">
+      <div className="ui-data-source-form space-y-5 text-xs">
         {/* Step 1: Select Connector Type */}
         <div>
           <label className="block text-xs font-bold text-slate-800 dark:text-slate-200 mb-2">
             1. Select Data Source Engine
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+          <div className="ui-data-source-type-grid grid grid-cols-2 gap-2.5 sm:grid-cols-3">
             {SOURCE_TYPES.map((type) => {
               const Icon = type.icon;
               const isSelected = selectedType === type.id;
@@ -499,7 +499,7 @@ export default function AddDataSourceModal({
                   key={type.id}
                   type="button"
                   onClick={() => handleTypeSelect(type.id)}
-                  className={`p-3 rounded-lg border text-left transition-all cursor-pointer flex flex-col justify-between gap-2 ${
+                  className={`flex min-h-28 flex-col justify-between gap-2 rounded-xl border p-3 text-left transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
                     isSelected
                       ? 'border-blue-600 bg-blue-50/60 dark:bg-blue-950/40 shadow-xs ring-1 ring-blue-500'
                       : 'border-slate-200 dark:border-[#1D3047] bg-white dark:bg-[#0D1828] hover:border-slate-300 dark:hover:border-slate-700'
